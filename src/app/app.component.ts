@@ -45,8 +45,8 @@ export class AppComponent implements OnInit {
     if(!this.match.opponentCharacterName){
       this.warnings.push("Opponent character name required.");
     }
-    else if(!this.match.userCharacterName && this.match.userCharacterGsp){
-      this.warnings.push("GSP must be associated with a character.");
+    if(!this.match.userCharacterName && this.match.userCharacterGsp){
+      this.warnings.push("User GSP must be associated with a user character.");
     }
 
     if(this.warnings.length) return false;
