@@ -7,4 +7,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'smush';
+
+  public saveEntry(item: any):void {
+    console.log("calling service method to save our new entry!!!!!11 You have selected", item);
+  }
 }
