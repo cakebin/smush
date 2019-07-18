@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -6,6 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { CommonUXModule } from './modules/common-ux/common-ux.module';
+import { CommonUXService } from './modules/common-ux/common-ux.service';
 
 @NgModule({
   declarations: [
@@ -13,11 +15,14 @@ import { CommonUXModule } from './modules/common-ux/common-ux.module';
   ],
   imports: [
     NgbModule,
+    FormsModule,
     BrowserModule,
     AppRoutingModule,
-    CommonUXModule,
+    CommonUXModule.forRoot()
   ],
-  providers: [],
+  providers: [
+    CommonUXService,
+  ],
   bootstrap: [
     AppComponent,
   ],

@@ -1,26 +1,26 @@
-<div class="container">
-  <div class="card mt-4">
-    <div class="card-body">
-        <form>
+<div class="container p-4">
+  <div class="card">   
+    <form>
+      <div class="card-body">
           <div class="row">
             <div class="form-group col-6">
               <label for="opponent-character">Opponent character*</label>
-              <common-ux-typeahead id="opponent-character" (select)="saveEntry($event)"></common-ux-typeahead>
+              <common-ux-typeahead #opponentCharacterNameInput (blur)="test($event)" (select)="match.opponentCharacterName = $event" id="opponent-character"></common-ux-typeahead>
             </div>
             <div class="form-group col-6">
               <label for="opponent-gsp">Opponent's GSP</label>
-              <input id="opponent-gsp" name="opponent-gsp" class="form-control" />
+              <input [(ngModel)]= "match.opponentCharacterGsp" id="opponent-gsp" name="opponent-gsp" class="form-control" />
             </div>
           </div>
 
           <div class="row">
             <div class="form-group col-6">
               <label for="user-character">Your character</label>
-              <common-ux-typeahead id="user-character" (select)="saveEntry($event)"></common-ux-typeahead>
+              <common-ux-typeahead (select)="match.userCharacterName = $event" id="user-character"></common-ux-typeahead>
             </div>
             <div class="form-group col-6">
               <label for="user-gsp">Your character's GSP</label>
-              <input id="user-gsp" name="user-gsp" class="form-control" />
+              <input [(ngModel)]= "match.userCharacterGsp" id="user-gsp" name="user-gsp" class="form-control" />
             </div>
           </div>
 
@@ -29,20 +29,20 @@
               <div class="row">
                 <div class="col-3">Opponent:</div>
                 <div class="form-check col-3">
-                  <input class="form-check-input" name="opponent-teabag" type="checkbox" value="" id="opponent-teabag">
+                  <input [(ngModel)]= "match.opponentCamp" class="form-check-input" name="opponent-teabag" type="checkbox" value="" id="opponent-teabag">
                   <label class="form-check-label" for="opponent-teabag">
                     Camper
                   </label>
                 </div>
                 <div class="form-check col-3">
-                  <input class="form-check-input" name="opponent-campy" type="checkbox" value="" id="opponent-campy">
+                  <input [(ngModel)]= "match.opponentTeabag" class="form-check-input" name="opponent-campy" type="checkbox" value="" id="opponent-campy">
                   <label class="form-check-label" for="opponent-campy">
                     Teabagger
                   </label>
                 </div>
                 <div class="form-check col-3">
-                  <input class="form-check-input" name="opponent-cool" type="checkbox" value="" id="opponent-cool">
-                  <label class="form-check-label" for="opponent-cool">
+                  <input [(ngModel)]= "match.opponentAwesome" class="form-check-input" name="opponent-awesome" type="checkbox" value="" id="opponent-awesome">
+                  <label class="form-check-label" for="opponent-awesome">
                     Real pal
                   </label>
                 </div>
@@ -54,13 +54,13 @@
                   Match outcome:
                 </div>
                 <div class="form-check col-4">
-                  <input class="form-check-input" type="radio" name="match-outcome" id="match-outcome-win" value="win" checked>
+                  <input [(ngModel)]= "match.userWin" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-win" value="true">
                   <label class="form-check-label" for="match-outcome-win">
                     Win
                   </label>
                 </div>
                 <div class="form-check col-4">
-                  <input class="form-check-input" type="radio" name="match-outcome" id="match-outcome-loss" value="loss">
+                  <input [(ngModel)]= "match.userWin" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-loss" value="false">
                   <label class="form-check-label" for="match-outcome-loss">
                     Loss
                   </label>
@@ -68,16 +68,36 @@
               </div>
             </div>
           </div>
-          
-          <div class="row mt-4">
-            <div class="col">
-              <button type="submit" class="btn btn-primary float-right">Submit</button>
-            </div>
-          </div>
-          
+
+        </div><!-- card-body -->
+                    
+        <div class="card-footer" (mouseenter)="showWarnings=true" (mouseleave)="showWarnings=false">
+            <div class="form-group text-right m-0">
+                <span *ngIf="showWarnings && !validateMatch()" class="text-danger mr-3">{{warnings.join(" ")}}</span>
+                <button [disabled]="!validateMatch()" (click)="createEntry()" type="submit" class="btn btn-primary">Submit</button>
+            </div>  
+        </div>
         </form>
     </div>
+
+  <div *ngIf="lastSavedMatch" class="card mt-4">
+    <div class="card-header">Last Saved Match</div>
+    <div class="card-body">
+      <ul>
+        <li>Opponent character: {{lastSavedMatch.opponentCharacterName}}</li>
+        <li *ngIf="lastSavedMatch.opponentCharacterGsp">Opponent character GSP: {{lastSavedMatch.opponentCharacterGsp}}</li>
+        <li *ngIf="lastSavedMatch.userCharacterName">User character: {{lastSavedMatch.userCharacterName}}</li>
+        <li *ngIf="lastSavedMatch.userCharacterGsp">User character GSP: {{lastSavedMatch.userCharacterGsp}}</li>
+        <li *ngIf="lastSavedMatch.opponentCamp">Opponent camp: {{lastSavedMatch.opponentCamp}}</li>
+        <li *ngIf="lastSavedMatch.opponentTeabag">Opponent teabag: {{lastSavedMatch.opponentTeabag}}</li>
+        <li *ngIf="lastSavedMatch.opponentAwesome">Opponent awesome: {{lastSavedMatch.opponentAwesome}}</li>
+        <li *ngIf="lastSavedMatch.userWin!=null">User win: {{lastSavedMatch.userWin}}</li>
+      </ul>
+    </div>
   </div>
-</div>
+
+</div> <!-- Close container -->
 
 <router-outlet></router-outlet>
+
+<common-ux-toasts aria-live="polite" aria-atomic="true"></common-ux-toasts>

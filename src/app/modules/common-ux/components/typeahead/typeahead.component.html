@@ -4,5 +4,7 @@
     class="form-control" 
     [(ngModel)]="userInput" 
     [ngbTypeahead]="search"
+    [focusFirst] = "true"
     (selectItem)="onSelect($event)"
+    (blur)="onBlur()"
     />
