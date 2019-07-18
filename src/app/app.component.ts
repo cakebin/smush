@@ -42,14 +42,15 @@ export class AppComponent implements OnInit {
   public validateMatch():boolean {
     this.warnings = [];
 
-    if(!(this.match && this.match.opponentCharacterName)){
+    if(!this.match.opponentCharacterName){
       this.warnings.push("Opponent character name required.");
-      return false;
     }
-    else {
-      this.warnings = [];
-      return true;
+    else if(!this.match.userCharacterName && this.match.userCharacterGsp){
+      this.warnings.push("GSP must be associated with a character.");
     }
+
+    if(this.warnings.length) return false;
+    else return true;
   }
   private resetMatch(): void {
     this.match = new MatchViewModel(null, null, this.match.userCharacterName, this.match.userCharacterGsp);

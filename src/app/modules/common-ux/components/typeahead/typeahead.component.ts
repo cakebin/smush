@@ -27,7 +27,7 @@ export class TypeaheadComponent implements OnInit {
       debounceTime(200),
       distinctUntilChanged(),
       map(term => {
-        if(term.length < 2){
+        if(term.length < 1){
           return [];
         } 
         else {

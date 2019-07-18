@@ -9,7 +9,7 @@
             </div>
             <div class="form-group col-6">
               <label for="opponent-gsp">Opponent's GSP</label>
-              <input [(ngModel)]= "match.opponentCharacterGsp" id="opponent-gsp" name="opponent-gsp" class="form-control" autocomplete="off" />
+              <input [(ngModel)]= "match.opponentCharacterGsp" id="opponent-gsp" type="number" name="opponent-gsp" class="form-control" autocomplete="off" />
             </div>
           </div>
 
@@ -20,54 +20,47 @@
             </div>
             <div class="form-group col-6">
               <label for="user-gsp">Your character's GSP</label>
-              <input [(ngModel)]= "match.userCharacterGsp" id="user-gsp" name="user-gsp" class="form-control" autocomplete="off" />
+              <input [(ngModel)]= "match.userCharacterGsp" id="user-gsp" type="number" name="user-gsp" class="form-control" autocomplete="off" />
             </div>
           </div>
 
           <div class="row">
             <div class="col-6">
-              <div class="row">
-                <div class="col-3">Opponent:</div>
-                <div class="form-check col-3">
-                  <input [(ngModel)]= "match.opponentCamp" class="form-check-input" name="opponent-teabag" type="checkbox" value="" id="opponent-teabag">
-                  <label class="form-check-label" for="opponent-teabag">
-                    Camper
-                  </label>
-                </div>
-                <div class="form-check col-3">
-                  <input [(ngModel)]= "match.opponentTeabag" class="form-check-input" name="opponent-campy" type="checkbox" value="" id="opponent-campy">
-                  <label class="form-check-label" for="opponent-campy">
-                    Teabagger
-                  </label>
-                </div>
-                <div class="form-check col-3">
-                  <input [(ngModel)]= "match.opponentAwesome" class="form-check-input" name="opponent-awesome" type="checkbox" value="" id="opponent-awesome">
-                  <label class="form-check-label" for="opponent-awesome">
-                    Real pal
-                  </label>
-                </div>
+              Opponent:
+              <div class="form-inline">
+                <input [(ngModel)]= "match.opponentAwesome" class="form-check-input" name="opponent-awesome" type="checkbox" value="" id="opponent-awesome">
+                <label class="form-check-label mr-3" for="opponent-awesome">
+                  Real pal
+                </label>
+              
+                <input [(ngModel)]= "match.opponentCamp" class="form-check-input" name="opponent-teabag" type="checkbox" value="" id="opponent-teabag">
+                <label class="form-check-label mr-3" for="opponent-teabag">
+                  Camper
+                </label>
+              
+                <input [(ngModel)]= "match.opponentTeabag" class="form-check-input" name="opponent-campy" type="checkbox" value="" id="opponent-campy">
+                <label class="form-check-label" for="opponent-campy">
+                  Teabagger
+                </label>
               </div>
             </div>
+          
             <div class="col-6">
-              <div class="row">
-                <div class="col-4">
-                  Match outcome:
-                </div>
-                <div class="form-check col-4">
-                  <input [(ngModel)]= "match.userWin" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-win" value="true">
-                  <label class="form-check-label" for="match-outcome-win">
-                    Win
-                  </label>
-                </div>
-                <div class="form-check col-4">
-                  <input [(ngModel)]= "match.userWin" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-loss" value="false">
-                  <label class="form-check-label" for="match-outcome-loss">
-                    Loss
-                  </label>
-                </div>
+              Match outcome:
+              <div class="form-inline">
+                <input [(ngModel)]= "match.userWin" [value]="true" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-win">
+                <label class="form-check-label mr-3" for="match-outcome-win">
+                  Win
+                </label>
+           
+                <input [(ngModel)]= "match.userWin" [value]="false" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-loss">
+                <label class="form-check-label" for="match-outcome-loss">
+                  Loss
+                </label>
               </div>
             </div>
-          </div>
+          </div><!-- Close row -->
+
         </div><!-- Close card-body -->
                     
         <div class="card-footer">
@@ -83,18 +76,32 @@
     </div>
 
   <div *ngIf="lastSavedMatch" class="card mt-4">
-    <div class="card-header">Last Saved Match</div>
+    <div class="card-header">Last Saved Match
+      <span *ngIf="lastSavedMatch.userWin!=null && lastSavedMatch.userWin==true" class="badge badge-success" style="position:relative;top:-1px">Win</span>
+      <span *ngIf="lastSavedMatch.userWin!=null && lastSavedMatch.userWin==false" class="badge badge-secondary" style="position:relative;top:-1px">Loss</span>
+    </div>
     <div class="card-body">
-      <ul>
-        <li>Opponent character: {{lastSavedMatch.opponentCharacterName}}</li>
-        <li *ngIf="lastSavedMatch.opponentCharacterGsp">Opponent character GSP: {{lastSavedMatch.opponentCharacterGsp}}</li>
-        <li *ngIf="lastSavedMatch.userCharacterName">User character: {{lastSavedMatch.userCharacterName}}</li>
-        <li *ngIf="lastSavedMatch.userCharacterGsp">User character GSP: {{lastSavedMatch.userCharacterGsp}}</li>
-        <li *ngIf="lastSavedMatch.opponentCamp">Opponent camp: {{lastSavedMatch.opponentCamp}}</li>
-        <li *ngIf="lastSavedMatch.opponentTeabag">Opponent teabag: {{lastSavedMatch.opponentTeabag}}</li>
-        <li *ngIf="lastSavedMatch.opponentAwesome">Opponent awesome: {{lastSavedMatch.opponentAwesome}}</li>
-        <li *ngIf="lastSavedMatch.userWin!=null">User win: {{lastSavedMatch.userWin}}</li>
-      </ul>
+      <div class="row">
+        <div class="col">
+          <span *ngIf="lastSavedMatch.userCharacterName">
+            <span class="font-weight-bold">{{lastSavedMatch.userCharacterName}}</span>
+            <span *ngIf="lastSavedMatch.userCharacterGsp" class="text-muted ml-1">{{lastSavedMatch.userCharacterGsp | number}}</span>
+            <span class="ml-1 mr-1">vs.</span>
+          </span>
+          <span *ngIf="lastSavedMatch.opponentCharacterName">
+            <span class="font-weight-bold text-primary">{{lastSavedMatch.opponentCharacterName}}</span>
+            <span *ngIf="lastSavedMatch.opponentCharacterGsp" class="text-muted ml-1">{{lastSavedMatch.opponentCharacterGsp | number}}</span>
+          </span>
+        </div>
+      </div>
+        
+      <div class="row">
+        <div class="col">
+          <span *ngIf="lastSavedMatch.opponentAwesome" class="badge badge-success mr-1">A good bloke</span>
+          <span *ngIf="lastSavedMatch.opponentCamp"class="badge badge-warning mr-1">Camper</span>
+          <span *ngIf="lastSavedMatch.opponentTeabag" class="badge badge-danger">Teabagger</span>
+        </div>
+      </div>
     </div>
   </div>
 
