@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
   @ViewChild('opponentCharacterNameInput', {static: false}) private opponentCharacterNameInput: TypeaheadComponent;
   public match: IMatchViewModel = new MatchViewModel();
   public lastSavedMatch: IMatchViewModel;
+  public showFooterWarnings:boolean = false;
   public warnings: string[] = [];
 
   constructor(private commonUXService:CommonUXService){
@@ -21,19 +22,23 @@ export class AppComponent implements OnInit {
   }
 
   public createEntry(): void {
-    if(!this.match.opponentCharacterName){
-      this.commonUXService.showWarningToast("Opponent character name required!");
+    if(!this.validateMatch()){
+      // This should never be reached, but in case someone does manage to re-enable the submit button
+      // without entering an opponent name... (we'll probably have bigger problems than this, if so)
+      this.warnings.forEach(warningMessage => {
+        this.commonUXService.showWarningToast(warningMessage);
+      });
       return;
     }
     console.log("Saving match:", this.match);
     this.lastSavedMatch = new MatchViewModel();
     this.lastSavedMatch = Object.assign(this.lastSavedMatch, this.match);
     this.resetMatch();
+
+    // Set footer warnings to false so it won't show up until the next mouseenter
+    this.showFooterWarnings = false;
   }
 
-  public test(event:any){
-    console.log(event);
-  }
   public validateMatch():boolean {
     this.warnings = [];
 

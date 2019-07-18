@@ -15,6 +15,7 @@ export class TypeaheadComponent implements OnInit {
   @Output() select:EventEmitter<string> = new EventEmitter<string>();
 
   public userInput: string;
+  private currentValue: string;
 
   constructor() { }
 
@@ -40,13 +41,16 @@ export class TypeaheadComponent implements OnInit {
   public onBlur(){
     // If the user has cleared the input and blurred out, we need to output a blank value manually
     // because the typeahead does not recognise this as an input "event" per se
-    if(this.userInput=="") this.select.emit("");
+    if(this.userInput==="") this.select.emit("");
+    else if(this.currentValue) this.select.emit(this.currentValue);
   }
   public onSelect(eventObject: NgbTypeaheadSelectItemEvent):void {
+    this.currentValue = eventObject.item;
     this.select.emit(eventObject.item);
   }
   public clear(): void {
     this.userInput = "";
+    this.currentValue = "";
   }
 
 }
