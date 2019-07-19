@@ -4,6 +4,8 @@ import (
   "log"
   "net/http"
   "os"
+
+  "github.com/cakebin/smush/server/routers/app"
 )
 
 func main() {
@@ -13,7 +15,8 @@ func main() {
     log.Fatal("$PORT must be set")
   }
 
+  router := &app.Router{}
+
   log.Printf("Listening on port %s", port) 
-  http.Handle("/", http.FileServer((http.Dir("dist"))))
-  http.ListenAndServe(":" + port, nil)
+  http.ListenAndServe(":" + port, router)
 }

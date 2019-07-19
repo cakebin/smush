@@ -2,8 +2,8 @@
   "name": "smush",
   "version": "0.0.0",
   "scripts": {
-    "build": "ng build --outputPath=dist",
-    "build:dev": "ng build --outputPath=dist --watch",
+    "build": "ng build",
+    "build:dev": "ng build --watch",
     "e2e": "ng e2e"
   },
   "private": true,
