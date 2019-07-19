@@ -1,6 +1,7 @@
 
 export class MatchViewModel implements IMatchViewModel {
 	constructor(
+        public matchId: number = null,
         public opponentCharacterName: string = "",
         public opponentCharacterGsp: number = null,
         public userCharacterName: string = "",
@@ -13,6 +14,7 @@ export class MatchViewModel implements IMatchViewModel {
 	}
 }
 export interface IMatchViewModel {
+    matchId: number;
 	opponentCharacterName: string;
 	opponentCharacterGsp: number;
 	userCharacterName: string;

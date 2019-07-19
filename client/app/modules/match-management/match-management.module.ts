@@ -9,12 +9,14 @@ import { CommonUXModule } from '../common-ux/common-ux.module';
 import { CommonUXService } from '../common-ux/common-ux.service';
 
 import { MatchInputFormComponent } from './match-input-form.component';
+import { MatchTableViewComponent } from './match-table-view.component';
 import { MatchManagementService } from './match-management.service';
 
 
 @NgModule({
   declarations: [
     MatchInputFormComponent,
+    MatchTableViewComponent,
   ],
   imports: [
     NgbModule,
@@ -25,6 +27,7 @@ import { MatchManagementService } from './match-management.service';
   ],
   exports: [
     MatchInputFormComponent,
+    MatchTableViewComponent,
   ]
 })
 export class MatchManagementModule {

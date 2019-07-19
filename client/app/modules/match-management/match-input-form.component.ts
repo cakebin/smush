@@ -67,7 +67,7 @@ export class MatchInputFormComponent implements OnInit {
   }
 
   private resetMatch(): void {
-    this.match = new MatchViewModel(null, null, this.match.userCharacterName, this.match.userCharacterGsp);
+    this.match = new MatchViewModel(null, null, null, this.match.userCharacterName, this.match.userCharacterGsp);
     // Need to manually reset the typeahead since it's not a simple input
     this.opponentCharacterNameInput.clear();
   }

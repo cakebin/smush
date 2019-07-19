@@ -1,0 +1,33 @@
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+        <th scope="col">#</th>
+        <th scope="col">User Character</th>
+        <th scope="col">User GSP</th>
+        <th scope="col">Opponent Character</th>
+        <th scope="col">Opponent GSP</th>
+        <th scope="col">Win/Loss</th>
+
+        <th scope="col">Chum</th>
+        <th scope="col">Camp</th>
+        <th scope="col">TBag</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let match of matches">
+            <td>{{match.matchId}}</td>
+            <td>{{match.userCharacterName}}</td>
+            <td>{{match.userCharacterGsp | number}}</td>
+            <td>{{match.opponentCharacterName}}</td>
+            <td>{{match.opponentCharacterGsp | number}}</td>
+            <td class="text-center">
+                <span *ngIf="match.userWin" class="text-success font-weight-bold">&#10003;</span>
+                <span *ngIf="match.userWin===false" class="text-danger font-weight-bold">&#10005;</span>
+            </td>
+
+            <td class="text-center"><span *ngIf="match.opponentAwesome" class="text-success font-weight-bold">&#10003;</span></td>
+            <td class="text-center"><span *ngIf="match.opponentCamp" class="text-success font-weight-bold">&#10003;</span></td>
+            <td class="text-center"><span *ngIf="match.opponentTeabag" class="text-success font-weight-bold">&#10003;</span></td>
+        </tr>
+    </tbody>
+</table>
