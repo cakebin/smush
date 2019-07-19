@@ -1,0 +1,108 @@
+<div class="card">   
+    <form>
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-6">
+                    <label for="opponent-character">Opponent character*</label>
+                    <common-ux-typeahead #opponentCharacterNameInput (blur)="test($event)" (select)="match.opponentCharacterName = $event" id="opponent-character"></common-ux-typeahead>
+                </div>
+                <div class="form-group col-6">
+                    <label for="opponent-gsp">Opponent character's GSP</label>
+                    <input [(ngModel)]= "match.opponentCharacterGsp" id="opponent-gsp" type="number" name="opponent-gsp" class="form-control" autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-6">
+                    <label for="user-character">Your character</label>
+                    <common-ux-typeahead (select)="match.userCharacterName = $event" id="user-character"></common-ux-typeahead>
+                </div>
+                <div class="form-group col-6">
+                    <label for="user-gsp">Your character's GSP</label>
+                    <input [(ngModel)]= "match.userCharacterGsp" id="user-gsp" type="number" name="user-gsp" class="form-control" autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    Opponent:
+                    <div class="form-inline">
+                        <input [(ngModel)]= "match.opponentAwesome" class="form-check-input" name="opponent-awesome" type="checkbox" value="" id="opponent-awesome">
+                        <label class="form-check-label mr-3" for="opponent-awesome">
+                        Real pal
+                        </label>
+
+                        <input [(ngModel)]= "match.opponentCamp" class="form-check-input" name="opponent-teabag" type="checkbox" value="" id="opponent-teabag">
+                        <label class="form-check-label mr-3" for="opponent-teabag">
+                        Camper
+                        </label>
+
+                        <input [(ngModel)]= "match.opponentTeabag" class="form-check-input" name="opponent-campy" type="checkbox" value="" id="opponent-campy">
+                        <label class="form-check-label" for="opponent-campy">
+                        Teabagger
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    Match outcome:
+                    <div class="form-inline">
+                        <input [(ngModel)]= "match.userWin" [value]="true" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-win">
+                        <label class="form-check-label mr-3" for="match-outcome-win">
+                        Win
+                        </label>
+
+                        <input [(ngModel)]= "match.userWin" [value]="false" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-loss">
+                        <label class="form-check-label" for="match-outcome-loss">
+                        Loss
+                        </label>
+                    </div>
+                </div>
+            </div><!-- Close row -->
+        </div><!-- Close card-body -->
+
+        <div class="card-footer">
+            <div class="form-group text-right m-0">
+                <span *ngIf="showFooterWarnings && !validateMatch()" class="text-danger mr-3">{{warnings.join(" ")}}</span>
+                <!-- Can't put events on disabled form inputs -->
+                <span (mouseenter)="showFooterWarnings=true" (mouseleave)="showFooterWarnings=false">
+                    <button [disabled]="!validateMatch()" (click)="createEntry()" type="submit" class="btn btn-primary">Submit</button>
+                </span>
+            </div>  
+        </div>
+    </form>
+</div>
+
+
+
+
+
+<div *ngIf="lastSavedMatch" class="card mt-4">
+    <div class="card-header">Last Saved Match
+        <span *ngIf="lastSavedMatch.userWin!=null && lastSavedMatch.userWin==true" class="badge badge-success" style="position:relative;top:-1px">Win</span>
+        <span *ngIf="lastSavedMatch.userWin!=null && lastSavedMatch.userWin==false" class="badge badge-secondary" style="position:relative;top:-1px">Loss</span>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <span *ngIf="lastSavedMatch.userCharacterName">
+                    <span class="font-weight-bold">{{lastSavedMatch.userCharacterName}}</span>
+                    <span *ngIf="lastSavedMatch.userCharacterGsp" class="text-muted ml-1">{{lastSavedMatch.userCharacterGsp | number}}</span>
+                    <span class="ml-1 mr-1">vs.</span>
+                </span>
+                <span *ngIf="lastSavedMatch.opponentCharacterName">
+                    <span class="font-weight-bold text-primary">{{lastSavedMatch.opponentCharacterName}}</span>
+                    <span *ngIf="lastSavedMatch.opponentCharacterGsp" class="text-muted ml-1">{{lastSavedMatch.opponentCharacterGsp | number}}</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <span *ngIf="lastSavedMatch.opponentAwesome" class="badge badge-success mr-1">A good bloke</span>
+                <span *ngIf="lastSavedMatch.opponentCamp"class="badge badge-warning mr-1">Camper</span>
+                <span *ngIf="lastSavedMatch.opponentTeabag" class="badge badge-danger">Teabagger</span>
+            </div>
+        </div>
+    </div>
+</div>

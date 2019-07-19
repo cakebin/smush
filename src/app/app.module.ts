@@ -9,9 +9,12 @@ import { AppComponent } from './app.component';
 import { CommonUXModule } from './modules/common-ux/common-ux.module';
 import { CommonUXService } from './modules/common-ux/common-ux.service';
 
+import { MatchInputFormComponent } from './components/match-input-form.component';
+
 @NgModule({
   declarations: [
     AppComponent,
+    MatchInputFormComponent,
   ],
   imports: [
     NgbModule,
