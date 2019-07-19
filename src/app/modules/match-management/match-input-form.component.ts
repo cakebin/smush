@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ApplicationRef } from '@angular/core';
 import { MatchViewModel, IMatchViewModel } from '../../app.view-models';
 import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.component';
 import { CommonUXService } from '../common-ux/common-ux.service';

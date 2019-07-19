@@ -8,7 +8,7 @@
                 </div>
                 <div class="form-group col-6">
                     <label for="opponent-gsp">Opponent character's GSP</label>
-                    <input [(ngModel)]= "match.opponentCharacterGsp" id="opponent-gsp" type="number" name="opponent-gsp" class="form-control" autocomplete="off" />
+                    <input numberMask [(ngModel)]="match.opponentCharacterGsp" type="text" name="opponent-gsp" class="form-control" autocomplete="off" />            
                 </div>
             </div>
 
@@ -19,7 +19,7 @@
                 </div>
                 <div class="form-group col-6">
                     <label for="user-gsp">Your character's GSP</label>
-                    <input [(ngModel)]= "match.userCharacterGsp" id="user-gsp" type="number" name="user-gsp" class="form-control" autocomplete="off" />
+                    <input numberMask [(ngModel)]="match.userCharacterGsp" type="text" name="user-gsp" class="form-control" autocomplete="off" />  
                 </div>
             </div>
 
@@ -83,16 +83,16 @@
         <span *ngIf="lastSavedMatch.userWin!=null && lastSavedMatch.userWin==false" class="badge badge-secondary" style="position:relative;top:-1px">Loss</span>
     </div>
     <div class="card-body">
-        <div class="row">
+        <div class="row h2">
             <div class="col">
                 <span *ngIf="lastSavedMatch.userCharacterName">
                     <span class="font-weight-bold">{{lastSavedMatch.userCharacterName}}</span>
-                    <span *ngIf="lastSavedMatch.userCharacterGsp" class="text-muted ml-1">{{lastSavedMatch.userCharacterGsp | number}}</span>
-                    <span class="ml-1 mr-1">vs.</span>
+                    <span *ngIf="lastSavedMatch.userCharacterGsp" class="text-black-50 ml-1">{{lastSavedMatch.userCharacterGsp}}</span>
+                    <span class="ml-2 mr-2">vs.</span>
                 </span>
                 <span *ngIf="lastSavedMatch.opponentCharacterName">
                     <span class="font-weight-bold text-primary">{{lastSavedMatch.opponentCharacterName}}</span>
-                    <span *ngIf="lastSavedMatch.opponentCharacterGsp" class="text-muted ml-1">{{lastSavedMatch.opponentCharacterGsp | number}}</span>
+                    <span *ngIf="lastSavedMatch.opponentCharacterGsp" class="text-black-50 ml-1">{{lastSavedMatch.opponentCharacterGsp}}</span>
                 </span>
             </div>
         </div>
