@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatchViewModel, IMatchViewModel } from '../app.view-models';
-import { TypeaheadComponent } from '../modules/common-ux/components/typeahead/typeahead.component';
-import { CommonUXService } from '../modules/common-ux/common-ux.service';
+import { MatchViewModel, IMatchViewModel } from '../../app.view-models';
+import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.component';
+import { CommonUXService } from '../common-ux/common-ux.service';
+import { MatchManagementService } from './match-management.service';
 
 @Component({
   selector: 'match-input-form',
@@ -11,10 +12,15 @@ export class MatchInputFormComponent implements OnInit {
   @ViewChild('opponentCharacterNameInput', {static: false}) private opponentCharacterNameInput: TypeaheadComponent;
   public match: IMatchViewModel = new MatchViewModel();
   public lastSavedMatch: IMatchViewModel;
+  
   public showFooterWarnings:boolean = false;
   public warnings: string[] = [];
+  public isSaving: boolean = false;
 
-  constructor(private commonUXService:CommonUXService){
+  constructor(
+    private commonUXService:CommonUXService,
+    private matchManagementService: MatchManagementService,
+    ){
   }
   
   ngOnInit() {
@@ -22,14 +28,23 @@ export class MatchInputFormComponent implements OnInit {
 
   public createEntry(): void {
     if(!this.validateMatch()){
-      // This should never be reached, but in case someone does manage to re-enable the submit button
-      // without entering an opponent name... (we'll probably have bigger problems than this, if so)
       this.warnings.forEach(warningMessage => {
         this.commonUXService.showWarningToast(warningMessage);
       });
       return;
     }
+
+    //Save match (hit fake API endpoint)
+    this.isSaving = true;
     console.log("Saving match:", this.match);
+    this.matchManagementService.createMatch(this.match).subscribe(response => {
+      if(response) this.commonUXService.showSuccessToast("Match saved!");
+    }, error => {
+      this.commonUXService.showDangerToast("Unable to save match.");
+    }, () => {
+      this.isSaving = false;
+    });
+
     this.lastSavedMatch = new MatchViewModel();
     this.lastSavedMatch = Object.assign(this.lastSavedMatch, this.match);
     this.resetMatch();
@@ -47,10 +62,10 @@ export class MatchInputFormComponent implements OnInit {
     if(!this.match.userCharacterName && this.match.userCharacterGsp){
       this.warnings.push("User GSP must be associated with a user character.");
     }
-
     if(this.warnings.length) return false;
     else return true;
   }
+
   private resetMatch(): void {
     this.match = new MatchViewModel(null, null, this.match.userCharacterName, this.match.userCharacterGsp);
     // Need to manually reset the typeahead since it's not a simple input
