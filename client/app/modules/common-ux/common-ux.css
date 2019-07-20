@@ -1,0 +1,10 @@
+:host /deep/ th span {
+    cursor:pointer;
+}
+:host /deep/ th span .ng-fa-icon {
+    opacity:0.3;
+}
+:host /deep/ th span.asc .ng-fa-icon[sortUp],
+:host /deep/ th span.desc .ng-fa-icon[sortDown]{
+    opacity:1;
+}

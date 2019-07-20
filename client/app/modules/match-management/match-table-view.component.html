@@ -1,33 +1,46 @@
-<table class="table table-striped">
+<table class="table table-sm table-striped table-hover">
     <thead class="thead-dark">
         <tr>
-        <th scope="col">#</th>
-        <th scope="col">User Character</th>
-        <th scope="col">User GSP</th>
-        <th scope="col">Opponent Character</th>
-        <th scope="col">Opponent GSP</th>
-        <th scope="col">Win/Loss</th>
-
-        <th scope="col">Chum</th>
-        <th scope="col">Camp</th>
-        <th scope="col">TBag</th>
+            <th *ngFor="let header of headerLabels">
+                <common-ux-sortable-table-header 
+                    [propertyName]="header.propertyName" 
+                    [displayName]="header.displayName"
+                    (sort)="onSort($event)">
+                </common-ux-sortable-table-header>
+            </th>
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let match of matches">
+        <tr *ngFor="let match of sortedMatches">
             <td>{{match.matchId}}</td>
             <td>{{match.userCharacterName}}</td>
             <td>{{match.userCharacterGsp | number}}</td>
             <td>{{match.opponentCharacterName}}</td>
             <td>{{match.opponentCharacterGsp | number}}</td>
             <td class="text-center">
-                <span *ngIf="match.userWin" class="text-success font-weight-bold">&#10003;</span>
-                <span *ngIf="match.userWin===false" class="text-danger font-weight-bold">&#10005;</span>
+                <span *ngIf="match.userWin" class="text-success font-weight-bold">
+                    <fa-icon sortUp [icon]="faCheck"></fa-icon>
+                </span>
+                <span *ngIf="match.userWin===false" class="text-danger font-weight-bold">
+                    <fa-icon sortUp [icon]="faTimes"></fa-icon>
+                </span>
             </td>
 
-            <td class="text-center"><span *ngIf="match.opponentAwesome" class="text-success font-weight-bold">&#10003;</span></td>
-            <td class="text-center"><span *ngIf="match.opponentCamp" class="text-success font-weight-bold">&#10003;</span></td>
-            <td class="text-center"><span *ngIf="match.opponentTeabag" class="text-success font-weight-bold">&#10003;</span></td>
+            <td class="text-center">
+                <span *ngIf="match.opponentAwesome" class="text-success font-weight-bold">
+                    <fa-icon sortUp [icon]="faCheck"></fa-icon>
+                </span>
+            </td>
+            <td class="text-center">
+                <span *ngIf="match.opponentCamp" class="text-success font-weight-bold">
+                    <fa-icon sortUp [icon]="faCheck"></fa-icon>
+                </span>
+            </td>
+            <td class="text-center">
+                <span *ngIf="match.opponentTeabag" class="text-success font-weight-bold">
+                    <fa-icon sortUp [icon]="faCheck"></fa-icon>
+                </span>
+            </td>
         </tr>
     </tbody>
 </table>

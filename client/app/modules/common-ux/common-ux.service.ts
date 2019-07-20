@@ -20,4 +20,7 @@ export class CommonUXService {
     public showDangerToast(message: string):void {
         this.toastService.show(message, { classname: 'bg-danger text-light', delay: 10000 });
     }
+
+    //Sorting methods
+    public compare = (v1, v2) => v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
 }
