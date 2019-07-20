@@ -27,8 +27,8 @@
 
             <div class="row">
                 <div class="col-6">
-                    Opponent:
                     <div class="form-inline">
+                        <span class="mr-3">Opponent:</span>
                         <input [(ngModel)]= "match.opponentAwesome" class="form-check-input" name="opponent-awesome" type="checkbox" value="" id="opponent-awesome">
                         <label class="form-check-label mr-3" for="opponent-awesome">
                         Real pal
@@ -47,8 +47,8 @@
                 </div>
 
                 <div class="col-6">
-                    Match outcome:
                     <div class="form-inline">
+                        <span class="mr-3">Match outcome:</span>
                         <input [(ngModel)]= "match.userWin" [value]="true" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-win">
                         <label class="form-check-label mr-3" for="match-outcome-win">
                         Win
