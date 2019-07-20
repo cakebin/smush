@@ -68,7 +68,9 @@
                 <span *ngIf="showFooterWarnings && !validateMatch()" class="text-danger mr-3">{{warnings.join(" ")}}</span>
                 <!-- Can't put events on disabled form inputs -->
                 <span (mouseenter)="showFooterWarnings=true" (mouseleave)="showFooterWarnings=false">
-                    <button [disabled]="!validateMatch()" (click)="createEntry()" type="submit" class="btn btn-primary">Submit</button>
+                    <button [disabled]="!validateMatch() || isSaving" (click)="createEntry()" type="submit" class="btn btn-primary">
+                        Submit
+                    </button>
                 </span>
             </div>  
         </div>

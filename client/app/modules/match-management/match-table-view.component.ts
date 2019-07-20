@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { faCheck, faTimes, faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { IMatchViewModel } from '../../app.view-models';
 import { CommonUXService } from '../common-ux/common-ux.service';
@@ -34,7 +36,8 @@ export class MatchTableViewComponent implements OnInit {
 
   public faCheck = faCheck;
   public faTimes = faTimes;
-
+  public faTrash = faTrash;
+  public faPencilAlt = faPencilAlt;
 
   constructor(
     private commonUXService:CommonUXService,
@@ -42,20 +45,20 @@ export class MatchTableViewComponent implements OnInit {
     ){
   }
   
+  // Watch all matches and update this component when they change
+  private allMatches = this.matchManagementService.getAllMatches().pipe(
+    map(res => {
+      if (!res) {
+        throw new Error('Matches expected!');
+      }
+      return res;
+    }),
+      catchError(err => of([]))
+    );
+
   ngOnInit() {
     this.isLoading = true;
-
-    this.matchManagementService.getAllMatches().subscribe(
-      result => {
-        if(result) this.sortedMatches = this.matches = result;
-      },
-      error => {
-        this.commonUXService.showDangerToast("Unable to get matches.");
-      },
-      () => {
-        this.isLoading = false;
-      }
-    );
+    this.subscribeToMatches(); 
   }
 
   public onSort({column, direction}: ISortEvent) {
@@ -80,4 +83,28 @@ export class MatchTableViewComponent implements OnInit {
       });
     }
   }
+
+  public editMatch(match: IMatchViewModel): void {
+    console.log('Editing match!', match);
+  }
+  public deleteMatch(matchId: number): void {
+    console.log('DELETING match!', matchId);
+  }
+
+  private subscribeToMatches(){
+    this.allMatches.subscribe(
+      result => {
+        if(result){
+          this.sortedMatches = this.matches = result;
+        }
+      },
+      error => {
+        this.commonUXService.showDangerToast("Unable to get matches.");
+      },
+      () => {
+        this.isLoading = false;
+      }
+    );
+  }
+  
 }
