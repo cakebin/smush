@@ -1,9 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule, ModuleWithProviders, ApplicationRef } from '@angular/core';
+import { NgModule, ModuleWithProviders } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
 
 import { CommonUXModule } from '../common-ux/common-ux.module';
 import { CommonUXService } from '../common-ux/common-ux.service';
@@ -20,6 +20,7 @@ import { MatchManagementService } from './match-management.service';
   ],
   imports: [
     NgbModule,
+    FontAwesomeModule,
     FormsModule,
     BrowserModule,
     HttpClientModule,

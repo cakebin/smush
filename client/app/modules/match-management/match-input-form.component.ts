@@ -34,8 +34,17 @@ export class MatchInputFormComponent implements OnInit {
       return;
     }
 
-    //Save match (hit fake API endpoint)
+    // Save match (hit fake API endpoint)
     this.isSaving = true;
+    
+    // Transform some data
+    if(this.match.opponentCharacterGsp) {
+      this.match.opponentCharacterGsp = parseInt(this.match.opponentCharacterGsp.toString().replace(/,/g, ''));
+    }
+    if(this.match.userCharacterGsp) {
+      this.match.userCharacterGsp = parseInt(this.match.userCharacterGsp.toString().replace(/,/g, ''));
+    }
+
     console.log("Saving match:", this.match);
     this.matchManagementService.createMatch(this.match).subscribe(response => {
       if(response) this.commonUXService.showSuccessToast("Match saved!");
