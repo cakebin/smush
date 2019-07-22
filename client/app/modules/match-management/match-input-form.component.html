@@ -8,7 +8,7 @@
                 </div>
                 <div class="form-group col-6">
                     <label for="opponent-gsp">Opponent character's GSP</label>
-                    <input numberMask [(ngModel)]="match.opponentCharacterGsp" type="text" name="opponent-gsp" class="form-control" autocomplete="off" />            
+                    <input number-mask [(ngModel)]="match.opponentCharacterGsp" type="text" name="opponent-gsp" class="form-control" autocomplete="off" />            
                 </div>
             </div>
 
@@ -21,7 +21,7 @@
                 </div>
                 <div class="form-group col-6">
                     <label for="user-gsp">Your character's GSP</label>
-                    <input numberMask [(ngModel)]="match.userCharacterGsp" type="text" name="user-gsp" class="form-control" autocomplete="off" />  
+                    <input #userCharacterGspInput=numberMask number-mask [(ngModel)]="match.userCharacterGsp" type="text" name="user-gsp" class="form-control" autocomplete="off" />  
                 </div>
             </div>
 
@@ -81,7 +81,7 @@
 
 
 
-<div *ngIf="lastSavedMatch" class="card mt-4">
+<div *ngIf="false" class="card mt-4">
     <div class="card-header">Last Saved Match
         <span *ngIf="lastSavedMatch.userWin!=null && lastSavedMatch.userWin==true" class="badge badge-success" style="position:relative;top:-1px">Win</span>
         <span *ngIf="lastSavedMatch.userWin!=null && lastSavedMatch.userWin==false" class="badge badge-secondary" style="position:relative;top:-1px">Loss</span>

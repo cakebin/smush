@@ -6,6 +6,13 @@ export interface ISortEvent {
     column: string;
     direction: SortDirection;
 }
+export class SortEvent implements ISortEvent {
+    constructor(
+    public column: string,
+    public direction: SortDirection){
+        
+    }
+}
 export interface IHeaderViewModel {
     propertyName: string;
     displayName: string;

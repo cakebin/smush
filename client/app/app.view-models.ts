@@ -1,7 +1,6 @@
-
 export class MatchViewModel implements IMatchViewModel {
 	constructor(
-        public matchId: number = null,
+        public id: number = null,
         public opponentCharacterName: string = "",
         public opponentCharacterGsp: number = null,
         public userCharacterName: string = "",
@@ -10,11 +9,12 @@ export class MatchViewModel implements IMatchViewModel {
         public opponentCamp: boolean = null, 
         public opponentAwesome: boolean = null,
         public userWin: boolean = null,
+        public created: Date = null,
     ) {
 	}
 }
 export interface IMatchViewModel {
-    matchId: number;
+    id: number;
 	opponentCharacterName: string;
 	opponentCharacterGsp: number;
 	userCharacterName: string;
@@ -23,4 +23,5 @@ export interface IMatchViewModel {
     opponentCamp: boolean;
     opponentAwesome: boolean;
     userWin: boolean;
+    created: Date;
 }

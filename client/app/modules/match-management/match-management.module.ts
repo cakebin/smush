@@ -1,4 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
+import { DecimalPipe } from '@angular/common';
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -39,6 +40,7 @@ export class MatchManagementModule {
         providers: [
           CommonUXService,
           MatchManagementService,
+          DecimalPipe,
           {
             provide: 'ApiUrl',
             useValue: '/api/match'

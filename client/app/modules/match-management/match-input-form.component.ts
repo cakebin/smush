@@ -1,5 +1,7 @@
-import { Component, OnInit, ViewChild, ApplicationRef } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { MatchViewModel, IMatchViewModel } from '../../app.view-models';
+import { NumberMaskDirective } from '../common-ux/directives/number-mask.directive';
 import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.component';
 import { CommonUXService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
@@ -9,7 +11,9 @@ import { MatchManagementService } from './match-management.service';
   templateUrl: './match-input-form.component.html',
 })
 export class MatchInputFormComponent implements OnInit {
-  @ViewChild('opponentCharacterNameInput', {static: false}) private opponentCharacterNameInput: TypeaheadComponent;
+  @ViewChild('opponentCharacterNameInput', { static: false }) private opponentCharacterNameInput: TypeaheadComponent;
+  @ViewChild('userCharacterGspInput', { static: false }) private userCharacterGspInput: NumberMaskDirective;
+
   public match: IMatchViewModel = new MatchViewModel();
   public lastSavedMatch: IMatchViewModel;
   
@@ -20,10 +24,12 @@ export class MatchInputFormComponent implements OnInit {
   constructor(
     private commonUXService:CommonUXService,
     private matchManagementService: MatchManagementService,
+    private decimalPipe: DecimalPipe,
     ){
   }
   
-  ngOnInit() {
+  ngOnInit(){
+
   }
 
   public createEntry(): void {
@@ -34,7 +40,6 @@ export class MatchInputFormComponent implements OnInit {
       return;
     }
 
-    // Save match (hit fake API endpoint)
     this.isSaving = true;
     
     // Transform some data
@@ -44,7 +49,6 @@ export class MatchInputFormComponent implements OnInit {
     if(this.match.userCharacterGsp) {
       this.match.userCharacterGsp = parseInt(this.match.userCharacterGsp.toString().replace(/,/g, ''));
     }
-
     console.log("Saving match:", this.match);
     this.matchManagementService.createMatch(this.match).subscribe(response => {
       if(response) this.commonUXService.showSuccessToast("Match saved!");
@@ -77,7 +81,11 @@ export class MatchInputFormComponent implements OnInit {
 
   private resetMatch(): void {
     this.match = new MatchViewModel(null, null, null, this.match.userCharacterName, this.match.userCharacterGsp);
-    // Need to manually reset the typeahead since it's not a simple input
+    // Need to manually mask the user GSP again
+    if(this.match.userCharacterGsp) {
+      this.userCharacterGspInput.setValue(this.match.userCharacterGsp);
+    }
+    // Need to manually reset the opponent character typeahead component
     this.opponentCharacterNameInput.clear();
   }
 }

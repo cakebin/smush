@@ -1,11 +1,9 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
-import { of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
 import { faCheck, faTimes, faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { IMatchViewModel } from '../../app.view-models';
 import { CommonUXService } from '../common-ux/common-ux.service';
-import { ISortEvent, HeaderViewModel } from '../common-ux/common-ux.view-models';
+import { ISortEvent, SortEvent, SortDirection, HeaderViewModel } from '../common-ux/common-ux.view-models';
 import { SortableTableHeaderComponent } from '../common-ux/components/sortable-table-header/sortable-table-header.component';
 import { MatchManagementService } from './match-management.service';
 
@@ -15,15 +13,16 @@ import { MatchManagementService } from './match-management.service';
 })
 export class MatchTableViewComponent implements OnInit {
   public headerLabels:HeaderViewModel[] = [
-    new HeaderViewModel('matchId', '#'),
-    new HeaderViewModel('userCharacterName', 'User Character'),
-    new HeaderViewModel('userCharacterGsp', 'User GSP'),
-    new HeaderViewModel('opponentCharacterName', 'Opponent Character'),
+    new HeaderViewModel('id', '#'),
+    new HeaderViewModel('userCharacterName', 'Char'),
+    new HeaderViewModel('userCharacterGsp', 'GSP'),
+    new HeaderViewModel('opponentCharacterName', 'Opponent Char'),
     new HeaderViewModel('opponentCharacterGsp', 'Opponent GSP'),
     new HeaderViewModel('userWin', 'Win/Loss'),
     new HeaderViewModel('opponentAwesome', 'Chum'),
     new HeaderViewModel('opponentCamp', 'Camp'),
     new HeaderViewModel('opponentTeabag', 'TBag'),
+    new HeaderViewModel('created', 'Created'),
   ];
   @ViewChildren(SortableTableHeaderComponent) headerComponents: QueryList<SortableTableHeaderComponent>;
   
@@ -31,7 +30,7 @@ export class MatchTableViewComponent implements OnInit {
 
   public sortedMatches: IMatchViewModel[];
   public sortColumnName: string = '';
-  public sortColumnDirection: string = '';
+  public sortColumnDirection: SortDirection = '';
   public isLoading: boolean = false;
 
   public faCheck = faCheck;
@@ -44,21 +43,24 @@ export class MatchTableViewComponent implements OnInit {
     private matchManagementService: MatchManagementService,
     ){
   }
-  
-  // Watch all matches and update this component when they change
-  private allMatches = this.matchManagementService.getAllMatches().pipe(
-    map(res => {
-      if (!res) {
-        throw new Error('Matches expected!');
-      }
-      return res;
-    }),
-      catchError(err => of([]))
-    );
 
   ngOnInit() {
     this.isLoading = true;
-    this.subscribeToMatches(); 
+    this.matchManagementService.cachedMatches.subscribe({
+      next: res => {
+        this.isLoading = true;
+        //console.warn("Got some new matches from the service:", res);
+        this.sortedMatches = this.matches = res;
+        this.initialSort();
+      },
+      error: err => {
+        this.commonUXService.showDangerToast('Unable to get matches.');
+        console.error(err);
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
   }
 
   public onSort({column, direction}: ISortEvent) {
@@ -89,22 +91,8 @@ export class MatchTableViewComponent implements OnInit {
   }
   public deleteMatch(matchId: number): void {
     console.log('DELETING match!', matchId);
+  } 
+  private initialSort(): void { 
+    this.onSort(new SortEvent('id', 'desc'));
   }
-
-  private subscribeToMatches(){
-    this.allMatches.subscribe(
-      result => {
-        if(result){
-          this.sortedMatches = this.matches = result;
-        }
-      },
-      error => {
-        this.commonUXService.showDangerToast("Unable to get matches.");
-      },
-      () => {
-        this.isLoading = false;
-      }
-    );
-  }
-  
 }
