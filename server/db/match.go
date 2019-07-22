@@ -96,7 +96,6 @@ func (db *DB) GetAllMatches() ([]*Match, error) {
 func (db *DB) CreateMatch(match Match) (bool, error) {
   sqlStatement := `
   INSERT INTO matches (
-    created,
     opponent_character_name,
     opponent_character_gsp,
     opponent_teabag,
@@ -106,10 +105,9 @@ func (db *DB) CreateMatch(match Match) (bool, error) {
     user_character_gsp,
     user_win
   )
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
   _, err := db.Exec(
     sqlStatement,
-    match.Created,
     match.OpponentCharacterName,
     match.OpponentCharacterGsp,
     match.OpponentTeabag,
