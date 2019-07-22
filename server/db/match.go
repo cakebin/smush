@@ -8,7 +8,6 @@ import (
 // Match represents a recorded Smash Ultimate Online match outcome
 type Match struct {
   ID                      int          `json:"id,omitempty"`
-  Created                 time.Time    `json:"created"`
   OpponentCharacterName   string       `json:"opponentCharacterName"`
   OpponentCharacterGsp    int          `json:"opponentCharacterGsp,omitempty"`
   OpponentTeabag          bool         `json:"opponentTeabag,omitempty"`
@@ -17,6 +16,7 @@ type Match struct {
   UserCharacterName       string       `json:"userCharacterName,omitempty"`
   UserCharacterGsp        int          `json:"userCharacterGsp,omitempty"`
   UserWin                 bool         `json:"userWin,omitempty"`
+  Created                 time.Time    `json:"created"`
 }
 
 
@@ -34,7 +34,6 @@ func (db *DB) GetMatchByID(id int) (*Match, error) {
   match := new(Match)
   err := row.Scan(
     &match.ID,
-    &match.Created,
     &match.OpponentCharacterName,
     &match.OpponentCharacterGsp,
     &match.OpponentTeabag,
@@ -43,6 +42,7 @@ func (db *DB) GetMatchByID(id int) (*Match, error) {
     &match.UserCharacterName,
     &match.UserCharacterGsp,
     &match.UserWin,
+    &match.Created,
   )
 
   if err != nil {
@@ -66,7 +66,6 @@ func (db *DB) GetAllMatches() ([]*Match, error) {
     match := new(Match)
     err := rows.Scan(
       &match.ID,
-      &match.Created,
       &match.OpponentCharacterName,
       &match.OpponentCharacterGsp,
       &match.OpponentTeabag,
@@ -75,6 +74,7 @@ func (db *DB) GetAllMatches() ([]*Match, error) {
       &match.UserCharacterName,
       &match.UserCharacterGsp,
       &match.UserWin,
+      &match.Created,
     )
 
     if err != nil {
