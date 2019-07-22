@@ -41,7 +41,7 @@ export class MatchManagementModule {
           MatchManagementService,
           {
             provide: 'ApiUrl',
-            useValue: '/api/matches'
+            useValue: '/api/match'
           },
         ]
     }
