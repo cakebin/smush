@@ -7,7 +7,7 @@ import (
 
 // Match represents a recorded Smash Ultimate Online match outcome
 type Match struct {
-  MatchID                 int          `json:"matchId,omitempty"`
+  ID                      int          `json:"id,omitempty"`
   Created                 time.Time    `json:"created"`
   OpponentCharacterName   string       `json:"opponentCharacterName"`
   OpponentCharacterGsp    int          `json:"opponentCharacterGsp,omitempty"`
@@ -33,7 +33,7 @@ func (db *DB) GetMatchByID(id int) (*Match, error) {
   row := db.QueryRow(`SELECT * FROM matches WHERE id = $1`, id)
   match := new(Match)
   err := row.Scan(
-    &match.MatchID,
+    &match.ID,
     &match.Created,
     &match.OpponentCharacterName,
     &match.OpponentCharacterGsp,
@@ -65,7 +65,7 @@ func (db *DB) GetAllMatches() ([]*Match, error) {
   for rows.Next() {
     match := new(Match)
     err := rows.Scan(
-      &match.MatchID,
+      &match.ID,
       &match.Created,
       &match.OpponentCharacterName,
       &match.OpponentCharacterGsp,
@@ -97,14 +97,14 @@ func (db *DB) CreateMatch(match Match) (bool, error) {
   sqlStatement := `
   INSERT INTO matches (
     created,
-    opponentcharactername,
-    opponentcharactergsp,
-    opponentteabag,
-    opponentcamp,
-    opponentawesome,
-    usercharactername,
-    usercharactergsp,
-    userwin
+    opponent_character_name,
+    opponent_character_gsp,
+    opponent_teabag,
+    opponent_camp,
+    opponent_awesome,
+    user_character_name,
+    user_character_gsp,
+    user_win
   )
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
   _, err := db.Exec(
