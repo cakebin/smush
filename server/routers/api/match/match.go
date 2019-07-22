@@ -3,7 +3,6 @@ package match
 import (
   "encoding/json"
   "fmt"
-  "log"
   "net/http"
   "strconv"
 
@@ -62,7 +61,7 @@ func (r *Router) handleGetByID(res http.ResponseWriter, req *http.Request) {
 
   match, err := r.SysUtils.Database.GetMatchByID(id)
   if err != nil {
-    http.Error(res, fmt.Sprintf("Error getting match with id %q", id), http.StatusInternalServerError)
+    http.Error(res, fmt.Sprintf("Error getting match with id %q: :%s", id, err.Error()), http.StatusInternalServerError)
   }
 
   res.Header().Set("Content-Type", "application/json")
@@ -73,7 +72,7 @@ func (r *Router) handleGetByID(res http.ResponseWriter, req *http.Request) {
 func (r *Router) handleGetAll(res http.ResponseWriter, req *http.Request) {
   matches, err := r.SysUtils.Database.GetAllMatches()
   if err != nil {
-    http.Error(res, "Error getting all matches from DB", http.StatusInternalServerError)
+    http.Error(res, fmt.Sprintf("Error getting all matches from DB: %s", err.Error()), http.StatusInternalServerError)
     return
   }
 
@@ -88,8 +87,7 @@ func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
 
   err := decoder.Decode(&match)
   if err != nil {
-    log.Printf("error: %s", err)
-    http.Error(res, "Invalid JSON request", http.StatusBadRequest)
+    http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
