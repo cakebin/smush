@@ -80,7 +80,7 @@ export class MatchInputFormComponent implements OnInit {
   }
 
   private resetMatch(): void {
-    this.match = new MatchViewModel(null, null, null, this.match.userCharacterName, this.match.userCharacterGsp);
+    this.match = new MatchViewModel(null, null, null, null, this.match.userCharacterName, this.match.userCharacterGsp);
     // Need to manually mask the user GSP again
     if(this.match.userCharacterGsp) {
       this.userCharacterGspInput.setValue(this.match.userCharacterGsp);

@@ -14,6 +14,7 @@ import { MatchManagementService } from './match-management.service';
 export class MatchTableViewComponent implements OnInit {
   public headerLabels:HeaderViewModel[] = [
     new HeaderViewModel('id', '#'),
+    new HeaderViewModel('userName', 'User'),
     new HeaderViewModel('userCharacterName', 'Char'),
     new HeaderViewModel('userCharacterGsp', 'GSP'),
     new HeaderViewModel('opponentCharacterName', 'Opponent Char'),
@@ -65,11 +66,13 @@ export class MatchTableViewComponent implements OnInit {
 
   public onSort({column, direction}: ISortEvent) {
     // Resetting all headers. This needs to be done in a parent, no way around it
-    this.headerComponents.forEach(header => {
-      if(header.propertyName !== column){
-        header.clearDirection();
-      }
-    });
+    if(this.headerComponents){
+      this.headerComponents.forEach(header => {
+        if(header.propertyName !== column){
+          header.clearDirection();
+        }
+      });
+    }
 
     // Sorting items
     if (direction === '') {

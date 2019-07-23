@@ -63,9 +63,9 @@
             </div><!-- Close row -->
         </div><!-- Close card-body -->
 
-        <div class="card-footer">
+        <div class="card-footer p-2">
             <div class="form-group text-right m-0">
-                <span *ngIf="showFooterWarnings && !validateMatch()" class="text-danger mr-3">{{warnings.join(" ")}}</span>
+                <span *ngIf="showFooterWarnings && !validateMatch()" class="text-danger mr-3" style="position:relative;top:2px;">{{warnings.join(" ")}}</span>
                 <!-- Can't put events on disabled form inputs -->
                 <span (mouseenter)="showFooterWarnings=true" (mouseleave)="showFooterWarnings=false">
                     <button [disabled]="!validateMatch() || isSaving" (click)="createEntry()" type="submit" class="btn btn-primary">

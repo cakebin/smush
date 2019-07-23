@@ -2,15 +2,8 @@
 
 <!-- Page container -->
 <div class="container-fluid p-4">
-    <match-input-form></match-input-form>
-
-    <div class="mt-4">
-        <match-table-view></match-table-view>
-    </div>
+    <router-outlet #routerOutlet="outlet"></router-outlet>
 </div>
-
-<!-- Routing, when we get to it -->
-<router-outlet></router-outlet>
 
 <!-- Hidden notification/toast area -->
 <common-ux-toasts aria-live="polite" aria-atomic="true"></common-ux-toasts>
