@@ -21,6 +21,8 @@ import { SortableTableHeaderComponent } from './components/sortable-table-header
     SortableTableHeaderComponent,
   ],
   exports: [
+    NgbModule,
+    FontAwesomeModule,
     TypeaheadComponent,
     ToastComponent,
     NumberMaskDirective,

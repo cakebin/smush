@@ -1,5 +1,5 @@
 <table class="table table-sm table-striped table-hover">
-    <thead class="thead-dark">
+    <thead class="thead-light">
         <tr>
             <th *ngFor="let header of headerLabels">
                 <common-ux-sortable-table-header 
@@ -19,10 +19,10 @@
             <td>{{match.opponentCharacterName}}</td>
             <td>{{match.opponentCharacterGsp | number}}</td>
             <td class="text-center">
-                <span *ngIf="match.userWin" class="text-success font-weight-bold">
+                <span *ngIf="match.userWin==true" class="text-success font-weight-bold">
                     <fa-icon [icon]="faCheck"></fa-icon>
                 </span>
-                <span *ngIf="match.userWin===false" class="text-danger font-weight-bold">
+                <span *ngIf="match.userWin==false" class="text-danger font-weight-bold">
                     <fa-icon [icon]="faTimes"></fa-icon>
                 </span>
             </td>
