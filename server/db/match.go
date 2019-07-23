@@ -1,21 +1,22 @@
 package db
 
 import (
+  "log"
   "time"
 )
 
 
 // Match represents a recorded Smash Ultimate Online match outcome
 type Match struct {
-  ID                      int          `json:"id,omitempty"`
+  ID                      *int          `json:"id,omitempty"`
   OpponentCharacterName   string       `json:"opponentCharacterName"`
-  OpponentCharacterGsp    int          `json:"opponentCharacterGsp,omitempty"`
-  OpponentTeabag          bool         `json:"opponentTeabag,omitempty"`
-  OpponentCamp            bool         `json:"opponentCamp,omitempty"`
-  OpponentAwesome         bool         `json:"opponentAwesome,omitempty"`
-  UserCharacterName       string       `json:"userCharacterName,omitempty"`
-  UserCharacterGsp        int          `json:"userCharacterGsp,omitempty"`
-  UserWin                 bool         `json:"userWin,omitempty"`
+  OpponentCharacterGsp    *int          `json:"opponentCharacterGsp,omitempty"`
+  OpponentTeabag          *bool         `json:"opponentTeabag,omitempty"`
+  OpponentCamp            *bool         `json:"opponentCamp,omitempty"`
+  OpponentAwesome         *bool         `json:"opponentAwesome,omitempty"`
+  UserCharacterName       *string       `json:"userCharacterName,omitempty"`
+  UserCharacterGsp        *int          `json:"userCharacterGsp,omitempty"`
+  UserWin                 *bool         `json:"userWin,omitempty"`
   Created                 time.Time    `json:"created"`
 }
 
