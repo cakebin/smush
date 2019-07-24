@@ -5,6 +5,7 @@ import { NumberMaskDirective } from '../common-ux/directives/number-mask.directi
 import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.component';
 import { CommonUXService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
+import { UserManagementService } from '../user-management/user-management.service';
 
 @Component({
   selector: 'match-input-form',
@@ -16,24 +17,38 @@ export class MatchInputFormComponent implements OnInit {
 
   public match: IMatchViewModel = new MatchViewModel();
   public lastSavedMatch: IMatchViewModel;
-  
-  public showFooterWarnings:boolean = false;
+
+  public showFooterWarnings: boolean = false;
   public warnings: string[] = [];
   public isSaving: boolean = false;
 
   constructor(
-    private commonUXService:CommonUXService,
-    private matchManagementService: MatchManagementService,
+    private commonUXService: CommonUXService,
+    private userService: UserManagementService,
+    private matchService: MatchManagementService,
     private decimalPipe: DecimalPipe,
-    ){
+    ) {
   }
-  
-  ngOnInit(){
 
+  ngOnInit() {
+    this.userService.cachedUser.subscribe(
+      res => {
+        if (res) {
+          if (!this.match.userCharacterName) {
+            this.match.userCharacterName = res.defaultCharacterName;
+            // This doesn't actually work yet. Need to write out this method
+            // this.opponentCharacterNameInput.select(this.match.userCharacterName);
+          }
+          if (!this.match.userCharacterGsp) {
+            this.match.userCharacterGsp = res.defaultCharacterGsp;
+            this.userCharacterGspInput.setValue(this.match.userCharacterGsp);
+          }
+        }
+    });
   }
 
   public createEntry(): void {
-    if(!this.validateMatch()){
+    if (!this.validateMatch()) {
       this.warnings.forEach(warningMessage => {
         this.commonUXService.showWarningToast(warningMessage);
       });
@@ -41,19 +56,21 @@ export class MatchInputFormComponent implements OnInit {
     }
 
     this.isSaving = true;
-    
+
     // Transform some data
-    if(this.match.opponentCharacterGsp) {
+    if (this.match.opponentCharacterGsp) {
       this.match.opponentCharacterGsp = parseInt(this.match.opponentCharacterGsp.toString().replace(/,/g, ''));
     }
-    if(this.match.userCharacterGsp) {
+    if (this.match.userCharacterGsp) {
       this.match.userCharacterGsp = parseInt(this.match.userCharacterGsp.toString().replace(/,/g, ''));
     }
-    console.log("Saving match:", this.match);
-    this.matchManagementService.createMatch(this.match).subscribe(response => {
-      if(response) this.commonUXService.showSuccessToast("Match saved!");
+    console.log('Saving match:', this.match);
+    this.matchService.createMatch(this.match).subscribe(response => {
+      if (response) {
+        this.commonUXService.showSuccessToast('Match saved!');
+      }
     }, error => {
-      this.commonUXService.showDangerToast("Unable to save match.");
+      this.commonUXService.showDangerToast('Unable to save match.');
     }, () => {
       this.isSaving = false;
     });
@@ -66,23 +83,26 @@ export class MatchInputFormComponent implements OnInit {
     this.showFooterWarnings = false;
   }
 
-  public validateMatch():boolean {
+  public validateMatch(): boolean {
     this.warnings = [];
 
-    if(!this.match.opponentCharacterName){
-      this.warnings.push("Opponent character name required.");
+    if (!this.match.opponentCharacterName) {
+      this.warnings.push('Opponent character name required.');
     }
-    if(!this.match.userCharacterName && this.match.userCharacterGsp){
-      this.warnings.push("User GSP must be associated with a user character.");
+    if (!this.match.userCharacterName && this.match.userCharacterGsp){
+      this.warnings.push('User GSP must be associated with a user character.');
     }
-    if(this.warnings.length) return false;
-    else return true;
+    if (this.warnings.length) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   private resetMatch(): void {
     this.match = new MatchViewModel(null, null, null, null, this.match.userCharacterName, this.match.userCharacterGsp);
     // Need to manually mask the user GSP again
-    if(this.match.userCharacterGsp) {
+    if (this.match.userCharacterGsp) {
       this.userCharacterGspInput.setValue(this.match.userCharacterGsp);
     }
     // Need to manually reset the opponent character typeahead component
