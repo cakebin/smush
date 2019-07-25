@@ -1,7 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
 import { NgModule, ModuleWithProviders } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { CommonUXModule } from '../common-ux/common-ux.module';
@@ -18,7 +17,6 @@ import { MatchManagementService } from './match-management.service';
     MatchTableViewComponent,
   ],
   imports: [
-    FormsModule,
     BrowserModule,
     HttpClientModule,
     CommonUXModule.forRoot(),

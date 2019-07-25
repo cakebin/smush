@@ -7,26 +7,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonUXModule } from '../common-ux/common-ux.module';
 import { CommonUXService } from '../common-ux/common-ux.service';
 
-import { UserEditFormComponent } from './user-edit-form.component';
-import { UserViewComponent } from './user-view.component';
 import { UserManagementService } from './user-management.service';
 
 
 @NgModule({
-  declarations: [
-    UserEditFormComponent,
-    UserViewComponent,
-  ],
+  declarations: [],
   imports: [
     FormsModule,
     BrowserModule,
     HttpClientModule,
     CommonUXModule.forRoot(),
   ],
-  exports: [
-    UserEditFormComponent,
-    UserViewComponent,
-  ]
+  exports: []
 })
 export class UserManagementModule {
   static forRoot(): ModuleWithProviders {

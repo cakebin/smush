@@ -6,7 +6,6 @@ import { ProfileEditComponent } from './components/profiles/profile-edit.compone
 import { InsightsComponent } from './components/insights/insights.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { HomeComponent } from './components/home/home.component';
-import { AboutComponent } from './components/about/about.component';
 
 const routes: Routes = [
   {
@@ -20,10 +19,6 @@ const routes: Routes = [
   {
     path: 'insights',
     component: InsightsComponent,
-  },
-  {
-    path: 'about',
-    component: AboutComponent,
   },
   {
     path: 'profile',
