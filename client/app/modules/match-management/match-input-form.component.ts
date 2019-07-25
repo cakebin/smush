@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { MatchViewModel, IMatchViewModel } from '../../app.view-models';
-import { NumberMaskDirective } from '../common-ux/directives/number-mask.directive';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { MatchViewModel, IMatchViewModel, IUserViewModel } from '../../app.view-models';
+import { MaskedNumberInputComponent } from '../common-ux/components/masked-number-input/masked-number-input.component';
 import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.component';
 import { CommonUXService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
@@ -11,12 +10,16 @@ import { UserManagementService } from '../user-management/user-management.servic
   selector: 'match-input-form',
   templateUrl: './match-input-form.component.html',
 })
-export class MatchInputFormComponent implements OnInit {
+export class MatchInputFormComponent implements OnInit, AfterViewInit {
   @ViewChild('opponentCharacterNameInput', { static: false }) private opponentCharacterNameInput: TypeaheadComponent;
-  @ViewChild('userCharacterGspInput', { static: false }) private userCharacterGspInput: NumberMaskDirective;
+  @ViewChild('userCharacterNameInput', { static: false }) private userCharacterNameInput: TypeaheadComponent;
+  @ViewChild('userCharacterGspInput', { static: false }) private userCharacterGspInput: MaskedNumberInputComponent;
 
   public match: IMatchViewModel = new MatchViewModel();
-  public lastSavedMatch: IMatchViewModel;
+
+  // We have number masking, so these need to be temporarily stored as a string
+  public opponentCharacterGspString: string = '';
+  public userCharacterGspString: string = '';
 
   public showFooterWarnings: boolean = false;
   public warnings: string[] = [];
@@ -26,7 +29,6 @@ export class MatchInputFormComponent implements OnInit {
     private commonUXService: CommonUXService,
     private userService: UserManagementService,
     private matchService: MatchManagementService,
-    private decimalPipe: DecimalPipe,
     ) {
   }
 
@@ -34,17 +36,27 @@ export class MatchInputFormComponent implements OnInit {
     this.userService.cachedUser.subscribe(
       res => {
         if (res) {
-          if (!this.match.userCharacterName) {
-            this.match.userCharacterName = res.defaultCharacterName;
-            // This doesn't actually work yet. Need to write out this method
-            // this.opponentCharacterNameInput.select(this.match.userCharacterName);
-          }
-          if (!this.match.userCharacterGsp) {
-            this.match.userCharacterGsp = res.defaultCharacterGsp;
-            this.userCharacterGspInput.setValue(this.match.userCharacterGsp);
-          }
+          this.match.userCharacterName = res.defaultCharacterName;
+          this.userCharacterGspString = res.defaultCharacterGsp.toString();
+          this.match.userCharacterGsp = res.defaultCharacterGsp;
+          this._formatUserDefaultValues();
         }
     });
+  }
+
+  ngAfterViewInit() {
+    this._formatUserDefaultValues();
+  }
+
+  private _formatUserDefaultValues(): void {
+    setTimeout(() => { // Just give in to the dark side
+      if (this.userCharacterGspInput && this.match.userCharacterGsp) {
+        this.userCharacterGspInput.setValue(this.match.userCharacterGsp);
+      }
+      if (this.userCharacterNameInput && this.match.userCharacterName) {
+        this.userCharacterNameInput.setDefaultValue(this.match.userCharacterName);
+      }
+    }, 0);
   }
 
   public createEntry(): void {
@@ -58,13 +70,14 @@ export class MatchInputFormComponent implements OnInit {
     this.isSaving = true;
 
     // Transform some data
-    if (this.match.opponentCharacterGsp) {
-      this.match.opponentCharacterGsp = parseInt(this.match.opponentCharacterGsp.toString().replace(/,/g, ''));
+    if (this.opponentCharacterGspString) {
+      this.match.opponentCharacterGsp = parseInt(this.opponentCharacterGspString.replace(/,/g, ''), 10);
     }
-    if (this.match.userCharacterGsp) {
-      this.match.userCharacterGsp = parseInt(this.match.userCharacterGsp.toString().replace(/,/g, ''));
+    if (this.userCharacterGspString) {
+      this.match.userCharacterGsp = parseInt(this.userCharacterGspString.replace(/,/g, ''), 10);
     }
     console.log('Saving match:', this.match);
+
     this.matchService.createMatch(this.match).subscribe(response => {
       if (response) {
         this.commonUXService.showSuccessToast('Match saved!');
@@ -75,8 +88,6 @@ export class MatchInputFormComponent implements OnInit {
       this.isSaving = false;
     });
 
-    this.lastSavedMatch = new MatchViewModel();
-    this.lastSavedMatch = Object.assign(this.lastSavedMatch, this.match);
     this.resetMatch();
 
     // Set footer warnings to false so it won't show up until the next mouseenter

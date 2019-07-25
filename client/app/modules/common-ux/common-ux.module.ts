@@ -8,15 +8,15 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TypeaheadComponent } from './components/typeahead/typeahead.component';
 import { ToastModule } from './components/toast/toast.module';
 import { ToastComponent } from './components/toast/toast.component';
+import { MaskedNumberInputComponent } from './components/masked-number-input/masked-number-input.component';
 import { ToastService } from './components/toast/toast.service';
-import { NumberMaskDirective } from './directives/number-mask.directive';
 import { SortableTableHeaderDirective } from './directives/sortable-table-header.directive';
 import { SortableTableHeaderComponent } from './components/sortable-table-header/sortable-table-header.component';
 
 @NgModule({
   declarations: [
     TypeaheadComponent,
-    NumberMaskDirective,
+    MaskedNumberInputComponent,
     SortableTableHeaderDirective,
     SortableTableHeaderComponent,
   ],
@@ -25,8 +25,8 @@ import { SortableTableHeaderComponent } from './components/sortable-table-header
     NgbModule,
     FontAwesomeModule,
     TypeaheadComponent,
+    MaskedNumberInputComponent,
     ToastComponent,
-    NumberMaskDirective,
     SortableTableHeaderDirective,
     SortableTableHeaderComponent,
   ],

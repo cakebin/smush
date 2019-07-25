@@ -4,11 +4,11 @@
             <div class="row">
                 <div class="form-group col-6">
                     <label for="opponent-character">Opponent character*</label>
-                    <common-ux-typeahead #opponentCharacterNameInput (blur)="test($event)" (select)="match.opponentCharacterName = $event" id="opponent-character"></common-ux-typeahead>
+                    <common-ux-typeahead #opponentCharacterNameInput (blur)="test($event)" (selectItem)="match.opponentCharacterName = $event" id="opponent-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">
                     <label for="opponent-gsp">Opponent character's GSP</label>
-                    <input number-mask [(ngModel)]="match.opponentCharacterGsp" type="text" name="opponent-gsp" class="form-control" autocomplete="off" />            
+                    <common-ux-masked-number-input #opponentCharacterGspInput [(inputValue)]="opponentCharacterGspString"></common-ux-masked-number-input>      
                 </div>
             </div>
 
@@ -17,11 +17,11 @@
                     <label for="user-character">
                         Your character<span *ngIf="match.userCharacterGsp">*</span>
                     </label>
-                    <common-ux-typeahead (select)="match.userCharacterName = $event" id="user-character"></common-ux-typeahead>
+                    <common-ux-typeahead #userCharacterNameInput (selectItem)="match.userCharacterName = $event" id="user-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">
                     <label for="user-gsp">Your character's GSP</label>
-                    <input #userCharacterGspInput=numberMask number-mask [(ngModel)]="match.userCharacterGsp" type="text" name="user-gsp" class="form-control" autocomplete="off" />  
+                    <common-ux-masked-number-input #userCharacterGspInput [(inputValue)]="userCharacterGspString"></common-ux-masked-number-input>
                 </div>
             </div>
 

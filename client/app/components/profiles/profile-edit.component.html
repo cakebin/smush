@@ -19,12 +19,12 @@
                     <label for="user-character">
                         Default character
                     </label>
-                    <common-ux-typeahead (select)="user.defaultCharacterName = $event" id="default-character"></common-ux-typeahead>
+                    <common-ux-typeahead #defaultCharacterNameInput (selectItem)="user.defaultCharacterName = $event" id="default-character"></common-ux-typeahead>
                 </div>
             
                 <div class="form-group">
                     <label for="user-gsp">Default GSP</label>
-                    <input #defaultCharacterGspInput=numberMask number-mask [(ngModel)]="user.defaultCharacterGsp" type="text" name="default-gsp" class="form-control" autocomplete="off" />  
+                    <common-ux-masked-number-input #defaultCharacterGspInput [(inputValue)]="defaultCharacterGspString"></common-ux-masked-number-input>
                 </div>
         
                 <div class="form-group mt-4 mb-0">

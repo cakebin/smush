@@ -24,7 +24,7 @@ export class MatchManagementService {
         );
     }
     public createMatch(match: IMatchViewModel): Observable<{}> {
-        const apiCreateMatch:Observable<{}> = this.httpClient.post(`${this.apiUrl}/create`, match);
+        const apiCreateMatch: Observable<{}> = this.httpClient.post(`${this.apiUrl}/create`, match);
 
         // SAKI: I might not keep this way of subscribing cause it's literally just a basic subscribe
         // in the form of stupid fancy pipe operators. It's so fucking extra.
