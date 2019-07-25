@@ -15,7 +15,6 @@ import { ProfileEditComponent } from './components/profiles/profile-edit.compone
 import { InsightsComponent } from './components/insights/insights.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { HomeComponent } from './components/home/home.component';
-import { AboutComponent } from './components/about/about.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +26,6 @@ import { AboutComponent } from './components/about/about.component';
     ProfileViewComponent,
     ProfileEditComponent,
     InsightsComponent,
-    AboutComponent,
   ],
   imports: [
     BrowserModule,
