@@ -6,6 +6,7 @@ import { ProfileEditComponent } from './components/profiles/profile-edit.compone
 import { InsightsComponent } from './components/insights/insights.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { HomeComponent } from './components/home/home.component';
+import { AuthGuardService as AuthGuard } from './app-auth-guard.service';
 
 const routes: Routes = [
   {
@@ -15,13 +16,16 @@ const routes: Routes = [
   {
     path: 'matches',
     component: MatchesComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'insights',
     component: InsightsComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'profile',
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'view',

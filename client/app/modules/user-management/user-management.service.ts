@@ -1,4 +1,5 @@
-import { Injectable, Inject,  } from '@angular/core';
+import { Injectable, Inject  } from '@angular/core';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { publish, refCount, delay } from 'rxjs/operators';
@@ -9,7 +10,11 @@ export class UserManagementService {
     private _fakeUser: UserViewModel = new UserViewModel('joebin@gmail.com', 'Jerulfe', 'Joker', 5200000);
     public cachedUser: BehaviorSubject<IUserViewModel> = new BehaviorSubject<IUserViewModel>(null);
 
-    constructor(private httpClient: HttpClient, @Inject('ApiUrl') private apiUrl: string) {
+    constructor(
+        private httpClient: HttpClient,
+        private router: Router,
+        @Inject('ApiUrl') private apiUrl: string,
+    ) {
     }
 
     private _loadUser(): void {
@@ -38,6 +43,8 @@ export class UserManagementService {
         // Set cached user to nothing! Then publish the new NOTHINGNESS!
         this.cachedUser.next(null);
         this.cachedUser.pipe(publish(), refCount());
+        // Send the user back to the home page
+        this.router.navigate(['/home']);
     }
     public getUser(): BehaviorSubject<IUserViewModel>{
         if(!this.cachedUser.value){

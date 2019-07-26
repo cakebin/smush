@@ -7,7 +7,7 @@
             <div class="card-body">
                 <div class="form-group">
                     <label for="email-address">Email address</label>
-                    <input [(ngModel)]="user.emailAddress" type="text" name="email-address" class="form-control" /> 
+                    <input disabled [(ngModel)]="user.emailAddress" type="text" name="email-address" class="form-control" /> 
                 </div>
               
                 <div class="form-group">
@@ -17,13 +17,25 @@
              
                 <div class="form-group">
                     <label for="user-character">
-                        Default character
+                        Default character 
+                        <fa-icon 
+                        [icon]="faQuestionCircle" 
+                        placement="right" 
+                        ngbTooltip="Who likes unnecessary and repetitive typing? We'll automagically fill the match input form with this character for you.">
+                        </fa-icon>
                     </label>
                     <common-ux-typeahead #defaultCharacterNameInput (selectItem)="user.defaultCharacterName = $event" id="default-character"></common-ux-typeahead>
                 </div>
             
                 <div class="form-group">
-                    <label for="user-gsp">Default GSP</label>
+                    <label for="user-gsp">
+                        Default GSP 
+                        <fa-icon 
+                        [icon]="faQuestionCircle" 
+                        placement="right" 
+                        ngbTooltip="Typing in our GSPs over and over was the hardest part of testing this app. We'll do you a solid with this GSP auto-fill option.">
+                        </fa-icon>
+                    </label>
                     <common-ux-masked-number-input #defaultCharacterGspInput [(inputValue)]="defaultCharacterGspString"></common-ux-masked-number-input>
                 </div>
         

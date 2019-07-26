@@ -13,10 +13,10 @@
                 <a class="nav-link" routerLink="/home">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" routerLink="/matches">Matches</a>
+                <a class="nav-link" [ngClass]="{'disabled': !user}" routerLink="/matches">Matches</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" routerLink="/insights">Insights</a>
+                <a class="nav-link" [ngClass]="{'disabled': !user}" routerLink="/insights">Insights</a>
             </li>
         </ul>
         

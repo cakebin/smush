@@ -4,6 +4,7 @@ import { MaskedNumberInputComponent } from '../../modules/common-ux/components/m
 import { TypeaheadComponent } from '../../modules/common-ux/components/typeahead/typeahead.component';
 import { CommonUXService } from '../../modules/common-ux/common-ux.service';
 import { UserManagementService } from '../../modules/user-management/user-management.service';
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'profile-edit',
@@ -19,6 +20,8 @@ export class ProfileEditComponent implements OnInit, AfterViewInit {
   public showFooterWarnings = false;
   public warnings: string[] = [];
   public isSaving = false;
+
+  public faQuestionCircle = faQuestionCircle;
 
   constructor(
     private commonUXService: CommonUXService,
