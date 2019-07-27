@@ -4,14 +4,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { ChartTestComponent } from './bar-chart.component';
+import { BarChartComponent } from './bar-chart.component';
 
 @NgModule({
   declarations: [
-    ChartTestComponent,
+    BarChartComponent,
   ],
   exports: [
-    ChartTestComponent,
+    BarChartComponent,
   ],
   imports: [
     CommonModule,

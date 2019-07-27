@@ -15,6 +15,7 @@ import { CommonUXService } from 'client/app/modules/common-ux/common-ux.service'
 })
 export class InsightsComponent implements OnInit {
   public chartData: SingleSeries = [];
+  public dataUnit: string = '';
   public xAxisLabel: string = '';
   public yAxisLabel: string = '';
   public xAxisTickFormatting;
@@ -52,6 +53,7 @@ export class InsightsComponent implements OnInit {
 
   public publishCharacterUsageChartData() {
     this.chartData = this._getCharacterUsageChartData();
+    this.dataUnit = 'percent';
     this.xAxisLabel = 'Usage';
     this.yAxisLabel = 'Character';
     this.xAxisTickFormatting = (val: string) => val + '%';

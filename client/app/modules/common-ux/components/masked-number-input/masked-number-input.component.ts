@@ -1,47 +1,46 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
+
 @Component({
   selector: 'common-ux-masked-number-input',
   templateUrl: './masked-number-input.component.html'
 })
 export class MaskedNumberInputComponent {
-  @Input() inputValue: string = '';
-  @Output() inputValueChange: EventEmitter<string> = new EventEmitter<string>();
+  private _numberValue: string = '';
+  @Input() set numberValue(value: string) {
+    this._numberValue = this._formatNumber(value);
+  }
+  get numberValue(): string {
+    return this._numberValue;
+  }
+  @Output() numberValueChange: EventEmitter<string> = new EventEmitter<string>();
 
-  // This is intended for pageload / account default setting, etc
-  public setValue(programmaticValue: number): void {
-    if (programmaticValue == null) {
-      return;
+  public checkKeyInput(event: KeyboardEvent): boolean {
+    const isNumber = event.key.replace(/\D/g, '').length;
+    const isNav = ['Backspace', 'Delete', 'Left', 'Right', 'ArrowLeft', 'ArrowRight'].indexOf(event.key) !== -1;
+    // To-do: allow appcommands like cmd+[r, c, v...]
+    if (isNav || isNumber) {
+      return true;
+    } else {
+      return false;
     }
-    this.inputValue = this._getFormattedNumber(programmaticValue.toString());
-    this.inputValueChange.emit(this.inputValue);
   }
 
-  public formatNumber(event: KeyboardEvent) {
+  public formatNumberAndEmit(event: KeyboardEvent): void {
     // Skip for arrow keys
     if (['Left', 'Right', 'ArrowLeft', 'ArrowRight'].indexOf(event.key) !== -1) {
       return;
     }
-    // Format number
-    this.inputValue = this._getFormattedNumber(this.inputValue);
-    this.inputValueChange.emit(this.inputValue);
+    this.numberValueChange.emit(this.numberValue);
   }
 
-  public checkNumber(event: KeyboardEvent) {
-    if (event.key === 'e' || event.key === '+' || event.key === '-') {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  private _getFormattedNumber(input: string): string {
-    let newValue: string = input;
-    newValue = input.replace(/\D/g, '');
+  private _formatNumber(val: string): string {
+    let newValue: string = val;
+    newValue = val.replace(/\D/g, '');
     if (newValue !== '') {
       return parseInt(newValue, 10).toLocaleString();
     } else {
-      return input;
+      return val;
     }
   }
 }

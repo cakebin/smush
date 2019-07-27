@@ -24,7 +24,7 @@
                         ngbTooltip="Who likes unnecessary and repetitive typing? We'll automagically fill the match input form with this character for you.">
                         </fa-icon>
                     </label>
-                    <common-ux-typeahead #defaultCharacterNameInput (selectItem)="user.defaultCharacterName = $event" id="default-character"></common-ux-typeahead>
+                    <common-ux-typeahead #defaultCharacterNameInput [items]="characters" [defaultItem]="user.defaultCharacterName" (selectItem)="user.defaultCharacterName = $event" id="default-character"></common-ux-typeahead>
                 </div>
             
                 <div class="form-group">
@@ -36,7 +36,7 @@
                         ngbTooltip="Typing in our GSPs over and over was the hardest part of testing this app. We'll do you a solid with this GSP auto-fill option.">
                         </fa-icon>
                     </label>
-                    <common-ux-masked-number-input #defaultCharacterGspInput [(inputValue)]="defaultCharacterGspString"></common-ux-masked-number-input>
+                    <common-ux-masked-number-input #defaultCharacterGspInput [(numberValue)]="defaultCharacterGspString"></common-ux-masked-number-input>
                 </div>
         
                 <div class="form-group mt-4 mb-0">
