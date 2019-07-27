@@ -107,9 +107,9 @@ func (db *DB) CreateMatch(match Match) (bool, error) {
     opponent_character_gsp,
     opponent_teabag,
     opponent_camp,
-    opponent_awesome,
+    opponent_awesome
   )
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
   _, err := db.Exec(
     sqlStatement,
     match.UserID,
