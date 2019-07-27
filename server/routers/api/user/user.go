@@ -1,4 +1,5 @@
-package match
+package user
+
 
 import (
   "encoding/json"
@@ -12,9 +13,9 @@ import (
 )
 
 
-// Router is responsible for serving "/api/matches"
+// Router is responsible for serving "/api/user"
 // Basically, connecting to our Postgres DB for all
-// of the CRUD operations for our "Match" models
+// of the CRUD operations for our "User" models
 type Router struct {
   SysUtils *env.SysUtils
 }
@@ -30,8 +31,6 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
     switch head {
     case "get":
       r.handleGetByID(res, req)
-    case "getall":
-      r.handleGetAll(res, req)
     default:
       http.Error(res, fmt.Sprintf("Unsupported GET path %s", head), http.StatusBadRequest)
       return
@@ -44,7 +43,7 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
     }
   // Unsupported Method Response
   default:
-    http.Error(res, fmt.Sprintf("Unsupport Method type %s", req.Method), http.StatusBadRequest)
+    http.Error(res, fmt.Sprintf("Unsupported Method type %s", req.Method), http.StatusBadRequest)
   }
 }
 
@@ -55,52 +54,40 @@ func (r *Router) handleGetByID(res http.ResponseWriter, req *http.Request) {
 
   id, err := strconv.Atoi(head)
   if err != nil {
-    http.Error(res, fmt.Sprintf("Invalid match id :%s", head), http.StatusBadRequest)
+    http.Error(res, fmt.Sprintf("Invalid user id: %s", head), http.StatusBadRequest)
     return
   }
 
-  match, err := r.SysUtils.Database.GetMatchByID(id)
+  user, err := r.SysUtils.Database.GetUserByID(id)
   if err != nil {
-    http.Error(res, fmt.Sprintf("Error getting match with id %q: :%s", id, err.Error()), http.StatusInternalServerError)
+    http.Error(res, fmt.Sprintf("Error getting user with id %q: %s", id, err.Error()), http.StatusInternalServerError)
     return
   }
 
   res.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(res).Encode(match)
-}
-
-
-func (r *Router) handleGetAll(res http.ResponseWriter, req *http.Request) {
-  matches, err := r.SysUtils.Database.GetAllMatches()
-  if err != nil {
-    http.Error(res, fmt.Sprintf("Error getting all matches from DB: %s", err.Error()), http.StatusInternalServerError)
-    return
-  }
-
-  res.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(res).Encode(matches)
+  json.NewEncoder(res).Encode(user)
 }
 
 
 func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  var match db.Match
+  var user db.User
 
-  err := decoder.Decode(&match)
+  err := decoder.Decode(&user)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
-  success, err := r.SysUtils.Database.CreateMatch(match)
+  success, err := r.SysUtils.Database.CreateUser(user)
 
-  matchResponse := &db.MatchResponse{
+  userResponse := &db.UserResponse{
     Success: success,
     Error: err,
   }
 
   res.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(res).Encode(matchResponse)
+  json.NewEncoder(res).Encode(userResponse)
 }
 
 

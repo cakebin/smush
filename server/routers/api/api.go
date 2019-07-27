@@ -5,6 +5,7 @@ import (
 
   "github.com/cakebin/smush/server/env"
   "github.com/cakebin/smush/server/routers/api/match"
+  "github.com/cakebin/smush/server/routers/api/user"
   "github.com/cakebin/smush/server/util/routing"
 )
 
@@ -14,6 +15,7 @@ import (
 type Router struct {
   SysUtils *env.SysUtils
   MatchRouter *match.Router
+  UserRouter *user.Router
 }
 
 
@@ -24,6 +26,8 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   switch head {
   case "match":
     r.MatchRouter.ServeHTTP(res, req)
+  case "user":
+    r.UserRouter.ServeHTTP(res, req)
   default:
     http.Error(res, "404 Not Found", http.StatusNotFound)
   }
@@ -36,5 +40,6 @@ func NewRouter(sysUtils *env.SysUtils) *Router {
   router := new(Router)
   router.SysUtils = sysUtils
   router.MatchRouter = match.NewRouter(sysUtils)
+  router.UserRouter = user.NewRouter(sysUtils)
   return router
 }

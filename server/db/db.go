@@ -10,11 +10,16 @@ import (
 // See specific files for their corresponding method implementations
 // (i.e. for AllMatches, see 'server/db/match.go')
 type Datastore interface {
+  // Match API
   GetMatchByID(id int) (*Match, error)
   GetAllMatches() ([]*Match, error)
   CreateMatch(match Match) (bool, error)
   // UpdateMatch() (MatchResponse, error)
   // DeleteMatch() (MatchResponse, error)
+
+  // User API
+  GetUserByID(id int) (*User, error)
+  CreateUser(user User) (bool, error)
 }
 
 
