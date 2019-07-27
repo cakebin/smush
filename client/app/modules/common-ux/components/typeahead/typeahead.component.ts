@@ -1,9 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { NgbTypeaheadSelectItemEvent } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { NgbTypeaheadSelectItemEvent } from '@ng-bootstrap/ng-bootstrap';
 
-const characters = ["Bayonetta", "Bowser", "Bowser Jr.", "Captain Falcon", "Chrom", "Cloud", "Corrin", "Daisy", "Dark Samus", "Diddy Kong", "Donkey Kong", "Dr. Mario", "Duck Hunt", "Falco", "Fox", "Ganondorf", "Greninja", "Ice Climbers", "Ike", "Incineroar", "Inkling", "Jigglypuff", "Joker", "Ken", "King DeDeDe", "King K. Rool", "Kirby", "Link", "Little Mac", "Lucario", "Lucas", "Lucina", "Luigi", "Mario", "Marth", "Mega Man", "Meta Knight", "Mewtwo", "Mii Brawler", "Mii Gunner", "Mii Sword Fighter", "Mr. Game & Watch", "Ness", "Olimar", "Pac-Man", "Palutena", "Peach", "Pichu", "Pikachu", "Pit", "Pokemon Trainer", "Richter", "Ridley", "Rob", "Robin", "Rosalina and Luma", "Roy", "Ryu", "Samus", "Sheik", "Shulk", "Simon", "Snake", "Sonic", "Toon Link", "Villager", "Wario", "Wolf", "Yoshi", "Young Link", "Wii-Fit Trainer", "Zelda", "Zero-Suit Samus"];
 
 @Component({
   selector: 'common-ux-typeahead',
@@ -12,9 +11,19 @@ const characters = ["Bayonetta", "Bowser", "Bowser Jr.", "Captain Falcon", "Chro
 export class TypeaheadComponent implements OnInit {
   @Input() items: string[] = [];
   @Output() selectItem: EventEmitter<string> = new EventEmitter<string>();
-
-  public userInput: string;
-  private currentValue: string;
+  @Input() set defaultItem(value: string) {
+    // Either setting it to null, or giving it a valid value
+    if (!value || this.items.indexOf(value) !== -1) {
+      this._selectedValue = value;
+      this.inputValue = value;
+    }
+  }
+  get defaultItem(): string {
+    return this._defaultItem;
+  }
+  private _defaultItem: string = '';
+  private _selectedValue: string;
+  public inputValue: string = '';
 
   constructor() { }
 
@@ -29,36 +38,29 @@ export class TypeaheadComponent implements OnInit {
         if (term.length < 1) {
           return [];
         } else {
-          return characters.filter(v => {
+          return this.items.filter(v => {
             return v.toLowerCase().indexOf(term.toLowerCase()) > -1;
           }).slice(0, 10);
         }
       })
     )
 
-  public setDefaultValue(defaultValue: string): void {
-    if (defaultValue) {
-      this.userInput = defaultValue;
-      this.currentValue = defaultValue;
-    }
-  }
-
   public onBlur() {
     // If the user has cleared the input and blurred out, we need to output a blank value manually
     // because the typeahead does not recognise this as an input "event" per se
-    if (this.userInput === '') {
+    if (this.inputValue === '') {
       this.selectItem.emit('');
-    } else if (this.currentValue) {
-      this.selectItem.emit(this.currentValue);
+    } else if (this._selectedValue) {
+      this.selectItem.emit(this._selectedValue);
     }
   }
   public onSelect(eventObject: NgbTypeaheadSelectItemEvent): void {
-    this.currentValue = eventObject.item;
+    this._selectedValue = eventObject.item;
     this.selectItem.emit(eventObject.item);
   }
   public clear(): void {
-    this.userInput = '';
-    this.currentValue = '';
+    this.inputValue = '';
+    this._selectedValue = '';
   }
 
 }

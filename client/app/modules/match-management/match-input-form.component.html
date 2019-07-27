@@ -4,11 +4,11 @@
             <div class="row">
                 <div class="form-group col-6">
                     <label for="opponent-character">Opponent character*</label>
-                    <common-ux-typeahead #opponentCharacterNameInput (blur)="test($event)" (selectItem)="match.opponentCharacterName = $event" id="opponent-character"></common-ux-typeahead>
+                    <common-ux-typeahead #opponentCharacterNameInput [defaultItem]="match.opponentCharacterName" [items]="characters" (blur)="test($event)" (selectItem)="match.opponentCharacterName = $event" id="opponent-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">
                     <label for="opponent-gsp">Opponent character's GSP</label>
-                    <common-ux-masked-number-input #opponentCharacterGspInput [(inputValue)]="opponentCharacterGspString"></common-ux-masked-number-input>      
+                    <common-ux-masked-number-input #opponentCharacterGspInput [(numberValue)]="opponentCharacterGspString"></common-ux-masked-number-input>      
                 </div>
             </div>
 
@@ -17,11 +17,11 @@
                     <label for="user-character">
                         Your character<span *ngIf="match.userCharacterGsp">*</span>
                     </label>
-                    <common-ux-typeahead #userCharacterNameInput (selectItem)="match.userCharacterName = $event" id="user-character"></common-ux-typeahead>
+                    <common-ux-typeahead #userCharacterNameInput [items]="characters" [defaultItem]="match.userCharacterName" (selectItem)="match.userCharacterName = $event" id="user-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">
                     <label for="user-gsp">Your character's GSP</label>
-                    <common-ux-masked-number-input #userCharacterGspInput [(inputValue)]="userCharacterGspString"></common-ux-masked-number-input>
+                    <common-ux-masked-number-input #userCharacterGspInput [(numberValue)]="userCharacterGspString"></common-ux-masked-number-input>
                 </div>
             </div>
 

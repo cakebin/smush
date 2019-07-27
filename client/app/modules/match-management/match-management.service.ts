@@ -6,6 +6,15 @@ import { IMatchViewModel } from '../../app.view-models';
 
 @Injectable()
 export class MatchManagementService {
+    public characters = ['Bayonetta', 'Bowser', 'Bowser Jr.', 'Captain Falcon', 'Chrom', 'Cloud', 'Corrin',
+    'Daisy', 'Dark Samus', 'Diddy Kong', 'Donkey Kong', 'Dr. Mario', 'Duck Hunt', 'Falco', 'Fox', 'Ganondorf',
+    'Greninja', 'Ice Climbers', 'Ike', 'Incineroar', 'Inkling', 'Jigglypuff', 'Joker', 'Ken', 'King DeDeDe',
+    'King K. Rool', 'Kirby', 'Link', 'Little Mac', 'Lucario', 'Lucas', 'Lucina', 'Luigi', 'Mario', 'Marth',
+    'Mega Man', 'Meta Knight', 'Mewtwo', 'Mii Brawler', 'Mii Gunner', 'Mii Sword Fighter', 'Mr. Game & Watch',
+    'Ness', 'Olimar', 'Pac-Man', 'Palutena', 'Peach', 'Pichu', 'Pikachu', 'Pit', 'Pokemon Trainer', 'Richter',
+    'Ridley', 'Rob', 'Robin', 'Rosalina and Luma', 'Roy', 'Ryu', 'Samus', 'Sheik', 'Shulk', 'Simon', 'Snake',
+    'Sonic', 'Toon Link', 'Villager', 'Wario', 'Wolf', 'Yoshi', 'Young Link', 'Wii-Fit Trainer', 'Zelda', 'Zero-Suit Samus'];
+
     public cachedMatches: ReplaySubject<IMatchViewModel[]> = new ReplaySubject<IMatchViewModel[]>();
 
     constructor(private httpClient: HttpClient, @Inject('ApiUrl') private apiUrl: string) {

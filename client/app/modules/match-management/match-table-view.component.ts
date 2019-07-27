@@ -12,8 +12,8 @@ import { MatchManagementService } from './match-management.service';
   templateUrl: './match-table-view.component.html',
 })
 export class MatchTableViewComponent implements OnInit {
-  public headerLabels:HeaderViewModel[] = [
-    new HeaderViewModel('id', '#'),
+  public headerLabels: HeaderViewModel[] = [
+    new HeaderViewModel('matchId', '#'),
     new HeaderViewModel('userName', 'User'),
     new HeaderViewModel('userCharacterName', 'Char'),
     new HeaderViewModel('userCharacterGsp', 'GSP'),
@@ -40,7 +40,7 @@ export class MatchTableViewComponent implements OnInit {
   public faPencilAlt = faPencilAlt;
 
   constructor(
-    private commonUXService:CommonUXService,
+    private commonUXService: CommonUXService,
     private matchManagementService: MatchManagementService,
     ){
   }
@@ -50,7 +50,6 @@ export class MatchTableViewComponent implements OnInit {
     this.matchManagementService.cachedMatches.subscribe({
       next: res => {
         this.isLoading = true;
-        //console.warn("Got some new matches from the service:", res);
         this.sortedMatches = this.matches = res;
         this.initialSort();
       },
@@ -81,7 +80,7 @@ export class MatchTableViewComponent implements OnInit {
       this.sortedMatches = this.matches;
     } else {
       this.sortColumnName = column;
-      this.sortColumnDirection = direction;     
+      this.sortColumnDirection = direction;
       this.sortedMatches = [...this.matches].sort((a, b) => {
         const res = this.commonUXService.compare(a[column], b[column]);
         return direction === 'asc' ? res : -res;
