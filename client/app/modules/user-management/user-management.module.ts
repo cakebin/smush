@@ -1,43 +1,36 @@
 import { HttpClientModule } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
 import { NgModule, ModuleWithProviders } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { CommonUXModule } from '../common-ux/common-ux.module';
 import { CommonUXService } from '../common-ux/common-ux.service';
 
-import { MatchInputFormComponent } from './match-input-form.component';
-import { MatchTableViewComponent } from './match-table-view.component';
-import { MatchManagementService } from './match-management.service';
+import { UserManagementService } from './user-management.service';
 
 
 @NgModule({
-  declarations: [
-    MatchInputFormComponent,
-    MatchTableViewComponent,
-  ],
+  declarations: [],
   imports: [
+    FormsModule,
     BrowserModule,
     HttpClientModule,
     CommonUXModule.forRoot(),
   ],
-  exports: [
-    MatchInputFormComponent,
-    MatchTableViewComponent,
-  ]
+  exports: []
 })
-export class MatchManagementModule {
-  // Put providers here instead of above so they are only loaded once.
+export class UserManagementModule {
   static forRoot(): ModuleWithProviders {
     return {
-        ngModule: MatchManagementModule,
+        ngModule: UserManagementModule,
         providers: [
           CommonUXService,
-          MatchManagementService,
+          UserManagementService,
           DecimalPipe,
           {
             provide: 'ApiUrl',
-            useValue: '/api/match'
+            useValue: '/api/user'
           },
         ]
     }

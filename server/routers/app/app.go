@@ -20,14 +20,14 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	head, req.URL.Path = routing.ShiftPath(req.URL.Path)
 
 	switch head {
-	case "", "static":
-		http.FileServer((http.Dir("dist/static"))).ServeHTTP(res, req)
+	case "static":
+		http.FileServer(http.Dir("dist/static")).ServeHTTP(res, req)
 	case "api":
 		r.APIRouter.ServeHTTP(res, req)
 	default:
 		// Angular requires returning index.html if you are using routing in your app:
 		// https://angular.io/guide/deployment#routed-apps-must-fallback-to-indexhtml
-		http.FileServer((http.Dir("dist/static"))).ServeHTTP(res, req)
+		http.ServeFile(res, req, "dist/static/index.html")
 	}
 }
 

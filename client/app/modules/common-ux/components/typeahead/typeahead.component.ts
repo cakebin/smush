@@ -7,12 +7,11 @@ const characters = ["Bayonetta", "Bowser", "Bowser Jr.", "Captain Falcon", "Chro
 
 @Component({
   selector: 'common-ux-typeahead',
-  templateUrl: './typeahead.component.html',
-  styleUrls: ['./typeahead.component.css']
+  templateUrl: './typeahead.component.html'
 })
 export class TypeaheadComponent implements OnInit {
-  @Input() items:string[] = [];
-  @Output() select:EventEmitter<string> = new EventEmitter<string>();
+  @Input() items: string[] = [];
+  @Output() selectItem: EventEmitter<string> = new EventEmitter<string>();
 
   public userInput: string;
   private currentValue: string;
@@ -27,30 +26,39 @@ export class TypeaheadComponent implements OnInit {
       debounceTime(200),
       distinctUntilChanged(),
       map(term => {
-        if(term.length < 1){
+        if (term.length < 1) {
           return [];
-        } 
-        else {
+        } else {
           return characters.filter(v => {
-            return v.toLowerCase().indexOf(term.toLowerCase()) > -1
+            return v.toLowerCase().indexOf(term.toLowerCase()) > -1;
           }).slice(0, 10);
         }
       })
     )
 
-  public onBlur(){
+  public setDefaultValue(defaultValue: string): void {
+    if (defaultValue) {
+      this.userInput = defaultValue;
+      this.currentValue = defaultValue;
+    }
+  }
+
+  public onBlur() {
     // If the user has cleared the input and blurred out, we need to output a blank value manually
     // because the typeahead does not recognise this as an input "event" per se
-    if(this.userInput==="") this.select.emit("");
-    else if(this.currentValue) this.select.emit(this.currentValue);
+    if (this.userInput === '') {
+      this.selectItem.emit('');
+    } else if (this.currentValue) {
+      this.selectItem.emit(this.currentValue);
+    }
   }
-  public onSelect(eventObject: NgbTypeaheadSelectItemEvent):void {
+  public onSelect(eventObject: NgbTypeaheadSelectItemEvent): void {
     this.currentValue = eventObject.item;
-    this.select.emit(eventObject.item);
+    this.selectItem.emit(eventObject.item);
   }
   public clear(): void {
-    this.userInput = "";
-    this.currentValue = "";
+    this.userInput = '';
+    this.currentValue = '';
   }
 
 }

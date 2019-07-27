@@ -1,39 +1,66 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { MatchViewModel, IMatchViewModel } from '../../app.view-models';
-import { NumberMaskDirective } from '../common-ux/directives/number-mask.directive';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { MatchViewModel, IMatchViewModel, IUserViewModel } from '../../app.view-models';
+import { MaskedNumberInputComponent } from '../common-ux/components/masked-number-input/masked-number-input.component';
 import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.component';
 import { CommonUXService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
+import { UserManagementService } from '../user-management/user-management.service';
 
 @Component({
   selector: 'match-input-form',
   templateUrl: './match-input-form.component.html',
 })
-export class MatchInputFormComponent implements OnInit {
+export class MatchInputFormComponent implements OnInit, AfterViewInit {
   @ViewChild('opponentCharacterNameInput', { static: false }) private opponentCharacterNameInput: TypeaheadComponent;
-  @ViewChild('userCharacterGspInput', { static: false }) private userCharacterGspInput: NumberMaskDirective;
+  @ViewChild('userCharacterNameInput', { static: false }) private userCharacterNameInput: TypeaheadComponent;
+  @ViewChild('userCharacterGspInput', { static: false }) private userCharacterGspInput: MaskedNumberInputComponent;
 
   public match: IMatchViewModel = new MatchViewModel();
-  public lastSavedMatch: IMatchViewModel;
-  
-  public showFooterWarnings:boolean = false;
+
+  // We have number masking, so these need to be temporarily stored as a string
+  public opponentCharacterGspString: string = '';
+  public userCharacterGspString: string = '';
+
+  public showFooterWarnings: boolean = false;
   public warnings: string[] = [];
   public isSaving: boolean = false;
 
   constructor(
-    private commonUXService:CommonUXService,
-    private matchManagementService: MatchManagementService,
-    private decimalPipe: DecimalPipe,
-    ){
+    private commonUXService: CommonUXService,
+    private userService: UserManagementService,
+    private matchService: MatchManagementService,
+    ) {
   }
-  
-  ngOnInit(){
 
+  ngOnInit() {
+    this.userService.cachedUser.subscribe(
+      res => {
+        if (res) {
+          this.match.userCharacterName = res.defaultCharacterName;
+          this.userCharacterGspString = res.defaultCharacterGsp.toString();
+          this.match.userCharacterGsp = res.defaultCharacterGsp;
+          this._formatUserDefaultValues();
+        }
+    });
+  }
+
+  ngAfterViewInit() {
+    this._formatUserDefaultValues();
+  }
+
+  private _formatUserDefaultValues(): void {
+    setTimeout(() => { // Just give in to the dark side
+      if (this.userCharacterGspInput && this.match.userCharacterGsp) {
+        this.userCharacterGspInput.setValue(this.match.userCharacterGsp);
+      }
+      if (this.userCharacterNameInput && this.match.userCharacterName) {
+        this.userCharacterNameInput.setDefaultValue(this.match.userCharacterName);
+      }
+    }, 0);
   }
 
   public createEntry(): void {
-    if(!this.validateMatch()){
+    if (!this.validateMatch()) {
       this.warnings.forEach(warningMessage => {
         this.commonUXService.showWarningToast(warningMessage);
       });
@@ -41,48 +68,52 @@ export class MatchInputFormComponent implements OnInit {
     }
 
     this.isSaving = true;
-    
+
     // Transform some data
-    if(this.match.opponentCharacterGsp) {
-      this.match.opponentCharacterGsp = parseInt(this.match.opponentCharacterGsp.toString().replace(/,/g, ''));
+    if (this.opponentCharacterGspString) {
+      this.match.opponentCharacterGsp = parseInt(this.opponentCharacterGspString.replace(/,/g, ''), 10);
     }
-    if(this.match.userCharacterGsp) {
-      this.match.userCharacterGsp = parseInt(this.match.userCharacterGsp.toString().replace(/,/g, ''));
+    if (this.userCharacterGspString) {
+      this.match.userCharacterGsp = parseInt(this.userCharacterGspString.replace(/,/g, ''), 10);
     }
-    console.log("Saving match:", this.match);
-    this.matchManagementService.createMatch(this.match).subscribe(response => {
-      if(response) this.commonUXService.showSuccessToast("Match saved!");
+    console.log('Saving match:', this.match);
+
+    this.matchService.createMatch(this.match).subscribe(response => {
+      if (response) {
+        this.commonUXService.showSuccessToast('Match saved!');
+      }
     }, error => {
-      this.commonUXService.showDangerToast("Unable to save match.");
+      this.commonUXService.showDangerToast('Unable to save match.');
     }, () => {
       this.isSaving = false;
     });
 
-    this.lastSavedMatch = new MatchViewModel();
-    this.lastSavedMatch = Object.assign(this.lastSavedMatch, this.match);
     this.resetMatch();
 
     // Set footer warnings to false so it won't show up until the next mouseenter
     this.showFooterWarnings = false;
   }
 
-  public validateMatch():boolean {
+  public validateMatch(): boolean {
     this.warnings = [];
 
-    if(!this.match.opponentCharacterName){
-      this.warnings.push("Opponent character name required.");
+    if (!this.match.opponentCharacterName) {
+      this.warnings.push('Opponent character name required.');
     }
-    if(!this.match.userCharacterName && this.match.userCharacterGsp){
-      this.warnings.push("User GSP must be associated with a user character.");
+    if (!this.match.userCharacterName && this.match.userCharacterGsp){
+      this.warnings.push('User GSP must be associated with a user character.');
     }
-    if(this.warnings.length) return false;
-    else return true;
+    if (this.warnings.length) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   private resetMatch(): void {
     this.match = new MatchViewModel(null, null, null, null, this.match.userCharacterName, this.match.userCharacterGsp);
     // Need to manually mask the user GSP again
-    if(this.match.userCharacterGsp) {
+    if (this.match.userCharacterGsp) {
       this.userCharacterGspInput.setValue(this.match.userCharacterGsp);
     }
     // Need to manually reset the opponent character typeahead component
