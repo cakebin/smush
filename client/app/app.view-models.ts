@@ -1,6 +1,21 @@
+export interface IMatchViewModel {
+    matchId: number;
+    userId: number;
+    userName: string; // Viewmodel only, intended to be read-only for match display
+    opponentCharacterName: string;
+    opponentCharacterGsp: number;
+    userCharacterName: string;
+    userCharacterGsp: number;
+    opponentTeabag: boolean;
+    opponentCamp: boolean;
+    opponentAwesome: boolean;
+    userWin: boolean;
+    created: Date; // Set on the server. Read-only
+}
 export class MatchViewModel implements IMatchViewModel {
     constructor(
-        public id: number = null,
+        public matchId: number = null,
+        public userId: number = null,
         public userName: string = '',
         public opponentCharacterName: string = '',
         public opponentCharacterGsp: number = null,
@@ -14,8 +29,16 @@ export class MatchViewModel implements IMatchViewModel {
     ) {
     }
 }
+export interface IUserViewModel {
+    userId: number;
+    emailAddress: string;
+    userName: string;
+    defaultCharacterName: string;
+    defaultCharacterGsp: number;
+}
 export class UserViewModel implements IUserViewModel {
     constructor(
+        public userId: number = null,
         public emailAddress: string = '',
         public userName: string = '',
         public defaultCharacterName: string = '',
@@ -23,22 +46,4 @@ export class UserViewModel implements IUserViewModel {
     ) {
     }
 }
-export interface IMatchViewModel {
-    id: number;
-    userName: string;
-    opponentCharacterName: string;
-    opponentCharacterGsp: number;
-    userCharacterName: string;
-    userCharacterGsp: number;
-    opponentTeabag: boolean;
-    opponentCamp: boolean;
-    opponentAwesome: boolean;
-    userWin: boolean;
-    created: Date;
-}
-export interface IUserViewModel {
-    emailAddress: string;
-    userName: string;
-    defaultCharacterName: string;
-    defaultCharacterGsp: number;
-}
+

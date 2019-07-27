@@ -7,7 +7,7 @@ import { UserViewModel, IUserViewModel } from '../../app.view-models';
 
 @Injectable()
 export class UserManagementService {
-    private _fakeUser: UserViewModel = new UserViewModel('joebin@gmail.com', 'Jerulfe', 'Joker', 5200000);
+    private _fakeUser: UserViewModel = new UserViewModel(1, 'joebin@gmail.com', 'Jerulfe', 'Joker', 5200000);
     public cachedUser: BehaviorSubject<IUserViewModel> = new BehaviorSubject<IUserViewModel>(null);
 
     constructor(

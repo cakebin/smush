@@ -25,6 +25,8 @@ export class MatchInputFormComponent implements OnInit, AfterViewInit {
   public warnings: string[] = [];
   public isSaving: boolean = false;
 
+  private user: IUserViewModel;
+
   constructor(
     private commonUXService: CommonUXService,
     private userService: UserManagementService,
@@ -36,6 +38,8 @@ export class MatchInputFormComponent implements OnInit, AfterViewInit {
     this.userService.cachedUser.subscribe(
       res => {
         if (res) {
+          this.user = res;
+          this.match.userId = this.user.userId;
           this.match.userCharacterName = res.defaultCharacterName;
           this.userCharacterGspString = res.defaultCharacterGsp.toString();
           this.match.userCharacterGsp = res.defaultCharacterGsp;
@@ -111,7 +115,7 @@ export class MatchInputFormComponent implements OnInit, AfterViewInit {
   }
 
   private resetMatch(): void {
-    this.match = new MatchViewModel(null, null, null, null, this.match.userCharacterName, this.match.userCharacterGsp);
+    this.match = new MatchViewModel(this.user.userId, null, null, null, null, this.match.userCharacterName, this.match.userCharacterGsp);
     // Need to manually mask the user GSP again
     if (this.match.userCharacterGsp) {
       this.userCharacterGspInput.setValue(this.match.userCharacterGsp);

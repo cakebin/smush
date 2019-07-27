@@ -10,13 +10,15 @@ import { UserManagementModule } from './modules/user-management/user-management.
 import { MatchManagementModule } from './modules/match-management/match-management.module';
 
 import { UserManagementService } from './modules/user-management/user-management.service';
-import { TopNavBarComponent } from './components/top-nav-bar/top-nav-bar.component';
-import { MatchesComponent } from './components/matches/matches.component';
-import { ProfileViewComponent } from './components/profiles/profile-view.component';
-import { ProfileEditComponent } from './components/profiles/profile-edit.component';
-import { InsightsComponent } from './components/insights/insights.component';
-import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { HomeComponent } from './components/home/home.component';
+import { TopNavBarComponent } from './page-components/top-nav-bar/top-nav-bar.component';
+import { MatchesComponent } from './page-components/matches/matches.component';
+import { ProfileViewComponent } from './page-components/profiles/profile-view.component';
+import { ProfileEditComponent } from './page-components/profiles/profile-edit.component';
+import { InsightsComponent } from './page-components/insights/insights.component';
+import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
+import { HomeComponent } from './page-components/home/home.component';
+
+import { ChartsModule } from './modules/charts/charts.module';
 
 
 @NgModule({
@@ -36,6 +38,8 @@ import { HomeComponent } from './components/home/home.component';
     UserManagementModule.forRoot(),
     MatchManagementModule.forRoot(),
     CommonUXModule.forRoot(),
+
+    ChartsModule,
   ],
   bootstrap: [
     AppComponent,
