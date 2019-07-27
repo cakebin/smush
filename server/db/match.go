@@ -9,6 +9,7 @@ import (
 type Match struct {
   MatchID                 *int          `json:"matchId,omitempty"`
   UserID                  int           `json:"userId"`
+  UserName                *string       `json:"userName,omitempty"`
   UserCharacterName       *string       `json:"userCharacterName,omitempty"`
   UserCharacterGsp        *int          `json:"userCharacterGsp,omitempty"`
   UserWin                 *bool         `json:"userWin,omitempty"`
@@ -57,7 +58,24 @@ func (db *DB) GetMatchByID(id int) (*Match, error) {
 
 // GetAllMatches gets all of the matches from our database
 func (db *DB) GetAllMatches() ([]*Match, error) {
-  rows, err := db.Query("SELECT * FROM matches")
+  sqlStatement := `
+  SELECT
+    users.user_id,
+    users.user_name,
+    matches.user_character_name,
+    matches.user_character_gsp,
+    matches.user_win,
+    matches.opponent_character_name,
+    matches.opponent_character_gsp,
+    matches.opponent_teabag,
+    matches.opponent_camp,
+    matches.opponent_awesome,
+    matches.created
+  FROM
+    users, matches
+  WHERE
+    users.user_id = matches.user_id;`
+  rows, err := db.Query(sqlStatement)
   if err != nil {
     return nil, err
   }
@@ -67,8 +85,8 @@ func (db *DB) GetAllMatches() ([]*Match, error) {
   for rows.Next() {
     match := new(Match)
     err := rows.Scan(
-      &match.MatchID,
       &match.UserID,
+      &match.UserName,
       &match.UserCharacterName,
       &match.UserCharacterGsp,
       &match.UserWin,
