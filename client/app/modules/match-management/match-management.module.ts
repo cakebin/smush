@@ -36,10 +36,10 @@ export class MatchManagementModule {
           MatchManagementService,
           DecimalPipe,
           {
-            provide: 'ApiUrl',
+            provide: 'MatchApiUrl',
             useValue: '/api/match'
           },
         ]
-    }
+    };
   }
 }

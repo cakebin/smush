@@ -8,3 +8,6 @@
 :host /deep/ th span.desc .ng-fa-icon[sortDown]{
     opacity:1;
 }
+:host /deep/ .no-data-block {
+    margin-top:100px;
+}

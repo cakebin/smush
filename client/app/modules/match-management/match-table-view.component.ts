@@ -9,7 +9,7 @@ import { MatchManagementService } from './match-management.service';
 
 @Component({
   selector: 'match-table-view',
-  templateUrl: './match-table-view.component.html',
+  templateUrl: './match-table-view.component.html'
 })
 export class MatchTableViewComponent implements OnInit {
   public headerLabels: HeaderViewModel[] = [
@@ -26,7 +26,7 @@ export class MatchTableViewComponent implements OnInit {
     new HeaderViewModel('created', 'Created'),
   ];
   @ViewChildren(SortableTableHeaderComponent) headerComponents: QueryList<SortableTableHeaderComponent>;
-  
+
   public matches: IMatchViewModel[] = [];
 
   public sortedMatches: IMatchViewModel[];
@@ -42,7 +42,7 @@ export class MatchTableViewComponent implements OnInit {
   constructor(
     private commonUXService: CommonUXService,
     private matchManagementService: MatchManagementService,
-    ){
+    ) {
   }
 
   ngOnInit() {
@@ -65,9 +65,9 @@ export class MatchTableViewComponent implements OnInit {
 
   public onSort({column, direction}: ISortEvent) {
     // Resetting all headers. This needs to be done in a parent, no way around it
-    if(this.headerComponents){
+    if (this.headerComponents) {
       this.headerComponents.forEach(header => {
-        if(header.propertyName !== column){
+        if (header.propertyName !== column) {
           header.clearDirection();
         }
       });
@@ -93,8 +93,8 @@ export class MatchTableViewComponent implements OnInit {
   }
   public deleteMatch(matchId: number): void {
     console.log('DELETING match!', matchId);
-  } 
-  private initialSort(): void { 
+  }
+  private initialSort(): void {
     this.onSort(new SortEvent('id', 'desc'));
   }
 }

@@ -1,4 +1,4 @@
-<table class="table table-sm table-striped table-hover">
+<table *ngIf="sortedMatches?.length; else noDataBlock" class="table table-sm table-striped table-hover">
     <thead class="thead-light">
         <tr>
             <th *ngFor="let header of headerLabels">
@@ -51,3 +51,8 @@
         </tr>
     </tbody>
 </table>
+<ng-template #noDataBlock>
+    <div class="text-center no-data-block">
+        <h3 class="text-black-50">No matches found</h3>
+    </div>
+</ng-template>
