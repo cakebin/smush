@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { SingleSeries, DataItem } from '@swimlane/ngx-charts';
+import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
 import { IMatchViewModel } from 'client/app/app.view-models';
 import { CommonUXService } from 'client/app/modules/common-ux/common-ux.service';
+
 
 @Component({
   selector: 'insights',
@@ -18,8 +21,8 @@ export class InsightsComponent implements OnInit {
   public dataUnit: string = '';
   public xAxisLabel: string = '';
   public yAxisLabel: string = '';
-  public xAxisTickFormatting;
-  public yAxisTickFormatting;
+  public xAxisTickFormatting: (val: string) => string;
+  public yAxisTickFormatting: (val: string) => string;
 
   private matches: IMatchViewModel[] = [];
   public startDate: Date;
@@ -27,6 +30,7 @@ export class InsightsComponent implements OnInit {
   public chartUserId: number;
 
   public isLoading: boolean = false;
+  public faCircleNotch = faCircleNotch;
 
   constructor(
     private matchService: MatchManagementService,
@@ -35,19 +39,18 @@ export class InsightsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.isLoading = true;
-    this.matchService.cachedMatches.subscribe({
-      next: res => {
-        this.matches = res;
-        this.publishCharacterUsageChartData();
-      },
-      error: err => {
+    // It doesn't take long enough for this to load to warrant a spinner.
+    // Will address later if this is actually an issue.
+    // this.isLoading = true;
+    this.matchService.cachedMatches.subscribe(res => {
+      this.matches = res;
+      this.publishCharacterUsageChartData();
+      this.isLoading = false;
+    },
+    err => {
         this.commonUxService.showDangerToast('Unable to get data.');
         console.error(err);
-      },
-      complete: () => {
         this.isLoading = false;
-      }
     });
   }
 
@@ -86,7 +89,6 @@ export class InsightsComponent implements OnInit {
       }
       return dataItemArray;
     }, []);
-
     // Go through the integer counts and turn into percents for more usable visualisation
     series = series.map((dataItem: DataItem) => { return {
       name: dataItem.name, value: ((dataItem.value as number) / filteredData.length) * 100 } as DataItem;

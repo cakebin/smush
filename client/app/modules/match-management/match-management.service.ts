@@ -1,4 +1,4 @@
-import { Injectable, Inject,  } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, ReplaySubject } from 'rxjs';
 import { publish, refCount, tap, finalize } from 'rxjs/operators';

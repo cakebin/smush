@@ -9,8 +9,7 @@ export interface ISortEvent {
 export class SortEvent implements ISortEvent {
     constructor(
     public column: string,
-    public direction: SortDirection){
-        
+    public direction: SortDirection) {
     }
 }
 export interface IHeaderViewModel {
@@ -18,9 +17,9 @@ export interface IHeaderViewModel {
     displayName: string;
 }
 export class HeaderViewModel implements IHeaderViewModel {
-	constructor(
+    constructor(
         public propertyName: string,
         public displayName: string,
     ) {
-	}
+    }
 }
