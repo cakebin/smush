@@ -48,7 +48,9 @@ export class TopNavBarComponent implements OnInit {
         (res: IServerResponse) => {
             if (res.success) {
               this.commonUxService.showSuccessToast('Congratulations! Your account has been created.');
+              this.newUser = {} as IUserViewModel;
               this.showLoginForm = true;
+              this.justCheckedCreateUserForm = false;
             } else {
               this.commonUxService.showDangerToast('Unable to create account.');
               console.error(res.error);
