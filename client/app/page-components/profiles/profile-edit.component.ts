@@ -28,7 +28,7 @@ export class ProfileEditComponent implements OnInit {
   public faQuestionCircle = faQuestionCircle;
 
   constructor(
-    private commonUXService: CommonUXService,
+    private commonUxService: CommonUXService,
     private userService: UserManagementService,
     private matchService: MatchManagementService,
     ) {
@@ -44,9 +44,20 @@ export class ProfileEditComponent implements OnInit {
         }
       },
       error: err => {
-        this.commonUXService.showDangerToast('Unable to get user data.');
+        this.commonUxService.showDangerToast('Unable to get user data.');
         console.error(err);
       }
     });
+  }
+
+  public updateUser(): void {
+    this.userService.updateUser(this.user).subscribe(
+      res => {
+        this.commonUxService.showSuccessToast('User information updated!');
+      },
+      error => {
+        this.commonUxService.showDangerToast('Error updating user information.');
+        console.error(error);
+      });
   }
 }

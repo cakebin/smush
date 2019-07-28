@@ -2,7 +2,7 @@ import { Injectable, Inject  } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount } from 'rxjs/operators';
+import { publish, refCount, tap, finalize } from 'rxjs/operators';
 import { IUserViewModel } from '../../app.view-models';
 
 @Injectable()
@@ -48,7 +48,13 @@ export class UserManagementService {
         return this.httpClient.post(`${this.apiUrl}/create`, user);
     }
     public updateUser(updatedUser: IUserViewModel): Observable<{}> {
-        return this.httpClient.post(`${this.apiUrl}/update`, updatedUser);
+        return this.httpClient.post(`${this.apiUrl}/update`, updatedUser).pipe(
+            tap(res => {
+                console.log('updateUser: Done updating user. Server returned:', res);
+            }
+        ),
+        finalize(() => this._loadUser(updatedUser.userId))
+        );
     }
     public deleteUser(userId: number): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/delete`, userId);
