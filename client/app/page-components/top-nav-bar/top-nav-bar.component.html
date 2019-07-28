@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <div *ngIf="!user" ngbDropdown class="d-inline-block">
+        <div *ngIf="!user" ngbDropdown (openChange)="onOpenChange($event)" class="d-inline-block">
             <button class="btn btn-outline-secondary" id="dropdownForm1" ngbDropdownToggle>Log in </button>
             
             <div ngbDropdownMenu class="user-form-dropdown dropdown-menu-right" aria-labelledby="dropdownForm1">

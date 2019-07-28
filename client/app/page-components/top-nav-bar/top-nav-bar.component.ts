@@ -32,6 +32,13 @@ export class TopNavBarComponent implements OnInit {
         }
       });
     }
+    public onOpenChange(isOpen: boolean): void {
+      if (!isOpen) {
+        // When the user closes the login dropdown,
+        // change the form back to the login (not register) form
+        this.showLoginForm = true;
+      }
+    }
     public logIn(): void {
       this.userService.logIn();
     }
