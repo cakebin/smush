@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "ng build",
-    "build:dev": "ng build --watch",
-    "e2e": "ng e2e"
+    "build:dev": "ng build --watch"
   },
   "private": true,
   "dependencies": {
