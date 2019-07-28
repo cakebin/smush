@@ -30,6 +30,7 @@ export class InsightsComponent implements OnInit {
   public endDate: NgbDate;
   public chartUserId: number;
 
+  public noFilteredDataToDisplay: boolean = false;
   public isLoading: boolean = false;
   public faCircleNotch = faCircleNotch;
   public faCalendarAlt = faCalendarAlt;
@@ -93,6 +94,12 @@ export class InsightsComponent implements OnInit {
     }
     if (this.chartUserId) {
       filteredData = filteredData.filter(match => match.userId === this.chartUserId);
+    }
+    if (!filteredData.length) {
+      this.noFilteredDataToDisplay = true;
+      return;
+    } else {
+      this.noFilteredDataToDisplay = false;
     }
     // Group by and transform into DataItem objects simultaneously (cringe)
     series = filteredData.reduce((dataItemArray: SingleSeries, match: IMatchViewModel) => {

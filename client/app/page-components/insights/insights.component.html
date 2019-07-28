@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <div *ngIf="!isLoading && matches?.length" class="insights-chart-container">
+        <div *ngIf="!isLoading && matches?.length && !noFilteredDataToDisplay" class="insights-chart-container">
             <chart-bar-horizontal 
                 [data]="chartData"
                 [dataUnit]="dataUnit"
@@ -55,7 +55,7 @@
         <div *ngIf="isLoading" class="text-center insights-chart-container">
             <fa-icon [icon]="faCircleNotch" [spin]="true" size="3x" class="text-black-50"></fa-icon>
         </div>
-        <div *ngIf="!isLoading && !matches?.length" class="text-center no-data-block">
+        <div *ngIf="!isLoading && (!matches?.length || noFilteredDataToDisplay)" class="text-center no-data-block">
             <h3 class="text-black-50">No matches found</h3>
         </div>
     </div>
