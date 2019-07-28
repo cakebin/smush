@@ -40,6 +40,8 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
     switch head {
     case "create":
       r.handleCreate(res, req)
+    case "update":
+      r.handleUpdate(res, req)
     }
   // Unsupported Method Response
   default:
@@ -90,6 +92,26 @@ func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
   json.NewEncoder(res).Encode(userResponse)
 }
 
+func (r *Router) handleUpdate(res http.ResponseWriter, req *http.Request) {
+  decoder := json.NewDecoder(req.Body)
+  var user db.User
+
+  err := decoder.Decode(&user)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
+    return
+  }
+
+  success, err := r.SysUtils.Database.UpdateUser(user)
+
+  userResponse := &db.UserResponse{
+    Success: success,
+    Error: err,
+  }
+
+  res.Header().Set("Content-Type", "application/json")
+  json.NewEncoder(res).Encode(userResponse)
+}
 
 // NewRouter makes a new match router with access to the "SysUtils" environment object
 func NewRouter(sysUtils *env.SysUtils) *Router {

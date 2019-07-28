@@ -41,16 +41,39 @@ func (db *DB) GetUserByID(id int) (*User, error) {
 	return user, nil
 }
 
+// UpdateUser updates an existing entry in the Users table
+func (db *DB) UpdateUser(user User) (bool, error) {
+	sqlStatement := `
+	UPDATE users SET 
+		user_name = $1,
+		default_character_name = $2,
+		default_character_gsp = $3
+	WHERE user_id = $4`
+	_, err := db.Exec(
+		sqlStatement,
+		user.UserName,
+		user.DefaultCharacterName,
+		user.DefaultCharacterGsp,
+		user.UserID,
+	)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 // CreateUser adds a new entry to the Users table in our database
 func (db *DB) CreateUser(user User) (bool, error) {
 	sqlStatement := `
-  INSERT INTO users (
-    user_name,
-    email_address,
-    default_character_name,
-    default_character_gsp,
-  )
-  VALUES ($1, $2, $3, $4)`
+	INSERT INTO users (
+		user_name,
+		email_address,
+		default_character_name,
+		default_character_gsp,
+	)
+	VALUES ($1, $2, $3, $4)`
 	_, err := db.Exec(
 		sqlStatement,
 		user.UserName,
