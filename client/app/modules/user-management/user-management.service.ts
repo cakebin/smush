@@ -45,7 +45,11 @@ export class UserManagementService {
         return this.cachedUser;
     }
     public createUser(user: IUserViewModel): Observable<{}> {
-        return this.httpClient.post(`${this.apiUrl}/create`, user);
+        console.log('Creating user. User model:', user);
+        return this.httpClient.post(`${this.apiUrl}/create`, user).pipe(
+            tap(res => {
+                console.log('createUser: Done creating user. Server returned:', res);
+            }));
     }
     public updateUser(updatedUser: IUserViewModel): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/update`, updatedUser).pipe(

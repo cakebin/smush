@@ -71,7 +71,7 @@ func (db *DB) CreateUser(user User) (bool, error) {
 		user_name,
 		email_address,
 		default_character_name,
-		default_character_gsp,
+		default_character_gsp
 	)
 	VALUES ($1, $2, $3, $4)`
 	_, err := db.Exec(
