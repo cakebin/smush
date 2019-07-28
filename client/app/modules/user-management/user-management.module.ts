@@ -29,10 +29,10 @@ export class UserManagementModule {
           UserManagementService,
           DecimalPipe,
           {
-            provide: 'ApiUrl',
+            provide: 'UserApiUrl',
             useValue: '/api/user'
           },
         ]
-    }
+    };
   }
 }

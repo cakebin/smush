@@ -17,7 +17,7 @@ export class MatchManagementService {
 
     public cachedMatches: ReplaySubject<IMatchViewModel[]> = new ReplaySubject<IMatchViewModel[]>();
 
-    constructor(private httpClient: HttpClient, @Inject('ApiUrl') private apiUrl: string) {
+    constructor(private httpClient: HttpClient, @Inject('MatchApiUrl') private apiUrl: string) {
         this._loadAllMatches();
     }
 

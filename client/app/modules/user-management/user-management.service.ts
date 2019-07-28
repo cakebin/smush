@@ -1,31 +1,23 @@
 import { Injectable, Inject  } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, delay } from 'rxjs/operators';
-import { UserViewModel, IUserViewModel } from '../../app.view-models';
+import { publish, refCount } from 'rxjs/operators';
+import { IUserViewModel } from '../../app.view-models';
 
 @Injectable()
 export class UserManagementService {
-    private _fakeUser: UserViewModel = new UserViewModel(1, 'joebin@gmail.com', 'Jerulfe', 'Joker', 5200000);
     public cachedUser: BehaviorSubject<IUserViewModel> = new BehaviorSubject<IUserViewModel>(null);
 
     constructor(
         private httpClient: HttpClient,
         private router: Router,
-        @Inject('ApiUrl') private apiUrl: string,
+        @Inject('UserApiUrl') private apiUrl: string,
     ) {
     }
 
-    private _loadUser(): void {
-        // this.httpClient.get<IUserViewModel>(`${this.apiUrl}/get/${userId}`)
-
-        const fakeUserObservable: Observable<UserViewModel> = new Observable<UserViewModel>((observer) => {
-            observer.next(this._fakeUser);
-            observer.complete();
-        }).pipe(delay(500));
-
-        fakeUserObservable.subscribe(
+    private _loadUser(userId: number): void {
+        this.httpClient.get<IUserViewModel>(`${this.apiUrl}/get/${userId}`).subscribe(
             res => {
                 this.cachedUser.next(res);
                 this.cachedUser.pipe(
@@ -37,7 +29,7 @@ export class UserManagementService {
     }
     public logIn(): void {
         // Placeholder for actually logging in
-        this._loadUser();
+        this._loadUser(1);
     }
     public logOut(): void {
         // Set cached user to nothing! Then publish the new NOTHINGNESS!
@@ -46,9 +38,9 @@ export class UserManagementService {
         // Send the user back to the home page
         this.router.navigate(['/home']);
     }
-    public getUser(): BehaviorSubject<IUserViewModel>{
-        if(!this.cachedUser.value){
-            this._loadUser();
+    public getUser(): BehaviorSubject<IUserViewModel> {
+        if (!this.cachedUser.value) {
+            this._loadUser(1);
         }
         return this.cachedUser;
     }
