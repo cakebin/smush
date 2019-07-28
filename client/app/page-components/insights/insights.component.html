@@ -25,7 +25,8 @@
                 </select>
             </div>
         </div>
-        <div class="insights-chart-container">
+
+        <div *ngIf="!isLoading; else noDataBlock" class="insights-chart-container">
             <chart-bar-horizontal 
                 [data]="chartData"
                 [dataUnit]="dataUnit"
@@ -35,6 +36,12 @@
                 [yAxisTickFormatting]="yAxisTickFormatting"
             ></chart-bar-horizontal>
         </div>
+        <ng-template #noDataBlock>
+            <div class="text-center insights-chart-container">
+                <fa-icon [icon]="faCircleNotch" [spin]="true" size="3x" class="text-muted"></fa-icon>
+            </div>
+        </ng-template>
+
     </div>
     <div class="col-3"></div>
 </div>
