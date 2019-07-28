@@ -37,26 +37,4 @@ export class CommonUXService {
             return 0;
         }
     }
-    public debounce(functionToRun, delay: number, runImmediately: boolean = false): () => void {
-        // Adapted from https://davidwalsh.name/javascript-debounce-function
-
-        let timeout: NodeJS.Timer;
-        return () => {
-            const context = this;
-            const args = arguments;
-
-            const later = () => {
-                timeout = null;
-                if (!runImmediately) {
-                    functionToRun.apply(context, args);
-                }
-            };
-            const callNow: boolean = runImmediately && !timeout;
-            clearTimeout(timeout);
-            timeout = setTimeout(later, delay);
-            if (callNow) {
-                functionToRun.apply(context, args);
-            }
-        };
-    }
 }
