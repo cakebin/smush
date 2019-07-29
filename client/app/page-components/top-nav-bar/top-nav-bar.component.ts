@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener} from '@angular/core';
 import { UserManagementService } from '../../modules/user-management/user-management.service';
 import { CommonUXService } from '../../modules/common-ux/common-ux.service';
 import { IUserViewModel, ILogInViewModel, IServerResponse } from 'client/app/app.view-models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'top-nav-bar',
@@ -15,7 +16,11 @@ export class TopNavBarComponent implements OnInit {
     public showLoginForm: boolean = true;
     public showRegistrationFormWarnings: boolean = false;
 
-    constructor(private commonUxService: CommonUXService, private userService: UserManagementService) {
+    constructor(
+      private commonUxService: CommonUXService,
+      private userService: UserManagementService,
+      private router: Router,
+    ) {
     }
 
     ngOnInit() {
@@ -41,7 +46,7 @@ export class TopNavBarComponent implements OnInit {
       }
     }
     public logIn(): void {
-      this.userService.logIn();
+      this.userService.logIn(this.logInModel);
     }
     public logOut(): void {
       this.userService.logOut();

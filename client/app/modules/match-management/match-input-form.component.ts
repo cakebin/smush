@@ -50,9 +50,15 @@ export class MatchInputFormComponent implements OnInit {
         if (res) {
           this.user = res;
           this.match.userId = this.user.userId;
-          this.match.userCharacterName = res.defaultCharacterName;
-          this.userCharacterGspString = res.defaultCharacterGsp.toString();
-          this.match.userCharacterGsp = res.defaultCharacterGsp;
+          if (res.defaultCharacterName) {
+            this.match.userCharacterName = res.defaultCharacterName;
+          }
+          if (res.defaultCharacterGsp) {
+            this.userCharacterGspString = res.defaultCharacterGsp.toString();
+          }
+          if (res.defaultCharacterGsp) {
+            this.match.userCharacterGsp = res.defaultCharacterGsp;
+          }
         }
     });
   }

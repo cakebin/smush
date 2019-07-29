@@ -49,7 +49,9 @@ export class ProfileEditComponent implements OnInit {
           Object.assign(this.user, res);
           Object.assign(this.editedUser, res);
 
-          this.defaultCharacterGspString = this.editedUser.defaultCharacterGsp.toString();
+          if (this.editedUser.defaultCharacterGsp) {
+            this.defaultCharacterGspString = this.editedUser.defaultCharacterGsp.toString();
+          }
         }
       },
       error: err => {
@@ -58,7 +60,10 @@ export class ProfileEditComponent implements OnInit {
       }
     });
   }
-
+  public onSelectDefaultCharacter(event: string): void {
+      this.editedUser.defaultCharacterName = event;
+      this.formChanged = this.getChangedStatus();
+  }
   public updateUser(): void {
     this.userService.updateUser(this.editedUser).subscribe(
       res => {
@@ -68,14 +73,16 @@ export class ProfileEditComponent implements OnInit {
         this.commonUxService.showSuccessToast('User information updated!');
       },
       error => {
-        this.commonUxService.showDangerToast('Error updating user information.');
+        this.commonUxService.showDangerToast('Unable to update user information.');
         console.error(error);
       });
   }
 
   public getChangedStatus(): boolean {
-    const keys: string[] = Object.keys(this.user);
+    const keys: string[] = Object.keys(this.editedUser);
     let formChanged: boolean = false;
+
+    console.log(this.user, keys);
     keys.forEach(k => {
       if (!Object.is(this.user[k], this.editedUser[k])) {
         formChanged = true;

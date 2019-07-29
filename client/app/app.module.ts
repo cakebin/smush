@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
+
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,8 +18,8 @@ import { ProfileEditComponent } from './page-components/profiles/profile-edit.co
 import { InsightsComponent } from './page-components/insights/insights.component';
 import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 import { HomeComponent } from './page-components/home/home.component';
-
 import { ChartsModule } from './modules/charts/charts.module';
+import { AuthInterceptor } from './auth.interceptor';
 
 
 @NgModule({
@@ -44,6 +46,11 @@ import { ChartsModule } from './modules/charts/charts.module';
   providers: [
     UserManagementService,
     AuthGuardService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
   ]
 })
 export class AppModule {}

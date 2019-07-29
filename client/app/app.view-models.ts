@@ -57,18 +57,20 @@ export class UserViewModel implements IUserViewModel {
 export interface ILogInViewModel {
     emailAddress: string;
     password: string;
-    remember: boolean;
 }
 export class LogInViewModel implements ILogInViewModel {
     constructor(
         public emailAddress: string = '',
         public password: string = '',
-        public remember: boolean = false,
     ) {
     }
 }
 export interface IServerResponse {
     success: boolean;
     error: any;
+}
+export interface IAuthServerResponse {
+    success: boolean;
+    user: IUserViewModel;
 }
 
