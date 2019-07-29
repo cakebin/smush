@@ -53,13 +53,17 @@ func (db *DB) GetUserByID(id int) (*User, error) {
 }
 
 
-// GetUserCredByEmail gets a user's auth related information
+// GetUserByEmail gets a user's auth related information
 // by their email; used for user authentication
-func (db *DB) GetUserCredByEmail(email string) (*User, error) {
+func (db *DB) GetUserByEmail(email string) (*User, error) {
   sqlStatement := `
   SELECT
     user_id,
+    user_name,
     email_address,
+    default_character_name,
+    default_character_gsp,
+    created,
     hashed_password,
     refresh_token
   FROM
@@ -70,7 +74,11 @@ func (db *DB) GetUserCredByEmail(email string) (*User, error) {
   user := new(User)
   err := row.Scan(
     &user.UserID,
+    &user.UserName,
     &user.EmailAddress,
+    &user.DefaultCharacterName,
+    &user.DefaultCharacterGsp,
+    &user.Created,
     &user.HashedPassword,
     &user.RefreshToken,
   )
