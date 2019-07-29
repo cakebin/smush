@@ -1,4 +1,33 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<common-ux-slide-panel class="nav-slide-menu" [paneVisible]="paneVisible" [slideDirection]="'left'">
+    <div pane class="nav-slide-menu-content shadow bg-white">
+        <!-- User login and registration -->
+        <div *ngIf="!user">
+            <div *ngIf="showLoginForm; then loginForm else registerForm"></div>
+
+            <div class="dropdown-divider"></div>       
+            
+            <button *ngIf="showLoginForm else loginButton" (click)="showLoginForm=false" class="user-form-button">New around here? Sign up</button>
+            <ng-template #loginButton><button (click)="showLoginForm=true" class="user-form-button">Already registered? Sign in</button></ng-template>
+            
+            <div class="dropdown-divider"></div> 
+            
+            <button class="user-form-button">Forgot password?</button>
+            
+            <div class="dropdown-divider"></div>
+        </div>
+
+        <!-- User edit profile and logout -->
+        <div *ngIf="user" class="pt-3">
+            <button class="user-form-button" routerLink="/profile/edit" (click)="togglePanelState(false)">Edit Profile</button>
+            <div class="dropdown-divider"></div> 
+            <button (click)="logOut()" class="user-form-button">Log Out</button>
+            <div class="dropdown-divider"></div> 
+        </div>
+    </div>
+</common-ux-slide-panel>
+
+    
+<nav class="navbar navbar-dark navbar-expand-lg fixed-top shadow" style="background-color:#1976d2">
     <a class="navbar-brand" routerLink="/home">
         <img src="/static/assets/logo_transparent.png" width="30" height="30" class="d-inline-block align-top" alt="Smush Tracker">
     </a>
@@ -25,55 +54,40 @@
                 </a>
             </li>
         </ul>
-        
-        <div *ngIf="user" ngbDropdown class="d-inline-block">
-            <button class="btn btn-secondary" id="dropdownUser" ngbDropdownToggle>
-                <img src="/static/assets/icons/joker.png" width="20" height="20" 
-                class="user-icon" [alt]="user?.userDefaultCharacterName">
-                <span class="mx-1">{{user?.userName}}</span>
-            </button>
-            <div ngbDropdownMenu class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownUser">
-                <button routerLink="/profile/edit" ngbDropdownItem>Edit Profile</button>
-                <button (click)="logOut()" ngbDropdownItem>Log Out</button>
-            </div>
-        </div>
 
-        <div *ngIf="!user" ngbDropdown (openChange)="onOpenChange($event)" class="d-inline-block">
-            <button class="btn btn-outline-secondary" id="dropdownForm1" ngbDropdownToggle>Log in </button>
-            
-            <div ngbDropdownMenu class="user-form-dropdown dropdown-menu-right" aria-labelledby="dropdownForm1">
-                
-                <div *ngIf="showLoginForm; then loginForm else registerForm"></div>
 
-                <div class="dropdown-divider"></div>
-                <button *ngIf="showLoginForm else loginButton" (click)="showLoginForm=false" class="user-form-button">New around here? Sign up</button>
-                <ng-template #loginButton><button (click)="showLoginForm=true" class="user-form-button">Already registered? Sign in</button></ng-template>
-                <button class="user-form-button">Forgot password?</button>
-            </div>
+        <div class="d-inline-block">
+            <span class="navbar-text" (click)="togglePanelState()">
+                <span *ngIf="!user" class="mr-3">Log in</span>
+                <span *ngIf="user" class="mr-3">
+                    <img src="/static/assets/icons/joker.png" width="20" height="20" 
+                    class="user-icon" [alt]="user?.userDefaultCharacterName">
+                    {{user?.userName}}
+                </span>
+
+                <fa-icon [icon]="faBars"></fa-icon>
+            </span>
         </div>
     </div>
 </nav>
 
 
-
-
-
 <ng-template #loginForm>
-    <div class="px-4 py-3">
+    <div class="p-4">
         <div class="form-group mb-1">
-            <label for="dropdownFormEmail" class="mb-0">Email address</label>
-            <input [(ngModel)]="logInModel.emailAddress" type="email" class="form-control" id="dropdownFormEmail">
+            <label for="loginFormEmail" class="mb-0">Email address</label>
+            <input [(ngModel)]="logInModel.emailAddress" type="email" class="form-control" id="loginFormEmail">
         </div>
         <div class="form-group mb-2">
-            <label for="dropdownFormPassword" class="mb-0">Password</label>
-            <input [(ngModel)]="logInModel.password" type="password" class="form-control" id="dropdownFormPassword">
+            <label for="loginFormPassword" class="mb-0">Password</label>
+            <input [(ngModel)]="logInModel.password" type="password" class="form-control" id="loginFormPassword">
         </div>
         <button (click)="logIn()" class="btn btn-primary mt-1">Sign in</button>
     </div>
 </ng-template>
 
 <ng-template #registerForm>
-    <div class="px-4 py-3">
+    <div class="p-4">
         <div class="form-group mb-1">
             <label for="dropdownFormEmail" class="mb-0">Email address</label>
             <input [(ngModel)]="newUser.emailAddress" (focus)="showRegistrationFormWarnings=false" type="email" class="form-control"
@@ -97,11 +111,4 @@
         </div>
         <button (click)="createUser();" class="btn btn-primary mt-1">Register</button>
     </div>
-</ng-template>
-
-<ng-template #createUserWarningsTemplate>
-    Please address the following problems:
-    <ul>
-        <li *ngFor="let warning of createUserWarnings">{{warning}}</li>
-    </ul>
 </ng-template>

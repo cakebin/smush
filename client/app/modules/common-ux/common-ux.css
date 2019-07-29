@@ -16,3 +16,13 @@
     top: initial;
     bottom: 0;
 }
+
+:host /deep/ .slide-panel-hide {
+    display:none;
+}
+:host /deep/ .slide-panel-high-z-index {
+    z-index:20;
+}
+:host /deep/ .slide-panel-low-z-index {
+    z-index:-1;
+}

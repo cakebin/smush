@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  overflow: hidden;
+}
+.pane-container {
+  height: 100%;
+  width: 200%;
+  display: flex;
+}
+.pane-container .pane-content {
+  flex: 0.5;
+}

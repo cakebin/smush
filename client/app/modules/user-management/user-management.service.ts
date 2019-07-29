@@ -38,8 +38,7 @@ export class UserManagementService {
         if (!this.cachedUser.value) {
             return;
         }
-        console.log('logOut() called');
-        this.httpClient.post(`${this.authApiUrl}/logout`, this.cachedUser.value.userId)
+        this.httpClient.post(`${this.authApiUrl}/logout`, this.cachedUser.value)
         .subscribe(res => {
             console.log('Logged out. Server returned:', res);
              // Set cached user to nothing! Then publish the new NOTHINGNESS!

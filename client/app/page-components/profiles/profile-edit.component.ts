@@ -81,8 +81,6 @@ export class ProfileEditComponent implements OnInit {
   public getChangedStatus(): boolean {
     const keys: string[] = Object.keys(this.editedUser);
     let formChanged: boolean = false;
-
-    console.log(this.user, keys);
     keys.forEach(k => {
       if (!Object.is(this.user[k], this.editedUser[k])) {
         formChanged = true;

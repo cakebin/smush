@@ -1,4 +1,5 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -12,6 +13,7 @@ import { MaskedNumberInputComponent } from './components/masked-number-input/mas
 import { ToastService } from './components/toast/toast.service';
 import { SortableTableHeaderDirective } from './directives/sortable-table-header.directive';
 import { SortableTableHeaderComponent } from './components/sortable-table-header/sortable-table-header.component';
+import { SlidePanelComponent } from './components/slide-panel/slide-panel.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +21,7 @@ import { SortableTableHeaderComponent } from './components/sortable-table-header
     MaskedNumberInputComponent,
     SortableTableHeaderDirective,
     SortableTableHeaderComponent,
+    SlidePanelComponent,
   ],
   exports: [
     FormsModule,
@@ -29,10 +32,12 @@ import { SortableTableHeaderComponent } from './components/sortable-table-header
     ToastComponent,
     SortableTableHeaderDirective,
     SortableTableHeaderComponent,
+    SlidePanelComponent,
   ],
   imports: [
     FontAwesomeModule,
     CommonModule,
+    BrowserAnimationsModule,
     FormsModule,
     NgbModule,
     ToastModule,
