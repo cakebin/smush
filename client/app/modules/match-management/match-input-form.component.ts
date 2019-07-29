@@ -73,9 +73,7 @@ export class MatchInputFormComponent implements OnInit {
     this.isSaving = true;
     console.log('Saving match:', this.match);
     this.matchService.createMatch(this.match).subscribe(response => {
-      if (response) {
-        this.commonUXService.showSuccessToast('Match saved!');
-      }
+      // On success (do nothing)
     }, error => {
       this.commonUXService.showDangerToast('Unable to save match.');
     }, () => {

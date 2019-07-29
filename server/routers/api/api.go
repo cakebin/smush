@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -35,8 +34,6 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	------------------------------------------*/
 	// Check the access token
 	accessCookie, err := req.Cookie("smush-access-token")
-
-	log.Printf("%s", accessCookie)
 
 	if err != nil {
 		http.Error(res, "Not logged in", http.StatusUnauthorized)
