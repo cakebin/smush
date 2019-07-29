@@ -47,7 +47,7 @@ func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
     return
   }
 
-  user, err := r.SysUtils.Database.GetUserCredByEmail(userLogin.EmailAddress)
+  user, err := r.SysUtils.Database.GetUserByEmail(userLogin.EmailAddress)
   if err == sql.ErrNoRows {
     http.Error(res, fmt.Sprintf("Invalid email address; user %s does not exist", userLogin.EmailAddress), http.StatusNotFound)
     return
@@ -104,9 +104,13 @@ func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
     },
   )
 
-  response := &api.Response{
+  user.HashedPassword = nil
+  user.RefreshToken = nil
+
+  response := &api.AuthResponse{
     Success: true,
     Error: nil,
+    User: user,
   }
 
   res.Header().Set("Content-Type", "application/json")
@@ -125,7 +129,7 @@ func (r *Router) handleRegister(res http.ResponseWriter, req *http.Request) {
     return
   }
 
-  _, err = r.SysUtils.Database.GetUserCredByEmail(newUser.EmailAddress)
+  _, err = r.SysUtils.Database.GetUserByEmail(newUser.EmailAddress)
   if err != sql.ErrNoRows {
     http.Error(res, fmt.Sprintf("User already exists with email address %s", newUser.EmailAddress), http.StatusBadRequest)
     return

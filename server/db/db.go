@@ -19,7 +19,7 @@ type Datastore interface {
 
 	// User API
 	GetUserByID(id int) (*User, error)
-	GetUserCredByEmail(email string) (*User, error)
+	GetUserByEmail(email string) (*User, error)
 	CreateUser(user User) (bool, error)
 	UpdateUser(user User) (bool, error)
 	UpdateUserRefreshTokenByID(token string, id int) (bool, error)
