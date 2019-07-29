@@ -24,7 +24,7 @@
                         ngbTooltip="Who likes unnecessary and repetitive typing? We'll automagically fill the match input form with this character for you.">
                         </fa-icon>
                     </label>
-                    <common-ux-typeahead #defaultCharacterNameInput [items]="characters" [defaultItem]="editedUser.defaultCharacterName" (selectItem)="editedUser.defaultCharacterName = $event" id="default-character"></common-ux-typeahead>
+                    <common-ux-typeahead #defaultCharacterNameInput [items]="characters" [defaultItem]="editedUser.defaultCharacterName" (selectItem)="onSelectDefaultCharacter($event)" id="default-character"></common-ux-typeahead>
                 </div>
             
                 <div class="form-group">

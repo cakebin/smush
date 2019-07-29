@@ -68,12 +68,6 @@
             <label for="dropdownFormPassword" class="mb-0">Password</label>
             <input [(ngModel)]="logInModel.password" type="password" class="form-control" id="dropdownFormPassword">
         </div>
-        <div *ngIf="false" class="form-check">
-            <input [(ngModel)]="logInModel.remember" type="checkbox" class="form-check-input" id="dropdownCheck">
-            <label class="form-check-label" for="dropdownCheck">
-            Remember me
-            </label>
-        </div>
         <button (click)="logIn()" class="btn btn-primary mt-1">Sign in</button>
     </div>
 </ng-template>

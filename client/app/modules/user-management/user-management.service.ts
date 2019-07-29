@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { publish, refCount, tap, finalize } from 'rxjs/operators';
-import { IUserViewModel } from '../../app.view-models';
+import { IUserViewModel, LogInViewModel, IAuthServerResponse } from '../../app.view-models';
 
 @Injectable()
 export class UserManagementService {
@@ -13,40 +13,44 @@ export class UserManagementService {
         private httpClient: HttpClient,
         private router: Router,
         @Inject('UserApiUrl') private apiUrl: string,
+        @Inject('AuthApiUrl') private authApiUrl: string,
     ) {
     }
 
-    private _loadUser(userId: number): void {
-        this.httpClient.get<IUserViewModel>(`${this.apiUrl}/get/${userId}`).subscribe(
-            res => {
-                this.cachedUser.next(res);
-                this.cachedUser.pipe(
-                    publish(),
-                    refCount()
-                );
-            }
+    private _loadUser(user: IUserViewModel): void {
+        this.cachedUser.next(user);
+        this.cachedUser.pipe(
+            publish(),
+            refCount()
         );
     }
-    public logIn(): void {
-        // Placeholder for actually logging in
-        this._loadUser(1);
+    public logIn(logInModel: LogInViewModel): void {
+        this.httpClient.post(`${this.authApiUrl}/login`, logInModel)
+        .subscribe((res: IAuthServerResponse) => {
+            if (res.success) {
+                this._loadUser(res.user);
+                this.router.navigate(['/matches']);
+            }
+        });
     }
     public logOut(): void {
-        // Set cached user to nothing! Then publish the new NOTHINGNESS!
-        this.cachedUser.next(null);
-        this.cachedUser.pipe(publish(), refCount());
-        // Send the user back to the home page
-        this.router.navigate(['/home']);
-    }
-    public getUser(): BehaviorSubject<IUserViewModel> {
         if (!this.cachedUser.value) {
-            this._loadUser(1);
+            return;
         }
-        return this.cachedUser;
+        console.log('logOut() called');
+        this.httpClient.post(`${this.authApiUrl}/logout`, this.cachedUser.value.userId)
+        .subscribe(res => {
+            console.log('Logged out. Server returned:', res);
+             // Set cached user to nothing! Then publish the new NOTHINGNESS!
+            this.cachedUser.next(null);
+            this.cachedUser.pipe(publish(), refCount());
+            // Send the user back to the home page
+            this.router.navigate(['/home']);
+        });
     }
     public createUser(user: IUserViewModel): Observable<{}> {
         console.log('Creating user. User model:', user);
-        return this.httpClient.post(`${this.apiUrl}/create`, user).pipe(
+        return this.httpClient.post(`${this.authApiUrl}/register`, user).pipe(
             tap(res => {
                 console.log('createUser: Done creating user. Server returned:', res);
             }));
@@ -57,7 +61,7 @@ export class UserManagementService {
                 console.log('updateUser: Done updating user. Server returned:', res);
             }
         ),
-        finalize(() => this._loadUser(updatedUser.userId))
+        finalize(() => this._loadUser(updatedUser))
         );
     }
     public deleteUser(userId: number): Observable<{}> {
