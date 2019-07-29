@@ -1,3 +1,5 @@
+import { NgStyle } from '@angular/common';
+
 export interface IMatchViewModel {
     matchId: number;
     userId: number;
@@ -32,6 +34,8 @@ export class MatchViewModel implements IMatchViewModel {
 export interface IUserViewModel {
     userId: number;
     emailAddress: string;
+    password: string;
+    passwordConfirm: string;
     userName: string;
     defaultCharacterName: string;
     defaultCharacterGsp: number;
@@ -40,10 +44,29 @@ export class UserViewModel implements IUserViewModel {
     constructor(
         public userId: number = null,
         public emailAddress: string = '',
+        public password: string = '',
+        public passwordConfirm: string = '',
         public userName: string = '',
         public defaultCharacterName: string = '',
         public defaultCharacterGsp: number = null,
     ) {
     }
+}
+export interface ILogInViewModel {
+    emailAddress: string;
+    password: string;
+    remember: boolean;
+}
+export class LogInViewModel implements ILogInViewModel {
+    constructor(
+        public emailAddress: string = '',
+        public password: string = '',
+        public remember: boolean = false,
+    ) {
+    }
+}
+export interface IServerResponse {
+    success: boolean;
+    error: any;
 }
 

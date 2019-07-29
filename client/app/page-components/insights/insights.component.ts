@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { SingleSeries, DataItem } from '@swimlane/ngx-charts';
-import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faCircleNotch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
 import { IMatchViewModel } from 'client/app/app.view-models';
@@ -25,12 +26,14 @@ export class InsightsComponent implements OnInit {
   public yAxisTickFormatting: (val: string) => string;
 
   private matches: IMatchViewModel[] = [];
-  public startDate: Date;
-  public endDate: Date;
+  public startDate: NgbDate;
+  public endDate: NgbDate;
   public chartUserId: number;
 
+  public noFilteredDataToDisplay: boolean = false;
   public isLoading: boolean = false;
   public faCircleNotch = faCircleNotch;
+  public faCalendarAlt = faCalendarAlt;
 
   constructor(
     private matchService: MatchManagementService,
@@ -53,7 +56,9 @@ export class InsightsComponent implements OnInit {
         this.isLoading = false;
     });
   }
-
+  public onDateSelect(event: any): void {
+    this.publishCharacterUsageChartData();
+  }
   public publishCharacterUsageChartData() {
     this.chartData = this._getCharacterUsageChartData();
     this.dataUnit = 'percent';
@@ -68,13 +73,33 @@ export class InsightsComponent implements OnInit {
 
     // Filter the data based on user-given constraints
     if (this.startDate) {
-      filteredData = filteredData.filter(match => match.created >= this.startDate);
+      filteredData = filteredData.filter(match => {
+        const matchCreateDate: Date = new Date(match.created);
+        const matchNgbCreateDate: NgbDate = new NgbDate(
+          matchCreateDate.getFullYear(),
+          matchCreateDate.getMonth() + 1,
+          matchCreateDate.getDate());
+        return (matchNgbCreateDate.after(this.startDate) || matchNgbCreateDate.equals(this.startDate));
+      });
     }
     if (this.endDate) {
-      filteredData = filteredData.filter(match => match.created <= this.endDate);
+      filteredData = filteredData.filter(match => {
+        const matchCreateDate: Date = new Date(match.created);
+        const matchNgbCreateDate: NgbDate = new NgbDate(
+          matchCreateDate.getFullYear(),
+          matchCreateDate.getMonth() + 1,
+          matchCreateDate.getDate());
+        return (matchNgbCreateDate.before(this.endDate) || matchNgbCreateDate.equals(this.endDate));
+      });
     }
     if (this.chartUserId) {
       filteredData = filteredData.filter(match => match.userId === this.chartUserId);
+    }
+    if (!filteredData.length) {
+      this.noFilteredDataToDisplay = true;
+      return;
+    } else {
+      this.noFilteredDataToDisplay = false;
     }
     // Group by and transform into DataItem objects simultaneously (cringe)
     series = filteredData.reduce((dataItemArray: SingleSeries, match: IMatchViewModel) => {
