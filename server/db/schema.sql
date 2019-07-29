@@ -44,6 +44,8 @@ CREATE TABLE "users" (
   "default_character_name" VARCHAR(100),
   "default_character_gsp" INTEGER,
   "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "hashed_password" VARCHAR(200) NOT NULL,
+  "refresh_token" VARCHAR(200),
   PRIMARY KEY ("user_id")
 );
 

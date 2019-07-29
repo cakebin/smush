@@ -6,6 +6,7 @@ import (
   "net/http"
   "strconv"
 
+  "github.com/cakebin/smush/server/api"
   "github.com/cakebin/smush/server/db"
   "github.com/cakebin/smush/server/env"
   "github.com/cakebin/smush/server/util/routing"
@@ -94,13 +95,13 @@ func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
 
   success, err := r.SysUtils.Database.CreateMatch(match)
 
-  matchResponse := &db.MatchResponse{
+  response := &api.Response{
     Success: success,
     Error: err,
   }
 
   res.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(res).Encode(matchResponse)
+  json.NewEncoder(res).Encode(response)
 }
 
 
