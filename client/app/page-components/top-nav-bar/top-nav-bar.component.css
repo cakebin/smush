@@ -18,3 +18,21 @@ img.user-icon {
     position:relative;
     top:-2px;
 }
+
+
+
+.nav-slide-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 300px;
+  max-width: 300px;
+  background: none;
+}
+.nav-slide-menu-content {
+  height:100%;
+  margin-top:50px;
+  margin-left:1rem;
+  height:100%;
+}
