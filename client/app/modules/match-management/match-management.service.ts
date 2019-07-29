@@ -18,10 +18,10 @@ export class MatchManagementService {
     public cachedMatches: ReplaySubject<IMatchViewModel[]> = new ReplaySubject<IMatchViewModel[]>();
 
     constructor(private httpClient: HttpClient, @Inject('MatchApiUrl') private apiUrl: string) {
-        this._loadAllMatches();
+        this.loadAllMatches();
     }
 
-    private _loadAllMatches(): void {
+    public loadAllMatches(): void {
         this.httpClient.get<IMatchViewModel[]>(`${this.apiUrl}/getall`).subscribe(
             res => {
                 this.cachedMatches.next(res);
@@ -43,7 +43,7 @@ export class MatchManagementService {
                             console.log('createMatch: Done creating match. Server returned:', res);
                         }
                     ),
-                    finalize(() => this._loadAllMatches())
+                    finalize(() => this.loadAllMatches())
                 );
     }
     public getMatch(matchId: number): Observable<IMatchViewModel> {

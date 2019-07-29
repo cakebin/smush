@@ -46,11 +46,6 @@ import { AuthInterceptor } from './auth.interceptor';
   providers: [
     UserManagementService,
     AuthGuardService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true,
-    },
   ]
 })
 export class AppModule {}

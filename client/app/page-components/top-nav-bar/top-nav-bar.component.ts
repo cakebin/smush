@@ -1,8 +1,10 @@
-import { Component, OnInit, HostListener} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserManagementService } from '../../modules/user-management/user-management.service';
 import { CommonUXService } from '../../modules/common-ux/common-ux.service';
-import { IUserViewModel, ILogInViewModel, IServerResponse } from 'client/app/app.view-models';
-import { Router } from '@angular/router';
+import { IUserViewModel, ILogInViewModel, IServerResponse, IAuthServerResponse } from 'client/app/app.view-models';
+import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
+
 
 @Component({
   selector: 'top-nav-bar',
@@ -19,6 +21,7 @@ export class TopNavBarComponent implements OnInit {
     constructor(
       private commonUxService: CommonUXService,
       private userService: UserManagementService,
+      private matchService: MatchManagementService,
       private router: Router,
     ) {
     }
@@ -46,7 +49,12 @@ export class TopNavBarComponent implements OnInit {
       }
     }
     public logIn(): void {
-      this.userService.logIn(this.logInModel);
+      this.userService.logIn(this.logInModel).subscribe((res: IAuthServerResponse) => {
+        if (res.success) {
+          this.matchService.loadAllMatches();
+          this.router.navigate(['/matches']);
+        }
+      });
     }
     public logOut(): void {
       this.userService.logOut();

@@ -24,14 +24,15 @@ export class UserManagementService {
             refCount()
         );
     }
-    public logIn(logInModel: LogInViewModel): void {
-        this.httpClient.post(`${this.authApiUrl}/login`, logInModel)
-        .subscribe((res: IAuthServerResponse) => {
-            if (res.success) {
-                this._loadUser(res.user);
-                this.router.navigate(['/matches']);
-            }
-        });
+    public logIn(logInModel: LogInViewModel): Observable<IAuthServerResponse> {
+        return this.httpClient.post(`${this.authApiUrl}/login`, logInModel)
+        .pipe(
+            tap((res: IAuthServerResponse) => {
+                if (res.success) {
+                    this._loadUser(res.user);
+                }
+            })
+        );
     }
     public logOut(): void {
         if (!this.cachedUser.value) {

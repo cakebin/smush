@@ -41,16 +41,17 @@ export class MatchTableViewComponent implements OnInit {
 
   constructor(
     private commonUXService: CommonUXService,
-    private matchManagementService: MatchManagementService,
+    private matchService: MatchManagementService,
     ) {
   }
 
   ngOnInit() {
     this.isLoading = true;
-    this.matchManagementService.cachedMatches.subscribe({
+    this.matchService.cachedMatches.subscribe({
       next: res => {
         this.isLoading = true;
-        this.sortedMatches = this.matches = res;
+        this.sortedMatches = res;
+        this.matches = res;
         this.initialSort();
       },
       error: err => {
@@ -95,6 +96,6 @@ export class MatchTableViewComponent implements OnInit {
     console.log('DELETING match!', matchId);
   }
   private initialSort(): void {
-    this.onSort(new SortEvent('id', 'desc'));
+    this.onSort(new SortEvent('matchId', 'desc'));
   }
 }
