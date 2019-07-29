@@ -7,6 +7,7 @@ import (
   "net/http"
   "strconv"
 
+  "github.com/cakebin/smush/server/api"
   "github.com/cakebin/smush/server/db"
   "github.com/cakebin/smush/server/env"
   "github.com/cakebin/smush/server/util/routing"
@@ -80,16 +81,18 @@ func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
-
+  
+  hashedPassword, err := r.SysUtils.Authenticator.HashPassword(*user.Password)
+  user.HashedPassword = &hashedPassword
   success, err := r.SysUtils.Database.CreateUser(user)
 
-  userResponse := &db.UserResponse{
+  response := &api.Response{
     Success: success,
     Error: err,
   }
 
   res.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(res).Encode(userResponse)
+  json.NewEncoder(res).Encode(response)
 }
 
 func (r *Router) handleUpdate(res http.ResponseWriter, req *http.Request) {
@@ -104,13 +107,13 @@ func (r *Router) handleUpdate(res http.ResponseWriter, req *http.Request) {
 
   success, err := r.SysUtils.Database.UpdateUser(user)
 
-  userResponse := &db.UserResponse{
+  response := &api.Response{
     Success: success,
     Error: err,
   }
 
   res.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(res).Encode(userResponse)
+  json.NewEncoder(res).Encode(response)
 }
 
 // NewRouter makes a new match router with access to the "SysUtils" environment object
