@@ -13,7 +13,7 @@ export class TopNavBarComponent implements OnInit {
     public newUser: IUserViewModel = {} as IUserViewModel;
     public logInModel: ILogInViewModel = {} as ILogInViewModel;
     public showLoginForm: boolean = true;
-    public justCheckedCreateUserForm: boolean = false;
+    public showRegistrationFormWarnings: boolean = false;
 
     constructor(private commonUxService: CommonUXService, private userService: UserManagementService) {
     }
@@ -37,6 +37,7 @@ export class TopNavBarComponent implements OnInit {
         // When the user closes the login dropdown,
         // change the form back to the login (not register) form
         this.showLoginForm = true;
+        this.showRegistrationFormWarnings = false;
       }
     }
     public logIn(): void {
@@ -57,7 +58,7 @@ export class TopNavBarComponent implements OnInit {
               this.commonUxService.showSuccessToast('Congratulations! Your account has been created.');
               this.newUser = {} as IUserViewModel;
               this.showLoginForm = true;
-              this.justCheckedCreateUserForm = false;
+              this.showRegistrationFormWarnings = false;
             } else {
               this.commonUxService.showDangerToast('Unable to create account.');
               console.error(res.error);
@@ -88,7 +89,7 @@ export class TopNavBarComponent implements OnInit {
       if (this.newUser.password !== this.newUser.passwordConfirm) {
         isValid = false;
       }
-      this.justCheckedCreateUserForm = true;
+      this.showRegistrationFormWarnings = true;
       return isValid;
     }
 }

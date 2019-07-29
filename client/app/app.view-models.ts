@@ -39,6 +39,7 @@ export interface IUserViewModel {
     userName: string;
     defaultCharacterName: string;
     defaultCharacterGsp: number;
+    defaultCharacterImageUrl: string; // Join on characters table for this
 }
 export class UserViewModel implements IUserViewModel {
     constructor(
@@ -49,6 +50,7 @@ export class UserViewModel implements IUserViewModel {
         public userName: string = '',
         public defaultCharacterName: string = '',
         public defaultCharacterGsp: number = null,
+        public defaultCharacterImageUrl: string = '',
     ) {
     }
 }

@@ -14,3 +14,7 @@
 .user-form-dropdown {
     width:300px;
 }
+img.user-icon {
+    position:relative;
+    top:-2px;
+}

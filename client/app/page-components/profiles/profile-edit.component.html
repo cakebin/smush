@@ -7,12 +7,12 @@
             <div class="card-body">
                 <div class="form-group">
                     <label for="email-address">Email address</label>
-                    <input disabled [(ngModel)]="user.emailAddress" type="text" name="email-address" class="form-control" /> 
+                    <input disabled [(ngModel)]="editedUser.emailAddress" type="text" name="email-address" class="form-control" /> 
                 </div>
               
                 <div class="form-group">
                     <label for="display-name">Display name</label>
-                    <input [(ngModel)]="user.userName" type="text" name="display-name" class="form-control" /> 
+                    <input [(ngModel)]="editedUser.userName" type="text" name="display-name" class="form-control" /> 
                 </div>
              
                 <div class="form-group">
@@ -24,7 +24,7 @@
                         ngbTooltip="Who likes unnecessary and repetitive typing? We'll automagically fill the match input form with this character for you.">
                         </fa-icon>
                     </label>
-                    <common-ux-typeahead #defaultCharacterNameInput [items]="characters" [defaultItem]="user.defaultCharacterName" (selectItem)="user.defaultCharacterName = $event" id="default-character"></common-ux-typeahead>
+                    <common-ux-typeahead #defaultCharacterNameInput [items]="characters" [defaultItem]="editedUser.defaultCharacterName" (selectItem)="editedUser.defaultCharacterName = $event" id="default-character"></common-ux-typeahead>
                 </div>
             
                 <div class="form-group">
@@ -40,13 +40,9 @@
                 </div>
         
                 <div class="form-group mt-4 mb-0">
-                    <div *ngIf="showFooterWarnings && warnings.length" class="text-danger mr-3" style="position:relative;top:2px;">{{warnings.join(" ")}}</div>
-                    <!-- Can't put events on disabled form inputs -->
-                    <div (mouseenter)="showFooterWarnings=true" (mouseleave)="showFooterWarnings=false">
-                        <button [disabled]="isSaving" (click)="updateUser()" type="submit" class="btn btn-primary">
-                            Save changes
-                        </button>
-                    </div>
+                    <button [disabled]="!formChanged || isSaving" (click)="updateUser()" type="submit" class="btn btn-primary">
+                        Save changes
+                    </button>
                 </div>
             </div>
         </div>

@@ -14,8 +14,9 @@
             <div class="col-6 pr-1">
                 <div class="form-row">
                     <div class="input-group col-6">
-                        <input class="form-control" placeholder="Start date"
-                                name="start-date" [(ngModel)]="startDate" (dateSelect)="onDateSelect($event)" ngbDatepicker #dpStart="ngbDatepicker">
+                        <input class="form-control" placeholder="Start date" name="start-date" 
+                            [(ngModel)]="startDate" (dateSelect)="onDateSelect($event)" 
+                            ngbDatepicker #dpStart="ngbDatepicker" autocomplete="off" />
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" (click)="dpStart.toggle()" type="button">
                                 <fa-icon [icon]="faCalendarAlt"></fa-icon>
@@ -23,8 +24,9 @@
                         </div>
                     </div>
                     <div class="input-group col-6">
-                        <input class="form-control" placeholder="End date"
-                                name="end-date" [(ngModel)]="endDate" (dateSelect)="onDateSelect($event)" ngbDatepicker #dpEnd="ngbDatepicker">
+                        <input class="form-control" placeholder="End date" name="end-date" 
+                            [(ngModel)]="endDate" (dateSelect)="onDateSelect($event)" 
+                            ngbDatepicker #dpEnd="ngbDatepicker" autocomplete="off" />
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" (click)="dpEnd.toggle()" type="button">
                                 <fa-icon [icon]="faCalendarAlt"></fa-icon>

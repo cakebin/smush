@@ -12,7 +12,6 @@ import { MatchManagementModule } from './modules/match-management/match-manageme
 import { UserManagementService } from './modules/user-management/user-management.service';
 import { TopNavBarComponent } from './page-components/top-nav-bar/top-nav-bar.component';
 import { MatchesComponent } from './page-components/matches/matches.component';
-import { ProfileViewComponent } from './page-components/profiles/profile-view.component';
 import { ProfileEditComponent } from './page-components/profiles/profile-edit.component';
 import { InsightsComponent } from './page-components/insights/insights.component';
 import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
@@ -28,7 +27,6 @@ import { ChartsModule } from './modules/charts/charts.module';
     TopNavBarComponent,
     HomeComponent,
     MatchesComponent,
-    ProfileViewComponent,
     ProfileEditComponent,
     InsightsComponent,
   ],
@@ -38,7 +36,6 @@ import { ChartsModule } from './modules/charts/charts.module';
     UserManagementModule.forRoot(),
     MatchManagementModule.forRoot(),
     CommonUXModule.forRoot(),
-
     ChartsModule,
   ],
   bootstrap: [

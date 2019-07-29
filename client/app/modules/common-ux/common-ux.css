@@ -11,3 +11,8 @@
 :host /deep/ .no-data-block {
     margin-top:100px;
 }
+
+:host /deep/ common-ux-toasts.ngb-toasts {
+    top: initial;
+    bottom: 0;
+}

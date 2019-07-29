@@ -8,17 +8,17 @@ export class CommonUXService {
     constructor(private toastService: ToastService) {
     }
 
-    public showStandardToast(message: string | TemplateRef<any>): void {
-        this.toastService.show(message);
+    public showStandardToast(message: string | TemplateRef<any>, titleText: string = ''): void {
+        this.toastService.show(message, { title: titleText });
     }
-    public showSuccessToast(message: string | TemplateRef<any>): void {
-        this.toastService.show(message, { classname: 'bg-success text-light', delay: 5000 });
+    public showSuccessToast(message: string | TemplateRef<any>, titleText: string = 'Success'): void {
+        this.toastService.show(message, { classname: 'bg-success text-light', delay: 5000, title: titleText });
     }
-    public showWarningToast(message: string | TemplateRef<any>): void {
-        this.toastService.show(message, { classname: 'bg-warning text-light', delay: 5000 });
+    public showWarningToast(message: string | TemplateRef<any>, titleText: string = 'Warning'): void {
+        this.toastService.show(message, { classname: 'bg-warning text-light', delay: 5000, title: titleText });
     }
-    public showDangerToast(message: string | TemplateRef<any>): void {
-        this.toastService.show(message, { classname: 'bg-danger text-light', delay: 10000 });
+    public showDangerToast(message: string | TemplateRef<any>, titleText: string = 'Error'): void {
+        this.toastService.show(message, { classname: 'bg-danger text-light', delay: 8000, title: titleText });
     }
 
     // Utility methods
