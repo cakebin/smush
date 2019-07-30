@@ -1,6 +1,15 @@
 import { Component, Input } from '@angular/core';
 import { SingleSeries } from '@swimlane/ngx-charts';
 
+const oceanScheme =  {
+  name: 'ocean',
+  selectable: false,
+  group: 'Ordinal',
+  domain: [
+      '#1D68FB', '#33C0FC', '#4AFFFE', '#AFFFFF', '#FFFC63', '#FDBD2D', '#FC8A25', '#FA4F1E', '#FA141B', '#BA38D1'
+  ]
+};
+
 @Component({
   selector: 'chart-bar-horizontal',
   templateUrl: './bar-chart.component.html',
@@ -15,14 +24,7 @@ export class BarChartComponent {
   // Weird-ass template handling: https://github.com/swimlane/ngx-charts/issues/736
   @Input() dataUnit: string = '';
 
-  public colorScheme = {
-    name: 'fire',
-      selectable: true,
-      group: 'Ordinal',
-      domain: [
-          '#ff3d00', '#bf360c', '#ff8f00', '#ff6f00', '#ff5722', '#e65100', '#ffca28', '#ffab00'
-      ]
-    };
+  public colorScheme = oceanScheme;
 
   constructor() {}
 }

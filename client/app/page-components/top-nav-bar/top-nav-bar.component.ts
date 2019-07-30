@@ -101,7 +101,6 @@ export class TopNavBarComponent implements OnInit {
           }
         );
     }
-
     private validateNewUser(): boolean {
       let isValid: boolean = true;
 
