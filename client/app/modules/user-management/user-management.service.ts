@@ -1,8 +1,8 @@
 import { Injectable, Inject  } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, tap, finalize } from 'rxjs/operators';
+import { publish, refCount, tap, finalize, map } from 'rxjs/operators';
 import { IUserViewModel, LogInViewModel, IAuthServerResponse } from '../../app.view-models';
 
 @Injectable()
@@ -27,10 +27,14 @@ export class UserManagementService {
     public logIn(logInModel: LogInViewModel): Observable<IAuthServerResponse> {
         return this.httpClient.post(`${this.authApiUrl}/login`, logInModel)
         .pipe(
-            tap((res: IAuthServerResponse) => {
-                if (res.success) {
-                    this._loadUser(res.user);
+            tap((res: HttpResponse<any>) => {
+                if (res.body.success) {
+                    console.log('Set-Cookie', res.headers.get('Set-Cookie'));
+                    this._loadUser(res.body.user);
                 }
+            }),
+            map((res: HttpResponse<any>) => {
+                return res.body as IAuthServerResponse;
             })
         );
     }

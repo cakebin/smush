@@ -81,15 +81,15 @@
     <div class="p-4">
         <div class="form-group mb-1">
             <label for="loginFormEmail" class="mb-0">Email address</label>
-            <input [(ngModel)]="logInModel.emailAddress" type="email" class="form-control" id="loginFormEmail">
+            <input [(ngModel)]="logInModel.emailAddress" (focus)="invalidEmailPassword=false" type="email" class="form-control" id="loginFormEmail">
         </div>
         <div class="form-group mb-1">
             <label for="loginFormPassword" class="mb-0">Password</label>
-            <input [(ngModel)]="logInModel.password" (keyup.enter)="logIn()" type="password" class="form-control" id="loginFormPassword">
+            <input [(ngModel)]="logInModel.password" (focus)="invalidEmailPassword=false" (keyup.enter)="logIn()" type="password" class="form-control" id="loginFormPassword">
         </div>
         <button (click)="logIn()" class="btn btn-primary mt-2 mb-2">Sign in</button>
 
-        <div *ngIf="invalidEmailPassword" class="text-danger">Invalid email/password.</div>
+        <div class="text-danger" [ngStyle]="{'opacity': (invalidEmailPassword ? 1 : 0)}">Invalid email/password.</div>
     </div>
 </ng-template>
 
