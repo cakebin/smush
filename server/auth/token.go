@@ -16,16 +16,16 @@ var jwtKey = []byte(os.Getenv("PORT"))
 // Claims is a custom extended jwt.StandardClaims to include
 // a user's email address as part of the claims
 type Claims struct {
-  EmailAddress        string
+  UserID               int
   jwt.StandardClaims
 }
 
 
 // GetNewJWTToken generates a new jwt access token
 // for a given user with a given expiration date
-func (a *Auth) GetNewJWTToken(emailAddress string, expirationTime time.Time) (string, error) {
+func (a *Auth) GetNewJWTToken(id int, expirationTime time.Time) (string, error) {
   claims := &Claims{
-    EmailAddress: emailAddress,
+    UserID: id,
     StandardClaims: jwt.StandardClaims{
       // In JWT, the expiry time is expressed as unix milliseconds
       ExpiresAt: expirationTime.Unix(),
