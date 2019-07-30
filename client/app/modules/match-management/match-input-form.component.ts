@@ -100,15 +100,19 @@ export class MatchInputFormComponent implements OnInit {
   }
 
   private resetMatch(): void {
-    this.match = new MatchViewModel(
-      this.user.userId,
-      null,
-      null,
-      null,
-      null,
-      this.match.userCharacterName,
-      this.match.userCharacterGsp
-    );
+    this.match = {
+      matchId: null,
+      userId: this.user.userId,
+      userName: null,
+      userCharacterName: this.match.userCharacterName,
+      userCharacterGsp: this.match.userCharacterGsp,
+      opponentCharacterName: null,
+      opponentCharacterGsp: null,
+      opponentAwesome: null,
+      opponentTeabag: null,
+      opponentCamp: null,
+      userWin: null
+    } as IMatchViewModel;
     this.opponentCharacterGspString = '';
   }
 }
