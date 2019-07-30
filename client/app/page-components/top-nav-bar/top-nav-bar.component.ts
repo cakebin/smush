@@ -21,7 +21,7 @@ export class TopNavBarComponent implements OnInit {
 
     public showLoginForm: boolean = true;
     public showRegistrationFormWarnings: boolean = false;
-    public afterViewInitLoaded: boolean = false;
+    public invalidEmailPassword: boolean = false;
     public paneVisible: boolean = false;
 
     public faBars = faBars;
@@ -31,7 +31,6 @@ export class TopNavBarComponent implements OnInit {
       private userService: UserManagementService,
       private matchService: MatchManagementService,
       private router: Router,
-      private modalService: NgbModal,
     ) {
     }
 
@@ -58,18 +57,20 @@ export class TopNavBarComponent implements OnInit {
       }
 
       // When the user closes the login panel,
-      // change the form back to the login (not register) form
-      this.showLoginForm = true;
-      this.showRegistrationFormWarnings = false;
+      // change the form back to the login (not register) form and clear all warnings
+      this.resetPane(false);
     }
     public logIn(): void {
       this.userService.logIn(this.logInModel).subscribe((res: IAuthServerResponse) => {
         if (res.success) {
-          this.logInModel = {} as LogInViewModel;
-          this.paneVisible = false;
+          this.resetPane();
           this.matchService.loadAllMatches();
           this.router.navigate(['/matches']);
+        } else {
+          this.invalidEmailPassword = true;
         }
+      }, error => {
+        this.invalidEmailPassword = true;
       });
     }
     public logOut(): void {
@@ -86,10 +87,7 @@ export class TopNavBarComponent implements OnInit {
         (res: IServerResponse) => {
             if (res.success) {
               this.commonUxService.showSuccessToast('Congratulations! Your account has been created.');
-              this.newUser = {} as IUserViewModel;
-              this.paneVisible = false;
-              this.showLoginForm = true;
-              this.showRegistrationFormWarnings = false;
+              this.resetPane();
             } else {
               this.commonUxService.showDangerToast('Unable to create account.');
               console.error(res.error);
@@ -100,6 +98,18 @@ export class TopNavBarComponent implements OnInit {
             console.error(error);
           }
         );
+    }
+    public resetPane(closePane: boolean = true): void {
+      this.logInModel = {} as LogInViewModel;
+      this.newUser = {} as IUserViewModel;
+
+      this.showLoginForm = true;
+      this.showRegistrationFormWarnings = false;
+      this.invalidEmailPassword = false;
+
+      if (closePane) {
+        this.paneVisible = false;
+      }
     }
     private validateNewUser(): boolean {
       let isValid: boolean = true;
