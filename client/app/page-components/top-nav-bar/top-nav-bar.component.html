@@ -6,21 +6,21 @@
 
             <div class="dropdown-divider"></div>       
             
-            <button *ngIf="showLoginForm else loginButton" (click)="showLoginForm=false" class="user-form-button">New around here? Sign up</button>
-            <ng-template #loginButton><button (click)="showLoginForm=true" class="user-form-button">Already registered? Sign in</button></ng-template>
+            <button *ngIf="showLoginForm else loginButton" (click)="showLoginForm=false" class="dropdown-item">New around here? Sign up</button>
+            <ng-template #loginButton><button (click)="showLoginForm=true" class="dropdown-item">Already registered? Sign in</button></ng-template>
             
             <div class="dropdown-divider"></div> 
             
-            <button class="user-form-button">Forgot password?</button>
+            <button class="dropdown-item">Forgot password?</button>
             
             <div class="dropdown-divider"></div>
         </div>
 
         <!-- User edit profile and logout -->
         <div *ngIf="user" class="pt-3">
-            <button class="user-form-button" routerLink="/profile/edit" (click)="togglePanelState(false)">Edit Profile</button>
+            <button class="dropdown-item" routerLink="/profile/edit" (click)="togglePanelState(false)">Edit Profile</button>
             <div class="dropdown-divider"></div> 
-            <button (click)="logOut()" class="user-form-button">Log Out</button>
+            <button (click)="logOut()" class="dropdown-item">Log Out</button>
             <div class="dropdown-divider"></div> 
         </div>
     </div>
@@ -57,16 +57,21 @@
 
 
         <div class="d-inline-block">
-            <span class="navbar-text" (click)="togglePanelState()">
-                <span *ngIf="!user" class="mr-3">Log in</span>
-                <span *ngIf="user" class="mr-3">
-                    <img src="/static/assets/icons/joker.png" width="20" height="20" 
-                    class="user-icon" [alt]="user?.userDefaultCharacterName">
-                    {{user?.userName}}
-                </span>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <span class="nav-link" (click)="togglePanelState()">
+                        <span *ngIf="!user" class="mr-3">Log in</span>
+                        <span *ngIf="user" class="mr-3">
+                            <img src="/static/assets/icons/joker.png" width="20" height="20" 
+                            class="user-icon" [alt]="user?.userDefaultCharacterName">
+                            {{user?.userName}}
+                        </span>
+        
+                        <fa-icon [icon]="faBars"></fa-icon>
+                    </span>
+                </li>
+            </ul>
 
-                <fa-icon [icon]="faBars"></fa-icon>
-            </span>
         </div>
     </div>
 </nav>
