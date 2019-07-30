@@ -6,7 +6,6 @@ import { faCircleNotch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons'
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
 import { IMatchViewModel } from 'client/app/app.view-models';
 import { CommonUXService } from 'client/app/modules/common-ux/common-ux.service';
-import { isFormattedError } from '@angular/compiler';
 
 
 @Component({
@@ -25,6 +24,8 @@ export class InsightsComponent implements OnInit {
   public yAxisLabel: string = '';
   public xAxisTickFormatting: (val: string) => string;
   public yAxisTickFormatting: (val: string) => string;
+  public sortType: string = '';
+  public sortOrder: string = '';
 
   private matches: IMatchViewModel[] = [];
   public startDate: NgbDate;
@@ -121,16 +122,51 @@ export class InsightsComponent implements OnInit {
     });
 
     // Sort by opponent character name alphabetically
-    series = series.sort((a: DataItem, b: DataItem) => {
-      if (a.name > b.name) {
-        return 1;
-      } else if (a.name === b.name) {
-        return 0;
-      } else if (a.name < b.name) {
-        return -1;
-      }
-    });
+    series = this._sortSeries(series);
 
     return series;
   }
+
+  private _sortSeries(series: SingleSeries): SingleSeries {
+    let sortMultiplier;
+    if (this.sortOrder === 'asc') {
+      sortMultiplier = 1;
+    }
+
+    if (this.sortOrder === 'desc') {
+      sortMultiplier = -1;
+    }
+
+    if (this.sortType === 'alpha') {
+      series = series.sort((a: DataItem, b: DataItem) => {
+        let sortValue;
+        if (a.name > b.name) {
+          sortValue = 1;
+        } else if (a.name === b.name) {
+          sortValue = 0;
+        } else if (a.name < b.name) {
+          sortValue = -1;
+        }
+
+        return sortValue * sortMultiplier;
+      });
+    }
+
+    if (this.sortType === 'use') {
+      series = series.sort((a: DataItem, b: DataItem) => {
+        let sortValue;
+        if (a.value > b.value) {
+          sortValue = 1;
+        } else if (a.value === b.value) {
+          sortValue = 0;
+        } else if (a.value < b.value) {
+          sortValue = -1;
+        }
+  
+        return sortValue * sortMultiplier;
+      });
+    }
+
+    return series;
+  } 
 }
