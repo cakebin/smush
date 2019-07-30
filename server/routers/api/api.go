@@ -35,12 +35,10 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   // Check the access token
   accessCookie, err := req.Cookie("smush-access-token")
 
-  if err != nil {
-    http.Error(res, "Not logged in", http.StatusUnauthorized)
-    return
+  if err == nil {
+    _, err = r.SysUtils.Authenticator.CheckJWTToken(accessCookie.Value)
   }
 
-  _, err = r.SysUtils.Authenticator.CheckJWTToken(accessCookie.Value)
   if err != nil {
     // Check the refresh token
     refreshCookie, err := req.Cookie("smush-refresh-token")
