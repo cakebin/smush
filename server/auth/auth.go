@@ -8,7 +8,7 @@ import (
 // Authenticator blah
 type Authenticator interface {
   // JWT Tokens
-  GetNewJWTToken(emailAddress string, expiration time.Time) (string, error)
+  GetNewJWTToken(id int, expiration time.Time) (string, error)
   RefreshJWTAccessToken(token string, expiration time.Time) (string, error)
   CheckJWTToken(token string) (bool, error)
 
