@@ -36,3 +36,6 @@ img.user-icon {
   margin-left:1rem;
   height:100%;
 }
+.nav-slide-toggle {
+  cursor:pointer;
+}
