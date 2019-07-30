@@ -6,6 +6,7 @@ import { faCircleNotch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons'
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
 import { IMatchViewModel } from 'client/app/app.view-models';
 import { CommonUXService } from 'client/app/modules/common-ux/common-ux.service';
+import { isFormattedError } from '@angular/compiler';
 
 
 @Component({
@@ -117,6 +118,17 @@ export class InsightsComponent implements OnInit {
     // Go through the integer counts and turn into percents for more usable visualisation
     series = series.map((dataItem: DataItem) => { return {
       name: dataItem.name, value: ((dataItem.value as number) / filteredData.length) * 100 } as DataItem;
+    });
+
+    // Sort by opponent character name alphabetically
+    series = series.sort((a: DataItem, b: DataItem) => {
+      if (a.name > b.name) {
+        return 1;
+      } else if (a.name === b.name) {
+        return 0;
+      } else if (a.name < b.name) {
+        return -1;
+      }
     });
 
     return series;
