@@ -72,6 +72,7 @@ export interface IServerResponse {
 export interface IAuthServerResponse {
     success: boolean;
     user: IUserViewModel;
-    expiration: Date;
+    accessExpiration: Date;
+    refreshExpiration: Date;
 }
 
