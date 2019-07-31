@@ -15,8 +15,9 @@ type Response struct {
 
 // AuthResponse is an api response related to auth endpoints (i.e login)
 type AuthResponse struct {
-	Success    bool      `json:"success"`
-	Error      error     `json:"error"`
-	User       *db.User  `json:"user"`
-	Expiration time.Time `json:"expiration"`
+	Success           bool      `json:"success"`
+	Error             error     `json:"error"`
+	User              *db.User  `json:"user"`
+	AccessExpiration  time.Time `json:"accessExpiration"`
+	RefreshExpiration time.Time `json:"refreshExpiration"`
 }
