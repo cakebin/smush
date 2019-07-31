@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, ReplaySubject } from 'rxjs';
-import { publish, refCount, tap, finalize } from 'rxjs/operators';
+import { publish, refCount, tap, finalize, retryWhen, delay, take } from 'rxjs/operators';
 import { IMatchViewModel } from '../../app.view-models';
 
 @Injectable()
@@ -22,7 +22,11 @@ export class MatchManagementService {
     }
 
     public loadAllMatches(): void {
-        this.httpClient.get<IMatchViewModel[]>(`${this.apiUrl}/getall`).subscribe(
+        this.httpClient.get<IMatchViewModel[]>(`${this.apiUrl}/getall`).pipe(
+            // Retry in case we're attempting to get matches when the user is still being re-authed
+            // https://stackoverflow.com/questions/44979131/rxjs-retry-with-delay-function
+            retryWhen(errors => errors.pipe(delay(1000), take(5)))
+        ).subscribe(
             res => {
                 this.cachedMatches.next(res);
                 this.cachedMatches.pipe(
