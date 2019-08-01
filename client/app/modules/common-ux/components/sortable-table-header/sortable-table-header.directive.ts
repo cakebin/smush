@@ -1,7 +1,7 @@
 import { Directive, EventEmitter, Input, Output } from '@angular/core';
-import { ISortEvent, SortDirection } from '../common-ux.view-models';
+import { ISortEvent, SortDirection } from '../../common-ux.view-models';
 
-const rotate: {[key: string]: SortDirection} = { 'asc': 'desc', 'desc': '', '': 'asc' };
+const rotate: {[key: string]: SortDirection} = { asc: 'desc', desc: '', '': 'asc' };
 
 @Directive({
   selector: 'th span[sortable]',
