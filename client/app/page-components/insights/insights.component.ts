@@ -5,7 +5,7 @@ import { faCircleNotch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons'
 
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
 import { IMatchViewModel } from 'client/app/app.view-models';
-import { CommonUXService } from 'client/app/modules/common-ux/common-ux.service';
+import { CommonUxService } from 'client/app/modules/common-ux/common-ux.service';
 
 
 @Component({
@@ -39,7 +39,7 @@ export class InsightsComponent implements OnInit {
 
   constructor(
     private matchService: MatchManagementService,
-    private commonUxService: CommonUXService,
+    private commonUxService: CommonUxService,
     ) {
   }
 
@@ -162,11 +162,11 @@ export class InsightsComponent implements OnInit {
         } else if (a.value < b.value) {
           sortValue = -1;
         }
-  
+
         return sortValue * sortMultiplier;
       });
     }
 
     return series;
-  } 
+  }
 }

@@ -1,11 +1,14 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { ToastService } from './components/toast/toast.service';
-
+import { ConfirmModalService, ConfirmOptions } from './components/confirm-modal/confirm-modal.service';
 
 @Injectable()
-export class CommonUXService {
+export class CommonUxService {
 
-    constructor(private toastService: ToastService) {
+    constructor(
+        private toastService: ToastService,
+        private confirmModalService: ConfirmModalService,
+    ) {
     }
 
     public showStandardToast(message: string | TemplateRef<any>, titleText: string = ''): void {
@@ -19,6 +22,9 @@ export class CommonUXService {
     }
     public showDangerToast(message: string | TemplateRef<any>, titleText: string = 'Error'): void {
         this.toastService.show(message, { classname: 'bg-danger text-light', delay: 8000, title: titleText });
+    }
+    public openConfirmModal(messageText: string, titleText: string = 'Confirmation', confirmLabelText: string = 'Okay'): Promise<any> {
+        return this.confirmModalService.open({ message: messageText, title: titleText, confirmLabel: confirmLabelText } as ConfirmOptions);
     }
 
     // Utility methods

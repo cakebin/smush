@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 import { UserManagementService } from '../../modules/user-management/user-management.service';
-import { CommonUXService } from '../../modules/common-ux/common-ux.service';
+import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { IUserViewModel, ILogInViewModel, IServerResponse, IAuthServerResponse, LogInViewModel } from 'client/app/app.view-models';
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
 
@@ -26,7 +26,7 @@ export class TopNavBarComponent implements OnInit {
     public faBars = faBars;
 
     constructor(
-      private commonUxService: CommonUXService,
+      private commonUxService: CommonUxService,
       private userService: UserManagementService,
       private matchService: MatchManagementService,
       private router: Router,

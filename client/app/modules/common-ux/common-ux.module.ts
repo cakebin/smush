@@ -3,44 +3,55 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+// Non-angular dependencies
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { TypeaheadComponent } from './components/typeahead/typeahead.component';
+// Confirmation modal
+import { ConfirmModalModule } from './components/confirm-modal/confirm-modal.module';
+import { ConfirmModalService } from './components/confirm-modal/confirm-modal.service';
+
+// Toast
 import { ToastModule } from './components/toast/toast.module';
-import { ToastComponent } from './components/toast/toast.component';
-import { MaskedNumberInputComponent } from './components/masked-number-input/masked-number-input.component';
 import { ToastService } from './components/toast/toast.service';
+import { ToastComponent } from './components/toast/toast.component';
+
+// Various components
 import { SortableTableHeaderDirective } from './directives/sortable-table-header.directive';
 import { SortableTableHeaderComponent } from './components/sortable-table-header/sortable-table-header.component';
+import { MaskedNumberInputComponent } from './components/masked-number-input/masked-number-input.component';
 import { SlidePanelComponent } from './components/slide-panel/slide-panel.component';
+import { TypeaheadComponent } from './components/typeahead/typeahead.component';
+
 
 @NgModule({
   declarations: [
-    TypeaheadComponent,
-    MaskedNumberInputComponent,
     SortableTableHeaderDirective,
     SortableTableHeaderComponent,
+    TypeaheadComponent,
+    MaskedNumberInputComponent,
     SlidePanelComponent,
   ],
   exports: [
     FormsModule,
     NgbModule,
     FontAwesomeModule,
+    SortableTableHeaderDirective,
+    SortableTableHeaderComponent,
     TypeaheadComponent,
     MaskedNumberInputComponent,
     ToastComponent,
-    SortableTableHeaderDirective,
-    SortableTableHeaderComponent,
     SlidePanelComponent,
+    ConfirmModalModule,
   ],
   imports: [
-    FontAwesomeModule,
     CommonModule,
     BrowserAnimationsModule,
     FormsModule,
+    FontAwesomeModule,
     NgbModule,
     ToastModule,
+    ConfirmModalModule,
   ],
 })
 export class CommonUXModule {
@@ -49,6 +60,7 @@ export class CommonUXModule {
         ngModule: CommonUXModule,
         providers: [
           ToastService,
+          ConfirmModalService,
         ]
     };
   }

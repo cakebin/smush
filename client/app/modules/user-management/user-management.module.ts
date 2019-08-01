@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { CommonUXModule } from '../common-ux/common-ux.module';
-import { CommonUXService } from '../common-ux/common-ux.service';
+import { CommonUxService } from '../common-ux/common-ux.service';
 
 import { UserManagementService } from './user-management.service';
 
@@ -25,7 +25,7 @@ export class UserManagementModule {
     return {
         ngModule: UserManagementModule,
         providers: [
-          CommonUXService,
+          CommonUxService,
           UserManagementService,
           DecimalPipe,
           {
