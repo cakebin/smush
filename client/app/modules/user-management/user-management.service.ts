@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, tap, finalize, map } from 'rxjs/operators';
+import { publish, refCount, tap, finalize } from 'rxjs/operators';
 import { IUserViewModel, LogInViewModel, IAuthServerResponse } from '../../app.view-models';
 
 @Injectable()

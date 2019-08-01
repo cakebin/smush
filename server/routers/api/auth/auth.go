@@ -150,7 +150,7 @@ func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// Longer lifespan refresh token
-	refreshExpiration := time.Now().Add(10 * time.Minute)
+	refreshExpiration := time.Now().Add(24 * time.Hour)
 	refreshTokenStr, err := r.SysUtils.Authenticator.GetNewJWTToken(*user.UserID, refreshExpiration)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error creating new refresh token: %s", err.Error()), http.StatusInternalServerError)
