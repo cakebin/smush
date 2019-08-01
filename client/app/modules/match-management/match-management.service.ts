@@ -25,7 +25,7 @@ export class MatchManagementService {
         this.httpClient.get<IMatchViewModel[]>(`${this.apiUrl}/getall`).pipe(
             // Retry in case we're attempting to get matches when the user is still being re-authed
             // https://stackoverflow.com/questions/44979131/rxjs-retry-with-delay-function
-            retryWhen(errors => errors.pipe(delay(1000), take(5)))
+            retryWhen(errors => errors.pipe(delay(1000), take(3)))
         ).subscribe(
             res => {
                 this.cachedMatches.next(res);

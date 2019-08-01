@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -66,7 +65,6 @@ func (r *Router) handleRefresh(res http.ResponseWriter, req *http.Request) {
 	// Check the access token to see if we need a new cookie. We DON'T need to check the access token value.
 	// It won't have a value if it's already expired (we won't be sent one to update)
 	accessCookie, err := req.Cookie("smush-access-token")
-	log.Printf("handleRefresh(): access cookie is: %s", accessCookie)
 
 	if err != nil {
 		// We do NOT HAVE A COOKIE ANYMORE! So we need to make a new one.
@@ -152,7 +150,7 @@ func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// Longer lifespan refresh token
-	refreshExpiration := time.Now().Add(time.Hour * 24)
+	refreshExpiration := time.Now().Add(10 * time.Minute)
 	refreshTokenStr, err := r.SysUtils.Authenticator.GetNewJWTToken(*user.UserID, refreshExpiration)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error creating new refresh token: %s", err.Error()), http.StatusInternalServerError)
@@ -260,7 +258,7 @@ func (r *Router) handleLogout(res http.ResponseWriter, req *http.Request) {
 		&http.Cookie{
 			Name:   "smush-access-token",
 			Value:  "",
-			MaxAge: 0,
+			MaxAge: -1,
 		},
 	)
 	http.SetCookie(
@@ -268,7 +266,7 @@ func (r *Router) handleLogout(res http.ResponseWriter, req *http.Request) {
 		&http.Cookie{
 			Name:   "smush-refresh-token",
 			Value:  "",
-			MaxAge: 0,
+			MaxAge: -1,
 		},
 	)
 

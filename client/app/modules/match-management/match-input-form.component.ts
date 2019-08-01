@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { MatchViewModel, IMatchViewModel, IUserViewModel } from '../../app.view-models';
-import { CommonUXService } from '../common-ux/common-ux.service';
+import { CommonUxService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
 import { UserManagementService } from '../user-management/user-management.service';
 
@@ -38,7 +38,7 @@ export class MatchInputFormComponent implements OnInit {
   private user: IUserViewModel;
 
   constructor(
-    private commonUXService: CommonUXService,
+    private commonUxService: CommonUxService,
     private userService: UserManagementService,
     private matchService: MatchManagementService,
     ) {
@@ -66,7 +66,7 @@ export class MatchInputFormComponent implements OnInit {
   public createEntry(): void {
     if (!this.validateMatch()) {
       this.warnings.forEach(warningMessage => {
-        this.commonUXService.showWarningToast(warningMessage);
+        this.commonUxService.showWarningToast(warningMessage);
       });
       return;
     }
@@ -75,7 +75,7 @@ export class MatchInputFormComponent implements OnInit {
     this.matchService.createMatch(this.match).subscribe(response => {
       // On success (do nothing)
     }, error => {
-      this.commonUXService.showDangerToast('Unable to save match.');
+      this.commonUxService.showDangerToast('Unable to save match.');
     }, () => {
       this.resetMatch();
       // Set footer warnings to false so it won't show up until the next mouseenter

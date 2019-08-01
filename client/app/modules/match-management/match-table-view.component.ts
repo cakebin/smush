@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { faCheck, faTimes, faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { IMatchViewModel } from '../../app.view-models';
-import { CommonUXService } from '../common-ux/common-ux.service';
+import { CommonUxService } from '../common-ux/common-ux.service';
 import { ISortEvent, SortEvent, SortDirection, HeaderViewModel } from '../common-ux/common-ux.view-models';
 import { SortableTableHeaderComponent } from '../common-ux/components/sortable-table-header/sortable-table-header.component';
 import { MatchManagementService } from './match-management.service';
@@ -40,7 +40,7 @@ export class MatchTableViewComponent implements OnInit {
   public faPencilAlt = faPencilAlt;
 
   constructor(
-    private commonUXService: CommonUXService,
+    private commonUXService: CommonUxService,
     private matchService: MatchManagementService,
     ) {
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { CommonUXService } from '../../modules/common-ux/common-ux.service';
+import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { UserManagementService } from '../../modules/user-management/user-management.service';
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
 import { IUserViewModel } from '../../app.view-models';
@@ -30,7 +30,7 @@ export class ProfileEditComponent implements OnInit {
   public formChanged: boolean = false;
 
   constructor(
-    private commonUxService: CommonUXService,
+    private commonUxService: CommonUxService,
     private userService: UserManagementService,
     private matchService: MatchManagementService,
     ) {

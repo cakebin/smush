@@ -2,24 +2,27 @@ import { NgModule } from '@angular/core';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 
-
-import { AppRoutingModule } from './app-routing.module';
+// Root
 import { AppComponent } from './app.component';
 
-import { CommonUXModule } from './modules/common-ux/common-ux.module';
+// Routing
+import { AppRoutingModule } from './app-routing.module';
 import { AuthGuardService } from './app-auth-guard.service';
+import { AuthInterceptor } from './auth.interceptor';
+
+// Modules
+import { CommonUXModule } from './modules/common-ux/common-ux.module';
+import { ChartsModule } from './modules/charts/charts.module';
 import { UserManagementModule } from './modules/user-management/user-management.module';
 import { MatchManagementModule } from './modules/match-management/match-management.module';
 
-import { UserManagementService } from './modules/user-management/user-management.service';
+// Pages
 import { TopNavBarComponent } from './page-components/top-nav-bar/top-nav-bar.component';
-import { MatchesComponent } from './page-components/matches/matches.component';
-import { ProfileEditComponent } from './page-components/profiles/profile-edit.component';
-import { InsightsComponent } from './page-components/insights/insights.component';
-import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 import { HomeComponent } from './page-components/home/home.component';
-import { ChartsModule } from './modules/charts/charts.module';
-import { AuthInterceptor } from './auth.interceptor';
+import { MatchesComponent } from './page-components/matches/matches.component';
+import { InsightsComponent } from './page-components/insights/insights.component';
+import { ProfileEditComponent } from './page-components/profiles/profile-edit.component';
+import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 
 
 @NgModule({
@@ -29,22 +32,21 @@ import { AuthInterceptor } from './auth.interceptor';
     TopNavBarComponent,
     HomeComponent,
     MatchesComponent,
-    ProfileEditComponent,
     InsightsComponent,
+    ProfileEditComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    ChartsModule,
+    CommonUXModule.forRoot(),
     UserManagementModule.forRoot(),
     MatchManagementModule.forRoot(),
-    CommonUXModule.forRoot(),
-    ChartsModule,
   ],
   bootstrap: [
     AppComponent,
   ],
   providers: [
-    UserManagementService,
     AuthGuardService,
     {
       provide: HTTP_INTERCEPTORS,

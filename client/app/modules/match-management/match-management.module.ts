@@ -4,7 +4,7 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { CommonUXModule } from '../common-ux/common-ux.module';
-import { CommonUXService } from '../common-ux/common-ux.service';
+import { CommonUxService } from '../common-ux/common-ux.service';
 
 import { MatchInputFormComponent } from './match-input-form.component';
 import { MatchTableViewComponent } from './match-table-view.component';
@@ -32,7 +32,7 @@ export class MatchManagementModule {
     return {
         ngModule: MatchManagementModule,
         providers: [
-          CommonUXService,
+          CommonUxService,
           MatchManagementService,
           DecimalPipe,
           {
