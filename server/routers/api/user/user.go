@@ -8,8 +8,8 @@ import (
   "strconv"
 
   "github.com/cakebin/smush/server/api"
-  "github.com/cakebin/smush/server/db"
   "github.com/cakebin/smush/server/env"
+  "github.com/cakebin/smush/server/services/database"
   "github.com/cakebin/smush/server/util/routing"
 )
 
@@ -61,20 +61,20 @@ func (r *Router) handleGetByID(res http.ResponseWriter, req *http.Request) {
     return
   }
 
-  user, err := r.SysUtils.Database.GetUserByID(id)
+  userProfileView, err := r.SysUtils.Database.GetUserProfileViewByID(id)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error getting user with id %q: %s", id, err.Error()), http.StatusInternalServerError)
     return
   }
 
   res.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(res).Encode(user)
+  json.NewEncoder(res).Encode(userProfileView)
 }
 
 
 func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  var user db.User
+  var user database.User
 
   err := decoder.Decode(&user)
   if err != nil {
@@ -82,13 +82,14 @@ func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
     return
   }
   
-  hashedPassword, err := r.SysUtils.Authenticator.HashPassword(*user.Password)
-  user.HashedPassword = &hashedPassword
-  success, err := r.SysUtils.Database.CreateUser(user)
+  hashedPassword, err := r.SysUtils.Authenticator.HashPassword(user.Password)
+  user.HashedPassword = hashedPassword
+  userID, err := r.SysUtils.Database.CreateUser(user)
 
   response := &api.Response{
-    Success: success,
+    Success: true,
     Error: err,
+    Data: userID,
   }
 
   res.Header().Set("Content-Type", "application/json")
@@ -97,19 +98,20 @@ func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
 
 func (r *Router) handleUpdate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  var user db.User
+  var userProfileUpdate database.UserProfileUpdate
 
-  err := decoder.Decode(&user)
+  err := decoder.Decode(&userProfileUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
-  success, err := r.SysUtils.Database.UpdateUser(user)
+  userID, err := r.SysUtils.Database.UpdateUserProfile(userProfileUpdate)
 
   response := &api.Response{
-    Success: success,
+    Success: true,
     Error: err,
+    Data: userID,
   }
 
   res.Header().Set("Content-Type", "application/json")
