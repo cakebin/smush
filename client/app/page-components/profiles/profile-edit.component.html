@@ -17,7 +17,7 @@
                     <input [(ngModel)]="editedUser.userName" type="text" name="display-name" class="form-control" /> 
                 </div>
              
-                <!--
+                
                 <div class="form-group">
                     <label for="user-character">
                         Default character 
@@ -41,7 +41,7 @@
                     </label>
                     <common-ux-masked-number-input [(numberValue)]="defaultCharacterGspString"></common-ux-masked-number-input>
                 </div>
-                -->
+            
 
                 <h4 class="mb-4" style="margin-top:50px;">Saved characters</h4>
 
@@ -55,37 +55,42 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let char of savedCharactersTestData; index as i">
-                            <td class="align-middle" [ngClass]="{'pl-3':i!=2}">
-                                <span *ngIf="i==2">
+                        <tr *ngFor="let char of savedCharactersTestData; index as i" [ngClass]="{'bg-primary text-white':char.isDefault}" >
+                            <td class="align-middle" [ngClass]="{'pl-3':!char.editMode}">
+                                <span *ngIf="char.editMode">
                                     <common-ux-typeahead [defaultItem]="char.name" [items]="characters"></common-ux-typeahead>
                                 </span>
-                                <span *ngIf="i!=2">{{char.name}}</span>
+                                <span *ngIf="!char.editMode">{{char.name}}</span>
                             </td>
-                            <td class="align-middle" [ngClass]="{'pl-3':i!=2}">
-                                <span *ngIf="i==2">
+                            <td class="align-middle" [ngClass]="{'pl-3':!char.editMode}">
+                                <span *ngIf="char.editMode">
                                     <common-ux-masked-number-input [(numberValue)]="char.gsp"></common-ux-masked-number-input>
                                 </span>
-                                <span *ngIf="i!=2">{{char.gsp | number}}</span>
+                                <span *ngIf="!char.editMode">{{char.gsp | number}}</span>
                             </td>
                             <td class="text-right align-middle">
-                                <div *ngIf="i==2" class="btn-group btn-block">
-                                    <button class="btn btn-outline-primary">Save</button>
-                                    <button class="btn btn-outline-primary">Cancel</button>
+                                <div *ngIf="char.editMode" class="btn-group btn-block">
+                                    <button (click)="char.editMode=false" class="btn btn-light border-secondary">Ok</button>
+                                    <button (click)="char.editMode=false" class="btn btn-light border-secondary">Cancel</button>
                                 </div>
-                                <div *ngIf="i!=2" class="btn-group btn-block">
-                                    <button type="button" class="btn btn-outline-secondary p-1">Set default</button>
+                                <div *ngIf="!char.editMode" class="btn-group btn-block">
+                                    <button *ngIf="char.isDefault" (click)="char.isDefault=false" type="button" class="btn btn-light border-secondary p-1">
+                                        Clear default
+                                    </button>
+                                    <button *ngIf="!char.isDefault" (click)="setDefaultSavedCharacter(char.id)" type="button" class="btn btn-light border-secondary p-1">
+                                        Set default
+                                    </button>
                                     <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle-split p-1" ngbDropdownToggle></button>
+                                        <button class="btn btn-light border-secondary dropdown-toggle-split p-1" ngbDropdownToggle></button>
                                         <div class="dropdown-menu" ngbDropdownMenu>
-                                            <button ngbDropdownItem>Update</button>
-                                            <button ngbDropdownItem>Delete</button>
+                                            <button (click)="setSavedCharacterEditMode(char.id)" ngbDropdownItem>Edit</button>
+                                            <button (click)="deleteSavedCharacter(char.id)" ngbDropdownItem>Delete</button>
                                         </div>
                                     </div>
                                 </div>
                             </td>
                         </tr>
-                        <tr *ngIf="1">
+                        <tr>
                             <td>
                                 <common-ux-typeahead [defaultItem]="editChar.name" [items]="characters"></common-ux-typeahead>
                             </td>
@@ -93,7 +98,7 @@
                                 <common-ux-masked-number-input [(numberValue)]="editChar.gsp"></common-ux-masked-number-input>
                             </td>
                             <td class="text-right align-middle">
-                                <button class="btn btn-block btn-outline-primary p-1">Add character</button>
+                                <button class="btn btn-block btn-primary p-1">Add character</button>
                             </td>
                         </tr>
                     </tbody>

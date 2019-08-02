@@ -7,13 +7,19 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 
 class ISavedCharacter {
+  id: number;
   name: string;
   gsp: number;
+  isDefault: boolean;
+  editMode: boolean;
 }
 class SavedCharacter implements ISavedCharacter {
   constructor(
+    public id: number = null,
     public name: string = '',
-    public gsp: number = null
+    public gsp: number = null,
+    public isDefault: boolean = false,
+    public editMode: boolean = false,
   ) {}
 }
 
@@ -24,11 +30,11 @@ class SavedCharacter implements ISavedCharacter {
 })
 export class ProfileEditComponent implements OnInit {
   public savedCharactersTestData: SavedCharacter[] = [
-    new SavedCharacter('Ike', 4300000),
-    new SavedCharacter('Palutena', 4200000),
-    new SavedCharacter('Lucina', 4500000),
-    new SavedCharacter('Marth', 5100000),
-    new SavedCharacter('Joker', 5200000),
+    new SavedCharacter(1, 'Ike', 4300000),
+    new SavedCharacter(2, 'Palutena', 4200000),
+    new SavedCharacter(3, 'Lucina', 4500000, true),
+    new SavedCharacter(4, 'Marth', 5100000),
+    new SavedCharacter(5, 'Joker', 5200000),
   ];
   public editChar: SavedCharacter = {} as SavedCharacter;
 
@@ -79,6 +85,24 @@ export class ProfileEditComponent implements OnInit {
       error: err => {
         this.commonUxService.showDangerToast('Unable to get user data.');
         console.error(err);
+      }
+    });
+  }
+  public setDefaultSavedCharacter(defaultCharId: number) {
+    this.savedCharactersTestData.forEach(char => {
+      if (char.id === defaultCharId) {
+        char.isDefault = true;
+      } else {
+        char.isDefault = false;
+      }
+    });
+  }
+  public setSavedCharacterEditMode(editCharId: number) {
+    this.savedCharactersTestData.forEach(char => {
+      if (char.id === editCharId) {
+        char.editMode = true;
+      } else {
+        char.editMode = false;
       }
     });
   }
