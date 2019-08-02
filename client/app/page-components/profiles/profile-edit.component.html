@@ -1,9 +1,10 @@
 <div *ngIf="user" class="row">
-    <div class="col-3"></div>
-    <div class="col-6">
+    <div class="col-2"></div>
+    <div class="col-8">
 
 
         <div class="card">
+            <h5 class="card-header">Account details</h5>
             <div class="card-body">
                 <div class="form-group">
                     <label for="email-address">Email address</label>
@@ -24,7 +25,7 @@
                         ngbTooltip="Who likes unnecessary and repetitive typing? We'll automagically fill the match input form with this character for you.">
                         </fa-icon>
                     </label>
-                    <common-ux-typeahead #defaultCharacterNameInput [items]="characters" [defaultItem]="editedUser.defaultCharacterName" (selectItem)="onSelectDefaultCharacter($event)" id="default-character"></common-ux-typeahead>
+                    <common-ux-typeahead [items]="characters" [defaultItem]="editedUser.defaultCharacterName" (selectItem)="onSelectDefaultCharacter($event)" id="default-character"></common-ux-typeahead>
                 </div>
             
                 <div class="form-group">
@@ -36,7 +37,7 @@
                         ngbTooltip="Typing in our GSPs over and over was the hardest part of testing this app. We'll do you a solid with this GSP auto-fill option.">
                         </fa-icon>
                     </label>
-                    <common-ux-masked-number-input #defaultCharacterGspInput [(numberValue)]="defaultCharacterGspString"></common-ux-masked-number-input>
+                    <common-ux-masked-number-input [(numberValue)]="defaultCharacterGspString"></common-ux-masked-number-input>
                 </div>
         
                 <div class="form-group mt-4 mb-0">
@@ -48,6 +49,71 @@
         </div>
 
 
+        <div class="card mt-4">
+            <h5 class="card-header">Saved characters</h5>
+            <div class="card-body p-0">
+                <table *ngIf="savedCharactersTestData?.length; else noDataBlock"
+                class="table table-borderless table-sm table-striped table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="pl-4 py-2">Character name</th>
+                            <th class="py-2">Character GSP</th>
+                            <th class="pr-4 py-2" style="width:150px;"><!-- Edit actions --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let char of savedCharactersTestData; index as i">
+                            <td class="px-4 align-middle">
+                                <span *ngIf="i==2">
+                                    <common-ux-typeahead [defaultItem]="char.name" [items]="characters"></common-ux-typeahead>
+                                </span>
+                                <span *ngIf="i!=2">{{char.name}}</span>
+                            </td>
+                            <td class="align-middle pr-4">
+                                <span *ngIf="i==2">
+                                    <common-ux-masked-number-input [(numberValue)]="char.gsp"></common-ux-masked-number-input>
+                                </span>
+                                <span *ngIf="i!=2">{{char.gsp | number}}</span>
+                            </td>
+                            <td class="text-right align-middle pr-4">
+                                <div *ngIf="i==2" class="btn-group btn-block">
+                                    <button class="btn btn-sm btn-outline-primary">Save</button>
+                                    <button class="btn btn-sm btn-outline-primary">Cancel</button>
+                                </div>
+                                <div *ngIf="i!=2" class="btn-group btn-block">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary p-1">Set default</button>
+                                    <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle-split p-1" ngbDropdownToggle></button>
+                                        <div class="dropdown-menu" ngbDropdownMenu>
+                                            <button ngbDropdownItem>Update</button>
+                                            <button ngbDropdownItem>Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="1">
+                            <td class="px-4">
+                                <common-ux-typeahead [defaultItem]="editChar.name" [items]="characters"></common-ux-typeahead>
+                            </td>
+                            <td class="pr-4">
+                                <common-ux-masked-number-input [(numberValue)]="editChar.gsp"></common-ux-masked-number-input>
+                            </td>
+                            <td class="text-right align-middle pr-4">
+                                <button class="btn btn-block btn-sm btn-secondary p-1">Add character</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <ng-template #noDataBlock>
+                    <div class="text-center no-data-block">
+                        <h3 class="text-black-50">No characters found</h3>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+
+
     </div>
-    <div class="col-3"></div>
-</div>        
+    <div class="col-2"></div>
+</div>

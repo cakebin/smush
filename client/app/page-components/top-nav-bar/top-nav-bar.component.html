@@ -54,12 +54,12 @@
                 </a>
             </li>
         </ul>
-
+        
 
         <div class="d-inline-block">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <span class="nav-link nav-slide-toggle" (click)="togglePanelState()">
+                    <span class="nav-link nav-slide-toggle" [ngClass]="{'active': paneVisible}" (click)="togglePanelState()">
                         <span *ngIf="!user" class="mr-3">Log in</span>
                         <span *ngIf="user" class="mr-3">{{user?.userName}}</span>
                         <fa-icon [icon]="faBars"></fa-icon>

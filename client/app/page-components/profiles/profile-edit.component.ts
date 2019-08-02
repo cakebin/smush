@@ -5,11 +5,32 @@ import { MatchManagementService } from 'client/app/modules/match-management/matc
 import { IUserViewModel } from '../../app.view-models';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
+
+class ISavedCharacter {
+  name: string;
+  gsp: number;
+}
+class SavedCharacter implements ISavedCharacter {
+  constructor(
+    public name: string = '',
+    public gsp: number = null
+  ) {}
+}
+
 @Component({
   selector: 'profile-edit',
   templateUrl: './profile-edit.component.html',
 })
 export class ProfileEditComponent implements OnInit {
+  public savedCharactersTestData: SavedCharacter[] = [
+    new SavedCharacter('Ike', 4300000),
+    new SavedCharacter('Palutena', 4200000),
+    new SavedCharacter('Lucina', 4500000),
+    new SavedCharacter('Marth', 5100000),
+    new SavedCharacter('Joker', 5200000),
+  ];
+  public editChar: SavedCharacter = {} as SavedCharacter;
+
   public characters = this.matchService.characters;
   public user: IUserViewModel = {} as IUserViewModel;
   public editedUser: IUserViewModel = {} as IUserViewModel;
