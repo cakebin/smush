@@ -11,27 +11,40 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 export class TypeaheadComponent {
   @Input() textPropertyName: string = '';
   @Input() valuePropertyName: string = '';
-  @Input() items: any[] = [];
   @Output() selectItem: EventEmitter<any> = new EventEmitter<any>();
+  @Input() set items(itemValues: any[]) {
+    this._items = itemValues;
+    // Because the items are sometimes delayed, we need to reselect any defaults we might have
+    // that had to be skipped when items weren't provided
+    this.value = this._lastValue;
+  }
+  get items(): any[] {
+    return this._items;
+  }
   @Input() set value(value: any) {
+    this._lastValue = value;
+
     // Either setting it to null, or giving it a valid value
-    if (value == null) {
-      this._selectedItem = null;
-      this.inputDisplayValue = null;
-    } else if (this.items.indexOf(value) !== -1) {
-      this._selectedItem = this.items.find(i => i[this.valuePropertyName] === value);
-      this.inputDisplayValue = this._selectedItem ? this._selectedItem[this.textPropertyName] : null;
+    if (this.items == null || value == null) {
+      this.selectedItem = null;
+      return;
     }
+
+    this.selectedItem = this.items.find(i => {
+      return i[this.valuePropertyName] === value;
+    });
   }
   get value(): any {
-    if (this._selectedItem) {
-      return this._selectedItem[this.valuePropertyName];
+    if (this.selectedItem) {
+      return this.selectedItem[this.valuePropertyName];
     } else {
       return null;
     }
   }
-  private _selectedItem: any;
-  public inputDisplayValue: string = '';
+
+  private _items: any[] = [];
+  private _lastValue: any;
+  public selectedItem: any;
 
   constructor() { }
 
@@ -54,19 +67,13 @@ export class TypeaheadComponent {
   public onBlur() {
     // If the user has cleared the input and blurred out, we need to output a blank value manually
     // because the typeahead does not recognise this as an input "event" per se
-    if (this.inputDisplayValue === '') {
-      this.selectItem.emit('');
-    } else if (this._selectedItem) {
-      this.selectItem.emit(this._selectedItem);
-    }
+    this.selectItem.emit(this.selectedItem);
   }
   public onSelect(eventObject: NgbTypeaheadSelectItemEvent): void {
-    this._selectedItem = eventObject.item;
     this.selectItem.emit(eventObject.item);
   }
   public clear(): void {
-    this.inputDisplayValue = '';
-    this._selectedItem = null;
+    this.selectedItem = null;
   }
 
 

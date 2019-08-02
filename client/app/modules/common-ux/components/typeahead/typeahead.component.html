@@ -1,7 +1,7 @@
 <input 
     type="text" 
     class="form-control" 
-    [(ngModel)]="inputDisplayValue" 
+    [(ngModel)]="selectedItem" 
     [inputFormatter] = "itemFormatter"
     [resultFormatter] = "itemFormatter"
     [ngbTypeahead]="search"

@@ -9,7 +9,7 @@
                     [textPropertyName]="'characterName'"
                     [valuePropertyName]="'characterId'"
                     [value]="match.opponentCharacterId"
-                    (selectItem)="match.opponentCharacterid = $event.characterId"
+                    (selectItem)="onSetOpponentCharacter($event)"
                     id="opponent-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">
@@ -28,7 +28,7 @@
                     [textPropertyName]="'characterName'"
                     [valuePropertyName]="'characterId'"
                     [value]="match.userCharacterId"
-                    (selectItem)="match.userCharacterId = $event.characterId"
+                    (selectItem)="onSetUserCharacter($event)"
                     id="user-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">

@@ -1,6 +1,5 @@
 package database
 
-
 /*---------------------------------
           Data Structures
 ----------------------------------*/
@@ -8,18 +7,17 @@ package database
 // Match describes the required and optional data
 // needed to create a new match in our matches table
 type Match struct {
-  OpponentCharacterID   int       `json:"opponentCharacterId"`
-  UserID                int       `json:"userId"`
+	OpponentCharacterID int `json:"opponentCharacterId"`
+	UserID              int `json:"userId"`
 
-  OpponentCharacterGsp  *int      `json:"opponentCharacterGsp,omitempty"`
-  OpponentTeabag        *bool     `json:"opponentTeabag,omitempty"`
-  OpponentCamp          *bool     `json:"opponentCamp,omitempty"`
-  OpponentAwesome       *bool     `json:"opponentAwesome,omitempty"`
-  UserCharacterID       *int      `json:"userCharacterId,omitempty"`
-  UserCharacterGsp      *int      `json:"userCharacterGsp,omitempty"`
-  UserWin               *bool     `json:"userWin,omitempty"`
+	OpponentCharacterGsp *int  `json:"opponentCharacterGsp,omitempty"`
+	OpponentTeabag       *bool `json:"opponentTeabag,omitempty"`
+	OpponentCamp         *bool `json:"opponentCamp,omitempty"`
+	OpponentAwesome      *bool `json:"opponentAwesome,omitempty"`
+	UserCharacterID      *int  `json:"userCharacterId,omitempty"`
+	UserCharacterGsp     *int  `json:"userCharacterGsp,omitempty"`
+	UserWin              *bool `json:"userWin,omitempty"`
 }
-
 
 /*---------------------------------
             Interface
@@ -28,9 +26,8 @@ type Match struct {
 // MatchManager describes all of the methods used
 // to interact with the matches table in our database
 type MatchManager interface {
-  CreateMatch(match Match) (int, error)
+	CreateMatch(match Match) (int, error)
 }
-
 
 /*---------------------------------
        Method Implementations
@@ -38,8 +35,8 @@ type MatchManager interface {
 
 // CreateMatch adds a new entry to the matches table in our database
 func (db *DB) CreateMatch(match Match) (int, error) {
-  var matchID int
-  sqlStatement := `
+	var matchID int
+	sqlStatement := `
     INSERT INTO matches (
       opponent_character_id,
       user_id,
@@ -47,7 +44,7 @@ func (db *DB) CreateMatch(match Match) (int, error) {
       opponent_teabag,
       opponent_camp,
       opponent_awesome,
-      user_character_id
+      user_character_id,
       user_character_gsp,
       user_win
     )
@@ -55,23 +52,23 @@ func (db *DB) CreateMatch(match Match) (int, error) {
     RETURNING
       match_id
   `
-  row := db.QueryRow(
-    sqlStatement,
-    match.OpponentCharacterID,
-    match.UserID,
-    match.OpponentCharacterGsp,
-    match.OpponentTeabag,
-    match.OpponentCamp,
-    match.OpponentAwesome,
-    match.UserCharacterID,
-    match.UserCharacterGsp,
-    match.UserWin,
-  )
-  err := row.Scan(matchID)
+	row := db.QueryRow(
+		sqlStatement,
+		match.OpponentCharacterID,
+		match.UserID,
+		match.OpponentCharacterGsp,
+		match.OpponentTeabag,
+		match.OpponentCamp,
+		match.OpponentAwesome,
+		match.UserCharacterID,
+		match.UserCharacterGsp,
+		match.UserWin,
+	)
+	err := row.Scan(matchID)
 
-  if err != nil {
-    return 0, err
-  }
+	if err != nil {
+		return 0, err
+	}
 
-  return matchID, nil
+	return matchID, nil
 }

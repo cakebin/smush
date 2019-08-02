@@ -1,7 +1,7 @@
 package database
 
 import (
-  "time"
+	"time"
 )
 
 /*---------------------------------
@@ -11,41 +11,38 @@ import (
 // UserProfileView describes all of the required
 // and optional data needed for a user's public
 type UserProfileView struct {
-  // Data from Users
-  UserID                int        `json:"userId"`
-  UserName              string     `json:"userName"`
-  EmailAddress          string     `json:"emailAddress"`
-  Created               time.Time  `json:"created"`
-  DefaultCharacterGsp   int        `json:"defaultCharacterGsp"`
+	// Data from Users
+	UserID              int       `json:"userId"`
+	UserName            string    `json:"userName"`
+	EmailAddress        string    `json:"emailAddress"`
+	Created             time.Time `json:"created"`
+	DefaultCharacterGsp int       `json:"defaultCharacterGsp"`
 
-  // Data from characters
-  DefaultCharacterID    int        `json:"defaultCharacterId"`
-  DefaultCharacterName  string     `json:"defaultCharacterName"`
+	// Data from characters
+	DefaultCharacterID   int    `json:"defaultCharacterId"`
+	DefaultCharacterName string `json:"defaultCharacterName"`
 }
-
 
 // UserCredentialsView describes all of the data
 // needed for a user's authentication credentials
 type UserCredentialsView struct {
-  UserID          *int      `json:"userId"`
-  UserName        *string   `json:"userName"`
-  EmailAddress    string    `json:"emailAddress"`
-  Password        *string   `json:"password,omitempty"`
-  HashedPassword  *string   `json:"hashedPassword,omitempty"`
+	UserID         *int    `json:"userId"`
+	UserName       *string `json:"userName"`
+	EmailAddress   string  `json:"emailAddress"`
+	Password       *string `json:"password,omitempty"`
+	HashedPassword *string `json:"hashedPassword,omitempty"`
 }
 
 /*---------------------------------
             Interface
 ----------------------------------*/
 
-
 // UserViewManager describes all of the methods used to interact with
 // user views in our database (data joined between match, character, user, etc)
 type UserViewManager interface {
-  GetUserProfileViewByID(userID int) (*UserProfileView, error)
-  GetUserCredentialsViewByEmail(email string) (*UserCredentialsView, error)
+	GetUserProfileViewByID(userID int) (*UserProfileView, error)
+	GetUserCredentialsViewByEmail(email string) (*UserCredentialsView, error)
 }
-
 
 /*---------------------------------
        Method Implementations
@@ -54,7 +51,7 @@ type UserViewManager interface {
 // GetUserProfileViewByID gets all of the data needed to display
 // a user's profile, which includes joined data from the characters table
 func (db *DB) GetUserProfileViewByID(userID int) (*UserProfileView, error) {
-  sqlStatement := `
+	sqlStatement := `
     SELECT
       users.user_id                     AS user_id,
       users.user_name                   AS user_name,
@@ -69,29 +66,29 @@ func (db *DB) GetUserProfileViewByID(userID int) (*UserProfileView, error) {
     WHERE
       user_id = $1
   `
-  row := db.QueryRow(sqlStatement, userID)
-  userProfileView := new(UserProfileView)
-  err := row.Scan(
-    &userProfileView.UserID,
-    &userProfileView.UserName,
-    &userProfileView.EmailAddress,
-    &userProfileView.DefaultCharacterID,
-    &userProfileView.DefaultCharacterName,
-    &userProfileView.DefaultCharacterGsp,
-  )
+	row := db.QueryRow(sqlStatement, userID)
+	userProfileView := new(UserProfileView)
+	err := row.Scan(
+		&userProfileView.UserID,
+		&userProfileView.UserName,
+		&userProfileView.EmailAddress,
+		&userProfileView.Created,
+		&userProfileView.DefaultCharacterGsp,
+		&userProfileView.DefaultCharacterID,
+		&userProfileView.DefaultCharacterName,
+	)
 
-  if err != nil {
-    return nil, err
-  }
+	if err != nil {
+		return nil, err
+	}
 
-  return userProfileView, nil
+	return userProfileView, nil
 }
 
-
-// GetUserCredentialsViewByEmail gets a user's auth related 
+// GetUserCredentialsViewByEmail gets a user's auth related
 // information by their email; used for user authentication
 func (db *DB) GetUserCredentialsViewByEmail(email string) (*UserCredentialsView, error) {
-  sqlStatement := `
+	sqlStatement := `
     SELECT
       user_id,
       user_name,
@@ -102,18 +99,18 @@ func (db *DB) GetUserCredentialsViewByEmail(email string) (*UserCredentialsView,
     WHERE
       email_address = $1
   `
-  row := db.QueryRow(sqlStatement, email)
-  userCredentialsView := new(UserCredentialsView)
-  err := row.Scan(
-    &userCredentialsView.UserID,
-    &userCredentialsView.UserName,
-    &userCredentialsView.EmailAddress,
-    &userCredentialsView.HashedPassword,
-  )
+	row := db.QueryRow(sqlStatement, email)
+	userCredentialsView := new(UserCredentialsView)
+	err := row.Scan(
+		&userCredentialsView.UserID,
+		&userCredentialsView.UserName,
+		&userCredentialsView.EmailAddress,
+		&userCredentialsView.HashedPassword,
+	)
 
-  if err != nil {
-    return nil, err
-  }
+	if err != nil {
+		return nil, err
+	}
 
-  return userCredentialsView, nil
+	return userCredentialsView, nil
 }
