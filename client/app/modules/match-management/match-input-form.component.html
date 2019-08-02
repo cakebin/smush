@@ -4,7 +4,13 @@
             <div class="row">
                 <div class="form-group col-6">
                     <label for="opponent-character">Opponent character*</label>
-                    <common-ux-typeahead #opponentCharacterNameInput [defaultItem]="match.opponentCharacterName" [items]="characters" (blur)="test($event)" (selectItem)="match.opponentCharacterName = $event" id="opponent-character"></common-ux-typeahead>
+                    <common-ux-typeahead #opponentCharacterNameInput 
+                    [items]="characters"
+                    [textPropertyName]="'characterName'"
+                    [valuePropertyName]="'characterId'"
+                    [value]="match.opponentCharacterId"
+                    (selectItem)="match.opponentCharacterid = $event.characterId"
+                    id="opponent-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">
                     <label for="opponent-gsp">Opponent character's GSP</label>
@@ -17,7 +23,13 @@
                     <label for="user-character">
                         Your character<span *ngIf="match.userCharacterGsp">*</span>
                     </label>
-                    <common-ux-typeahead #userCharacterNameInput [items]="characters" [defaultItem]="match.userCharacterName" (selectItem)="match.userCharacterName = $event" id="user-character"></common-ux-typeahead>
+                    <common-ux-typeahead #userCharacterNameInput 
+                    [items]="characters" 
+                    [textPropertyName]="'characterName'"
+                    [valuePropertyName]="'characterId'"
+                    [value]="match.userCharacterId"
+                    (selectItem)="match.userCharacterId = $event.characterId"
+                    id="user-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">
                     <label for="user-gsp">Your character's GSP</label>

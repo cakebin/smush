@@ -37,6 +37,7 @@ export interface IUserViewModel {
     password: string;
     passwordConfirm: string;
     userName: string;
+    defaultCharacterId: number;
     defaultCharacterName: string;
     defaultCharacterGsp: number;
     defaultCharacterImageUrl: string; // Join on characters table for this
@@ -48,11 +49,23 @@ export class UserViewModel implements IUserViewModel {
         public password: string = '',
         public passwordConfirm: string = '',
         public userName: string = '',
+        public defaultCharacterId: number = null,
         public defaultCharacterName: string = '',
         public defaultCharacterGsp: number = null,
         public defaultCharacterImageUrl: string = '',
     ) {
     }
+}
+export interface ICharacterViewModel {
+    characterId: number;
+    characterName: string;
+    characterStockImg: string;
+    characterImg: string;
+    characterArchetype: string;
+}
+export interface ITypeAheadViewModel {
+    text: string;
+    value: any;
 }
 export interface ILogInViewModel {
     emailAddress: string;

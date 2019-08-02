@@ -1,8 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { UserManagementService } from '../../modules/user-management/user-management.service';
-import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
-import { IUserViewModel } from '../../app.view-models';
+import { CharacterManagementService } from 'client/app/modules/character-management/character-management.service';
+import { IUserViewModel, ICharacterViewModel } from '../../app.view-models';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -10,7 +10,7 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './profile-edit.component.html',
 })
 export class ProfileEditComponent implements OnInit {
-  public characters = this.matchService.characters;
+  public characters: ICharacterViewModel[] = [];
   public user: IUserViewModel = {} as IUserViewModel;
   public editedUser: IUserViewModel = {} as IUserViewModel;
 
@@ -32,7 +32,7 @@ export class ProfileEditComponent implements OnInit {
   constructor(
     private commonUxService: CommonUxService,
     private userService: UserManagementService,
-    private matchService: MatchManagementService,
+    private characterService: CharacterManagementService,
     ) {
   }
 
@@ -59,9 +59,14 @@ export class ProfileEditComponent implements OnInit {
         console.error(err);
       }
     });
+    this.characterService.characters.subscribe(
+      res => {
+        this.characters = res;
+      }
+    );
   }
-  public onSelectDefaultCharacter(event: string): void {
-      this.editedUser.defaultCharacterName = event;
+  public onSelectDefaultCharacter(event: ICharacterViewModel): void {
+      this.editedUser.defaultCharacterId = event.characterId;
       this.formChanged = this.getChangedStatus();
   }
   public updateUser(): void {
