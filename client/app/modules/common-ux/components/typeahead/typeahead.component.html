@@ -1,7 +1,9 @@
 <input 
     type="text" 
     class="form-control" 
-    [(ngModel)]="inputValue" 
+    [(ngModel)]="selectedItem" 
+    [inputFormatter] = "itemFormatter"
+    [resultFormatter] = "itemFormatter"
     [ngbTypeahead]="search"
     [focusFirst] = "true"
     (selectItem)="onSelect($event)"

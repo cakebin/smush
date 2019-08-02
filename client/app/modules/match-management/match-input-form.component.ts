@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
-import { MatchViewModel, IMatchViewModel, IUserViewModel } from '../../app.view-models';
+import { MatchViewModel, IMatchViewModel, IUserViewModel, ICharacterViewModel } from '../../app.view-models';
 import { CommonUxService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
 import { UserManagementService } from '../user-management/user-management.service';
+import { CharacterManagementService } from '../character-management/character-management.service';
 
 
 @Component({
@@ -12,8 +13,10 @@ import { UserManagementService } from '../user-management/user-management.servic
 })
 export class MatchInputFormComponent implements OnInit {
   public match: IMatchViewModel = new MatchViewModel();
-  public characters = this.matchService.characters;
+  public characters: ICharacterViewModel[] = [];
 
+  // The masking returns a string, but GSPs are numbers, so we need to convert
+  // and set our model to the number value on every change
   private _opponentCharacterGspString: string = '';
   private _userCharacterGspString: string = '';
   public set opponentCharacterGspString(value: string) {
@@ -41,6 +44,7 @@ export class MatchInputFormComponent implements OnInit {
     private commonUxService: CommonUxService,
     private userService: UserManagementService,
     private matchService: MatchManagementService,
+    private characterService: CharacterManagementService,
     ) {
   }
 
@@ -50,19 +54,30 @@ export class MatchInputFormComponent implements OnInit {
         if (res) {
           this.user = res;
           this.match.userId = this.user.userId;
-          if (res.defaultCharacterName) {
-            this.match.userCharacterName = res.defaultCharacterName;
+          if (res.defaultCharacterId) {
+            this.match.userCharacterId = res.defaultCharacterId;
           }
           if (res.defaultCharacterGsp) {
             this.userCharacterGspString = res.defaultCharacterGsp.toString();
           }
-          if (res.defaultCharacterGsp) {
-            this.match.userCharacterGsp = res.defaultCharacterGsp;
-          }
         }
     });
+
+    this.characterService.characters.subscribe(
+      res => {
+        this.characters = res;
+      }
+    );
   }
 
+  public onSetOpponentCharacter(event: ICharacterViewModel): void {
+    // Event properties aren't accessible in the template
+    this.match.opponentCharacterId = event.characterId;
+  }
+  public onSetUserCharacter(event: ICharacterViewModel): void {
+    // Event properties aren't accessible in the template
+    this.match.userCharacterId = event.characterId;
+  }
   public createEntry(): void {
     if (!this.validateMatch()) {
       this.warnings.forEach(warningMessage => {
@@ -86,10 +101,10 @@ export class MatchInputFormComponent implements OnInit {
 
   public validateMatch(): boolean {
     this.warnings = [];
-    if (!this.match.opponentCharacterName) {
-      this.warnings.push('Opponent character name required.');
+    if (!this.match.opponentCharacterId) {
+      this.warnings.push('Opponent character required.');
     }
-    if (!this.match.userCharacterName && this.match.userCharacterGsp){
+    if (!this.match.userCharacterId && this.match.userCharacterGsp){
       this.warnings.push('User GSP must be associated with a user character.');
     }
     if (this.warnings.length) {
@@ -104,8 +119,10 @@ export class MatchInputFormComponent implements OnInit {
       matchId: null,
       userId: this.user.userId,
       userName: null,
+      userCharacterId: this.match.userCharacterId,
       userCharacterName: this.match.userCharacterName,
       userCharacterGsp: this.match.userCharacterGsp,
+      opponentCharacterId: null,
       opponentCharacterName: null,
       opponentCharacterGsp: null,
       opponentAwesome: null,
