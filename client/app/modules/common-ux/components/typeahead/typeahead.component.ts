@@ -10,7 +10,7 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 })
 export class TypeaheadComponent implements OnInit {
   @Input() items: string[] = [];
-  @Input() placeholder: string = '';
+  @Input() size: '' | 'sm' | 'lg' = '';
   @Output() selectItem: EventEmitter<string> = new EventEmitter<string>();
   @Input() set defaultItem(value: string) {
     // Either setting it to null, or giving it a valid value

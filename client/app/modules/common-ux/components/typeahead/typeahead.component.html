@@ -1,6 +1,7 @@
 <input 
     type="text" 
-    class="form-control" 
+    class="form-control"
+    [ngClass]="{'form-control-sm':size=='sm', 'form-control-lg':size=='lg'}" 
     [(ngModel)]="inputValue" 
     [ngbTypeahead]="search"
     [focusFirst] = "true"

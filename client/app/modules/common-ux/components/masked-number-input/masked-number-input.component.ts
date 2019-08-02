@@ -7,7 +7,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class MaskedNumberInputComponent {
   private _numberValue: string = '';
-  @Input() placeholder: string = '';
+  @Input() size: '' | 'sm' | 'lg' = '';
   @Input() set numberValue(value: string) {
     this._numberValue = this._formatNumber(value);
   }
