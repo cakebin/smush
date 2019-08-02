@@ -25,8 +25,7 @@ class SavedCharacter implements ISavedCharacter {
 
 @Component({
   selector: 'profile-edit',
-  templateUrl: './profile-edit.component.html',
-  styleUrls: ['./profile-edit.component.css']
+  templateUrl: './profile-edit.component.html'
 })
 export class ProfileEditComponent implements OnInit {
   public savedCharactersTestData: SavedCharacter[] = [
