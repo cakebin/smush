@@ -262,7 +262,7 @@ func (r *Router) handleLogout(res http.ResponseWriter, req *http.Request) {
 		&http.Cookie{
 			Name:   "smush-access-token",
 			Value:  "",
-			MaxAge: 0,
+			MaxAge: -1,
 		},
 	)
 	http.SetCookie(
@@ -270,7 +270,7 @@ func (r *Router) handleLogout(res http.ResponseWriter, req *http.Request) {
 		&http.Cookie{
 			Name:   "smush-refresh-token",
 			Value:  "",
-			MaxAge: 0,
+			MaxAge: -1,
 		},
 	)
 
