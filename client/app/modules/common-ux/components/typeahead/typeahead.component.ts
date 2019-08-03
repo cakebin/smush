@@ -9,6 +9,7 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
   templateUrl: './typeahead.component.html'
 })
 export class TypeaheadComponent {
+  @Input() size: '' | 'sm' | 'lg' = '';
   @Input() textPropertyName: string = '';
   @Input() valuePropertyName: string = '';
   @Output() selectItem: EventEmitter<any> = new EventEmitter<any>();

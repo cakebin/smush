@@ -5,11 +5,33 @@ import { CharacterManagementService } from 'client/app/modules/character-managem
 import { IUserViewModel, ICharacterViewModel } from '../../app.view-models';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
+
+class ISavedCharacter {
+  id: number;
+  name: string;
+  gsp: number;
+  isDefault: boolean;
+  editMode: boolean;
+}
+class SavedCharacter implements ISavedCharacter {
+  constructor(
+    public id: number = null,
+    public name: string = '',
+    public gsp: number = null,
+    public isDefault: boolean = false,
+    public editMode: boolean = false,
+  ) {}
+}
+
 @Component({
   selector: 'profile-edit',
-  templateUrl: './profile-edit.component.html',
+  templateUrl: './profile-edit.component.html'
 })
 export class ProfileEditComponent implements OnInit {
+  public savedCharactersTestData: ISavedCharacter[] = [];
+
+  public editChar: ISavedCharacter = {} as ISavedCharacter;
+
   public characters: ICharacterViewModel[] = [];
   public user: IUserViewModel = {} as IUserViewModel;
   public editedUser: IUserViewModel = {} as IUserViewModel;
@@ -61,9 +83,40 @@ export class ProfileEditComponent implements OnInit {
     });
     this.characterService.characters.subscribe(
       res => {
-        this.characters = res;
+        if (res) {
+          this.characters = res;
+
+          // TEST DATA BEFORE WE HAVE A SAVED CHAR TABLE
+          this.savedCharactersTestData = res.slice(0, 5).map(char => {
+            return new SavedCharacter(char.characterId, char.characterName, 98000);
+          });
+          this.savedCharactersTestData[3].isDefault = true;
+        }
       }
     );
+  }
+
+  public setDefaultSavedCharacter(defaultCharId: number) {
+    this.savedCharactersTestData.forEach(char => {
+      if (char.id === defaultCharId) {
+        char.isDefault = true;
+      } else {
+        char.isDefault = false;
+      }
+    });
+  }
+  public setSavedCharacterEditMode(editCharId: number) {
+    this.savedCharactersTestData.forEach(char => {
+      if (char.id === editCharId) {
+        char.editMode = true;
+      } else {
+        char.editMode = false;
+      }
+    });
+  }
+  public onSelectSavedCharacter(event: ICharacterViewModel, savedChar: ISavedCharacter) {
+    savedChar.id = event.characterId;
+    savedChar.name = event.characterName;
   }
   public onSelectDefaultCharacter(event: ICharacterViewModel): void {
       this.editedUser.defaultCharacterId = event.characterId;

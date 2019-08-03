@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -12,21 +13,21 @@ import (
 // and optional data needed for a user's public
 type UserProfileView struct {
 	// Data from Users
-	UserID              int       `json:"userId"`
-	UserName            string    `json:"userName"`
-	EmailAddress        string    `json:"emailAddress"`
-	Created             time.Time `json:"created"`
-	DefaultCharacterGsp int       `json:"defaultCharacterGsp"`
+	UserID              int           `json:"userId"`
+	UserName            string        `json:"userName"`
+	EmailAddress        string        `json:"emailAddress"`
+	Created             time.Time     `json:"created"`
+	DefaultCharacterGsp sql.NullInt64 `json:"defaultCharacterGsp"`
 
 	// Data from characters
-	DefaultCharacterID   int    `json:"defaultCharacterId"`
-	DefaultCharacterName string `json:"defaultCharacterName"`
+	DefaultCharacterID   sql.NullInt64  `json:"defaultCharacterId"`
+	DefaultCharacterName sql.NullString `json:"defaultCharacterName"`
 }
 
 // UserCredentialsView describes all of the data
 // needed for a user's authentication credentials
 type UserCredentialsView struct {
-	UserID         *int    `json:"userId"`
+	UserID         *int    `json:"userId,omitempty"`
 	UserName       *string `json:"userName"`
 	EmailAddress   string  `json:"emailAddress"`
 	Password       *string `json:"password,omitempty"`
@@ -62,7 +63,7 @@ func (db *DB) GetUserProfileViewByID(userID int) (*UserProfileView, error) {
       characters.character_name         AS default_character_name
     FROM
       users
-    JOIN characters ON characters.character_id = users.default_character_id
+    LEFT JOIN characters ON characters.character_id = users.default_character_id
     WHERE
       user_id = $1
   `

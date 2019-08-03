@@ -64,6 +64,6 @@ export class SlidePanelComponent implements OnInit {
     // For some reason, it starts out displayed before hiding itself.
     setTimeout(() => {
       this.setHidePanelClass = false;
-    }, 400);
+    }, 1000);
   }
 }

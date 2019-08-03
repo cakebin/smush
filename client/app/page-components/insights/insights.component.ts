@@ -24,8 +24,8 @@ export class InsightsComponent implements OnInit {
   public yAxisLabel: string = '';
   public xAxisTickFormatting: (val: string) => string;
   public yAxisTickFormatting: (val: string) => string;
-  public sortType: string = '';
-  public sortOrder: string = '';
+  public sortType: string = 'use';
+  public sortOrder: string = 'desc';
 
   private matches: IMatchViewModel[] = [];
   public startDate: NgbDate;
@@ -44,18 +44,13 @@ export class InsightsComponent implements OnInit {
   }
 
   ngOnInit() {
-    // It doesn't take long enough for this to load to warrant a spinner.
-    // Will address later if this is actually an issue.
-    // this.isLoading = true;
     this.matchService.cachedMatches.subscribe(res => {
       this.matches = res;
       this.publishCharacterUsageChartData();
-      this.isLoading = false;
     },
     err => {
         this.commonUxService.showDangerToast('Unable to get data.');
         console.error(err);
-        this.isLoading = false;
     });
   }
   public onDateSelect(event: any): void {

@@ -7,6 +7,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class MaskedNumberInputComponent {
   private _numberValue: string = '';
+  @Input() size: '' | 'sm' | 'lg' = '';
   @Input() set numberValue(value: string) {
     this._numberValue = this._formatNumber(value);
   }
@@ -34,13 +35,20 @@ export class MaskedNumberInputComponent {
     this.numberValueChange.emit(this.numberValue);
   }
 
-  private _formatNumber(val: string): string {
-    let newValue: string = val;
-    newValue = val.replace(/\D/g, '');
-    if (newValue !== '') {
-      return parseInt(newValue, 10).toLocaleString();
+  private _formatNumber(val: string | number): string {
+    let newStringValue: string = '';
+
+    if (typeof val === 'string') {
+      newStringValue = val;
+    } else if (typeof val === 'number') {
+      newStringValue = val.toString();
+    }
+
+    newStringValue = newStringValue.replace(/\D/g, '');
+    if (newStringValue !== '') {
+      return parseInt(newStringValue, 10).toLocaleString();
     } else {
-      return val;
+      return newStringValue;
     }
   }
 }
