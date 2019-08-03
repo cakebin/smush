@@ -184,7 +184,7 @@ func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
 
 	userProfileView, err := r.SysUtils.Database.GetUserProfileViewByID(*userCredentialsView.UserID)
 	if err != nil {
-		http.Error(res, fmt.Sprintf("Could not get user data: %s", err.Error()), http.StatusBadRequest)
+		http.Error(res, fmt.Sprintf("Could not get user data for id %d: %s", *userCredentialsView.UserID, err.Error()), http.StatusBadRequest)
 		return
 	}
 
