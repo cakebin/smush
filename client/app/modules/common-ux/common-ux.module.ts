@@ -23,6 +23,8 @@ import { MaskedNumberInputComponent } from './components/masked-number-input/mas
 import { SlidePanelComponent } from './components/slide-panel/slide-panel.component';
 import { TypeaheadComponent } from './components/typeahead/typeahead.component';
 
+import { ToNumberPipe } from './components/string-to-number/string-to-number.pipe';
+
 
 @NgModule({
   declarations: [
@@ -31,6 +33,7 @@ import { TypeaheadComponent } from './components/typeahead/typeahead.component';
     TypeaheadComponent,
     MaskedNumberInputComponent,
     SlidePanelComponent,
+    ToNumberPipe,
   ],
   exports: [
     FormsModule,
@@ -43,6 +46,7 @@ import { TypeaheadComponent } from './components/typeahead/typeahead.component';
     ToastComponent,
     SlidePanelComponent,
     ConfirmModalModule,
+    ToNumberPipe,
   ],
   imports: [
     CommonModule,

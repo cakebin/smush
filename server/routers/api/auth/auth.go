@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/cakebin/smush/server/api"
-	"github.com/cakebin/smush/server/db"
 	"github.com/cakebin/smush/server/env"
+	"github.com/cakebin/smush/server/services/database"
 	"github.com/cakebin/smush/server/util/routing"
 )
 
@@ -39,7 +39,7 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 func (r *Router) handleRefresh(res http.ResponseWriter, req *http.Request) {
 	// We need the user to create a new token in case the access token is gone
 	decoder := json.NewDecoder(req.Body)
-	var userRefresh db.User
+	var userRefresh database.UserRefreshUpdate
 
 	err := decoder.Decode(&userRefresh)
 	if err != nil {
@@ -68,7 +68,7 @@ func (r *Router) handleRefresh(res http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		// We do NOT HAVE A COOKIE ANYMORE! So we need to make a new one.
-		accessTokenStr, err := r.SysUtils.Authenticator.GetNewJWTToken(*userRefresh.UserID, newExpirationTime)
+		accessTokenStr, err := r.SysUtils.Authenticator.GetNewJWTToken(userRefresh.UserID, newExpirationTime)
 		if err != nil {
 			http.Error(res, fmt.Sprintf("Error creating new access token: %s", err.Error()), http.StatusInternalServerError)
 			return
@@ -115,17 +115,17 @@ func (r *Router) handleRefresh(res http.ResponseWriter, req *http.Request) {
 
 func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
-	var userLogin db.User
+	var credentialsRequest database.UserCredentialsView
 
-	err := decoder.Decode(&userLogin)
+	err := decoder.Decode(&credentialsRequest)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
 		return
 	}
 
-	user, err := r.SysUtils.Database.GetUserByEmail(userLogin.EmailAddress)
+	userCredentialsView, err := r.SysUtils.Database.GetUserCredentialsViewByEmail(credentialsRequest.EmailAddress)
 	if err == sql.ErrNoRows {
-		http.Error(res, fmt.Sprintf("Invalid email address; user %s does not exist", userLogin.EmailAddress), http.StatusNotFound)
+		http.Error(res, fmt.Sprintf("Invalid email address; user %s does not exist", credentialsRequest.EmailAddress), http.StatusNotFound)
 		return
 	} else if err != nil {
 		http.Error(res, fmt.Sprintf("Database error: %s", err.Error()), http.StatusInternalServerError)
@@ -133,8 +133,8 @@ func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
 	}
 
 	err = r.SysUtils.Authenticator.CheckPassword(
-		*user.HashedPassword,
-		*userLogin.Password,
+		*userCredentialsView.HashedPassword,
+		*credentialsRequest.Password,
 	)
 	if err != nil {
 		http.Error(res, "Invalid email/password", http.StatusUnauthorized)
@@ -143,21 +143,21 @@ func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
 
 	// Short lifespan access token
 	accessExpiration := time.Now().Add(5 * time.Minute)
-	accessTokenStr, err := r.SysUtils.Authenticator.GetNewJWTToken(*user.UserID, accessExpiration)
+	accessTokenStr, err := r.SysUtils.Authenticator.GetNewJWTToken(*userCredentialsView.UserID, accessExpiration)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error creating new access token: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 
 	// Longer lifespan refresh token
-	refreshExpiration := time.Now().Add(24 * time.Hour)
-	refreshTokenStr, err := r.SysUtils.Authenticator.GetNewJWTToken(*user.UserID, refreshExpiration)
+	refreshExpiration := time.Now().Add(time.Hour * 24)
+	refreshTokenStr, err := r.SysUtils.Authenticator.GetNewJWTToken(*userCredentialsView.UserID, refreshExpiration)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error creating new refresh token: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
 	// Also store this refresh token in the user table
-	_, err = r.SysUtils.Database.UpdateUserRefreshTokenByID(refreshTokenStr, *user.UserID)
+	_, err = r.SysUtils.Database.UpdateUserRefreshToken(refreshTokenStr, *userCredentialsView.UserID)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error adding new refresh token to database: %s", err.Error()), http.StatusInternalServerError)
 		return
@@ -182,13 +182,16 @@ func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
 		},
 	)
 
-	user.HashedPassword = nil
-	user.RefreshToken = nil
+	userProfileView, err := r.SysUtils.Database.GetUserProfileViewByID(*userCredentialsView.UserID)
+	if err != nil {
+		http.Error(res, fmt.Sprintf("Could not get user data: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
 
 	response := &api.AuthResponse{
 		Success:           true,
 		Error:             nil,
-		User:              user,
+		User:              userProfileView,
 		AccessExpiration:  accessExpiration,
 		RefreshExpiration: refreshExpiration,
 	}
@@ -199,7 +202,7 @@ func (r *Router) handleLogin(res http.ResponseWriter, req *http.Request) {
 
 func (r *Router) handleRegister(res http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
-	var newUser db.User
+	var newUser database.User
 
 	err := decoder.Decode(&newUser)
 	if err != nil {
@@ -213,14 +216,14 @@ func (r *Router) handleRegister(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	hashedPassword, err := r.SysUtils.Authenticator.HashPassword(*newUser.Password)
+	hashedPassword, err := r.SysUtils.Authenticator.HashPassword(newUser.Password)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error when hashing password: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
-	newUser.HashedPassword = &hashedPassword
+	newUser.HashedPassword = hashedPassword
 
-	_, err = r.SysUtils.Database.CreateUser(newUser)
+	userID, err := r.SysUtils.Database.CreateUser(newUser)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error creating new user in database: %s", err.Error()), http.StatusInternalServerError)
 		return
@@ -229,6 +232,7 @@ func (r *Router) handleRegister(res http.ResponseWriter, req *http.Request) {
 	response := &api.Response{
 		Success: true,
 		Error:   nil,
+		Data:    userID,
 	}
 
 	res.Header().Set("Content-Type", "application/json")
@@ -237,7 +241,7 @@ func (r *Router) handleRegister(res http.ResponseWriter, req *http.Request) {
 
 func (r *Router) handleLogout(res http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
-	var userLogout db.User
+	var userLogout database.User
 
 	err := decoder.Decode(&userLogout)
 	if err != nil {
@@ -246,7 +250,7 @@ func (r *Router) handleLogout(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// We want to delete the refresh token when a user logs out
-	_, err = r.SysUtils.Database.UpdateUserRefreshTokenByID("", *userLogout.UserID)
+	userID, err := r.SysUtils.Database.UpdateUserRefreshToken("", *userLogout.UserID)
 	if err != nil {
 		http.Error(res, fmt.Sprintf("Error removing refresh token from database: %s", err.Error()), http.StatusInternalServerError)
 		return
@@ -273,6 +277,7 @@ func (r *Router) handleLogout(res http.ResponseWriter, req *http.Request) {
 	response := &api.Response{
 		Success: true,
 		Error:   nil,
+		Data:    userID,
 	}
 
 	res.Header().Set("Content-Type", "application/json")

@@ -6,9 +6,9 @@ import (
   "os"
 
   "github.com/cakebin/smush/server/auth"
-  "github.com/cakebin/smush/server/db"
   "github.com/cakebin/smush/server/env"
   "github.com/cakebin/smush/server/routers/app"
+  "github.com/cakebin/smush/server/services/database"
 )
 
 
@@ -19,7 +19,7 @@ func main() {
   }
 
   dbURL := os.Getenv(("DATABASE_URL"))
-  database, err := db.NewDB(dbURL)
+  db, err := database.New(dbURL)
   if err != nil {
     log.Fatalf("Error opening database: %q", err)
   }
@@ -27,7 +27,7 @@ func main() {
   authenticator := auth.NewAuthenticator()
 
   sysUtils := &env.SysUtils{
-    Database: database,
+    Database: db,
     Authenticator: authenticator,
   }
   router := app.NewRouter(sysUtils)

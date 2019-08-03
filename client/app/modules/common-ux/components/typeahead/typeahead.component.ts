@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { NgbTypeaheadSelectItemEvent } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
@@ -8,30 +8,49 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
   selector: 'common-ux-typeahead',
   templateUrl: './typeahead.component.html'
 })
-export class TypeaheadComponent implements OnInit {
-  @Input() items: string[] = [];
+export class TypeaheadComponent {
   @Input() size: '' | 'sm' | 'lg' = '';
-  @Output() selectItem: EventEmitter<string> = new EventEmitter<string>();
-  @Input() set defaultItem(value: string) {
+  @Input() textPropertyName: string = '';
+  @Input() valuePropertyName: string = '';
+  @Output() selectItem: EventEmitter<any> = new EventEmitter<any>();
+  @Input() set items(itemValues: any[]) {
+    this._items = itemValues;
+    // Because the items are sometimes delayed, we need to reselect any defaults we might have
+    // that had to be skipped when items weren't provided
+    this.value = this._lastValue;
+  }
+  get items(): any[] {
+    return this._items;
+  }
+  @Input() set value(value: any) {
+    this._lastValue = value;
+
     // Either setting it to null, or giving it a valid value
-    if (!value || this.items.indexOf(value) !== -1) {
-      this._selectedValue = value;
-      this.inputValue = value;
+    if (this.items == null || value == null) {
+      this.selectedItem = null;
+      return;
+    }
+
+    this.selectedItem = this.items.find(i => {
+      return i[this.valuePropertyName] === value;
+    });
+  }
+  get value(): any {
+    if (this.selectedItem) {
+      return this.selectedItem[this.valuePropertyName];
+    } else {
+      return null;
     }
   }
-  get defaultItem(): string {
-    return this._defaultItem;
-  }
-  private _defaultItem: string = '';
-  private _selectedValue: string;
-  public inputValue: string = '';
+
+  private _items: any[] = [];
+  private _lastValue: any;
+  public selectedItem: any;
 
   constructor() { }
 
-  ngOnInit() {
-  }
-
-  search = (text$: Observable<string>) =>
+  public itemFormatter = (result: any) => result[this.textPropertyName];
+  public search = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(200),
       distinctUntilChanged(),
@@ -40,7 +59,7 @@ export class TypeaheadComponent implements OnInit {
           return [];
         } else {
           return this.items.filter(v => {
-            return v.toLowerCase().indexOf(term.toLowerCase()) > -1;
+            return v[this.textPropertyName].toLowerCase().indexOf(term.toLowerCase()) > -1;
           }).slice(0, 10);
         }
       })
@@ -49,19 +68,14 @@ export class TypeaheadComponent implements OnInit {
   public onBlur() {
     // If the user has cleared the input and blurred out, we need to output a blank value manually
     // because the typeahead does not recognise this as an input "event" per se
-    if (this.inputValue === '') {
-      this.selectItem.emit('');
-    } else if (this._selectedValue) {
-      this.selectItem.emit(this._selectedValue);
-    }
+    this.selectItem.emit(this.selectedItem);
   }
   public onSelect(eventObject: NgbTypeaheadSelectItemEvent): void {
-    this._selectedValue = eventObject.item;
     this.selectItem.emit(eventObject.item);
   }
   public clear(): void {
-    this.inputValue = '';
-    this._selectedValue = '';
+    this.selectedItem = null;
   }
+
 
 }

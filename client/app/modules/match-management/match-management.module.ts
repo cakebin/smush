@@ -8,7 +8,11 @@ import { CommonUxService } from '../common-ux/common-ux.service';
 
 import { MatchInputFormComponent } from './match-input-form.component';
 import { MatchTableViewComponent } from './match-table-view.component';
+
 import { MatchManagementService } from './match-management.service';
+import { CharacterManagementModule } from '../character-management/character-management.module';
+import { CharacterManagementService } from '../character-management/character-management.service';
+
 
 
 @NgModule({
@@ -20,6 +24,7 @@ import { MatchManagementService } from './match-management.service';
     BrowserModule,
     HttpClientModule,
     CommonUXModule.forRoot(),
+    CharacterManagementModule.forRoot(),
   ],
   exports: [
     MatchInputFormComponent,
@@ -33,6 +38,7 @@ export class MatchManagementModule {
         ngModule: MatchManagementModule,
         providers: [
           CommonUxService,
+          CharacterManagementService,
           MatchManagementService,
           DecimalPipe,
           {

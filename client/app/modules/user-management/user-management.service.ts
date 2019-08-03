@@ -59,7 +59,7 @@ export class UserManagementService {
     public updateUser(updatedUser: IUserViewModel): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/update`, updatedUser).pipe(
             tap(res => {
-                // console.log('updateUser: Done updating user. Server returned:', res);
+                localStorage.setItem('smush_user', JSON.stringify(updatedUser));
             }
         ),
         finalize(() => this._loadUser(updatedUser))

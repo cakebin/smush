@@ -1,8 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { UserManagementService } from '../../modules/user-management/user-management.service';
-import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
-import { IUserViewModel } from '../../app.view-models';
+import { CharacterManagementService } from 'client/app/modules/character-management/character-management.service';
+import { IUserViewModel, ICharacterViewModel } from '../../app.view-models';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -28,16 +28,11 @@ class SavedCharacter implements ISavedCharacter {
   templateUrl: './profile-edit.component.html'
 })
 export class ProfileEditComponent implements OnInit {
-  public savedCharactersTestData: SavedCharacter[] = [
-    new SavedCharacter(1, 'Ike', 4300000),
-    new SavedCharacter(2, 'Palutena', 4200000),
-    new SavedCharacter(3, 'Lucina', 4500000, true),
-    new SavedCharacter(4, 'Marth', 5100000),
-    new SavedCharacter(5, 'Joker', 5200000),
-  ];
-  public editChar: SavedCharacter = {} as SavedCharacter;
+  public savedCharactersTestData: ISavedCharacter[] = [];
 
-  public characters = this.matchService.characters;
+  public editChar: ISavedCharacter = {} as ISavedCharacter;
+
+  public characters: ICharacterViewModel[] = [];
   public user: IUserViewModel = {} as IUserViewModel;
   public editedUser: IUserViewModel = {} as IUserViewModel;
 
@@ -59,7 +54,7 @@ export class ProfileEditComponent implements OnInit {
   constructor(
     private commonUxService: CommonUxService,
     private userService: UserManagementService,
-    private matchService: MatchManagementService,
+    private characterService: CharacterManagementService,
     ) {
   }
 
@@ -86,7 +81,21 @@ export class ProfileEditComponent implements OnInit {
         console.error(err);
       }
     });
+    this.characterService.characters.subscribe(
+      res => {
+        if (res) {
+          this.characters = res;
+
+          // TEST DATA BEFORE WE HAVE A SAVED CHAR TABLE
+          this.savedCharactersTestData = res.slice(0, 5).map(char => {
+            return new SavedCharacter(char.characterId, char.characterName, 98000);
+          });
+          this.savedCharactersTestData[3].isDefault = true;
+        }
+      }
+    );
   }
+
   public setDefaultSavedCharacter(defaultCharId: number) {
     this.savedCharactersTestData.forEach(char => {
       if (char.id === defaultCharId) {
@@ -105,8 +114,12 @@ export class ProfileEditComponent implements OnInit {
       }
     });
   }
-  public onSelectDefaultCharacter(event: string): void {
-      this.editedUser.defaultCharacterName = event;
+  public onSelectSavedCharacter(event: ICharacterViewModel, savedChar: ISavedCharacter) {
+    savedChar.id = event.characterId;
+    savedChar.name = event.characterName;
+  }
+  public onSelectDefaultCharacter(event: ICharacterViewModel): void {
+      this.editedUser.defaultCharacterId = event.characterId;
       this.formChanged = this.getChangedStatus();
   }
   public updateUser(): void {

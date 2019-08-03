@@ -4,8 +4,10 @@ export interface IMatchViewModel {
     matchId: number;
     userId: number;
     userName: string; // Viewmodel only, intended to be read-only for match display
+    opponentCharacterId: number;
     opponentCharacterName: string;
     opponentCharacterGsp: number;
+    userCharacterId: number;
     userCharacterName: string;
     userCharacterGsp: number;
     opponentTeabag: boolean;
@@ -19,8 +21,10 @@ export class MatchViewModel implements IMatchViewModel {
         public matchId: number = null,
         public userId: number = null,
         public userName: string = '',
+        public opponentCharacterId: number = null,
         public opponentCharacterName: string = '',
         public opponentCharacterGsp: number = null,
+        public userCharacterId: number = null,
         public userCharacterName: string = '',
         public userCharacterGsp: number = null,
         public opponentTeabag: boolean = null,
@@ -37,6 +41,7 @@ export interface IUserViewModel {
     password: string;
     passwordConfirm: string;
     userName: string;
+    defaultCharacterId: number;
     defaultCharacterName: string;
     defaultCharacterGsp: number;
     defaultCharacterImageUrl: string; // Join on characters table for this
@@ -48,11 +53,23 @@ export class UserViewModel implements IUserViewModel {
         public password: string = '',
         public passwordConfirm: string = '',
         public userName: string = '',
+        public defaultCharacterId: number = null,
         public defaultCharacterName: string = '',
         public defaultCharacterGsp: number = null,
         public defaultCharacterImageUrl: string = '',
     ) {
     }
+}
+export interface ICharacterViewModel {
+    characterId: number;
+    characterName: string;
+    characterStockImg: string;
+    characterImg: string;
+    characterArchetype: string;
+}
+export interface ITypeAheadViewModel {
+    text: string;
+    value: any;
 }
 export interface ILogInViewModel {
     emailAddress: string;

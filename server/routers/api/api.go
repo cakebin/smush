@@ -5,6 +5,7 @@ import (
 
 	"github.com/cakebin/smush/server/env"
 	"github.com/cakebin/smush/server/routers/api/auth"
+	"github.com/cakebin/smush/server/routers/api/character"
 	"github.com/cakebin/smush/server/routers/api/match"
 	"github.com/cakebin/smush/server/routers/api/user"
 	"github.com/cakebin/smush/server/util/routing"
@@ -13,10 +14,11 @@ import (
 // Router is responsible for serving "/api"
 // or delegating to the appropriate sub api-router
 type Router struct {
-	SysUtils    *env.SysUtils
-	AuthRouter  *auth.Router
-	MatchRouter *match.Router
-	UserRouter  *user.Router
+	SysUtils        *env.SysUtils
+	AuthRouter      *auth.Router
+	MatchRouter     *match.Router
+	UserRouter      *user.Router
+	CharacterRouter *character.Router
 }
 
 func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
@@ -54,6 +56,8 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		r.MatchRouter.ServeHTTP(res, req)
 	case "user":
 		r.UserRouter.ServeHTTP(res, req)
+	case "character":
+		r.CharacterRouter.ServeHTTP(res, req)
 	default:
 		http.Error(res, "404 Not Found", http.StatusNotFound)
 	}
@@ -67,5 +71,6 @@ func NewRouter(sysUtils *env.SysUtils) *Router {
 	router.AuthRouter = auth.NewRouter(sysUtils)
 	router.MatchRouter = match.NewRouter(sysUtils)
 	router.UserRouter = user.NewRouter(sysUtils)
+	router.CharacterRouter = character.NewRouter(sysUtils)
 	return router
 }
