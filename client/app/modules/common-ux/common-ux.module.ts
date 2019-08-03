@@ -23,6 +23,7 @@ import { MaskedNumberInputComponent } from './components/masked-number-input/mas
 import { SlidePanelComponent } from './components/slide-panel/slide-panel.component';
 import { TypeaheadComponent } from './components/typeahead/typeahead.component';
 
+// Pipes
 import { ToNumberPipe } from './components/string-to-number/string-to-number.pipe';
 
 

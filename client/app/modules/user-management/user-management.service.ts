@@ -98,14 +98,14 @@ export class UserManagementService {
         }
 
         // Run this first to make sure the user gets a cookie if they no longer have one
-        this._runSessionCheck();
+        this._runSessionCheck(true);
 
         this._checkSessionInterval = setInterval(() => {
             // Then check again in a minute
            this._runSessionCheck();
         }, 60000);
     }
-    private _runSessionCheck() {
+    private _runSessionCheck(isInitialCheck: boolean = false) {
         const dateNow = new Date();
         const refreshExpiration: string = localStorage.getItem('smush_refresh_expire');
         const accessExpiration: string = localStorage.getItem('smush_access_expire');
@@ -122,11 +122,13 @@ export class UserManagementService {
 
         if (dateNowMs >= refreshExpireMs) {
             // It is after the refresh expiry date. Log user out and don't refresh their token.
-            this.commonUxService.openConfirmModal(
-                'You\'ve been logged out because your session has expired. Log in again to continue tracking matches :)',
-                'Session Expired',
-                'Okey'
-            );
+            if (!isInitialCheck) {
+                this.commonUxService.openConfirmModal(
+                    'You\'ve been logged out because your session has expired. Log in again to continue tracking matches :)',
+                    'Session Expired',
+                    'Okey'
+                );
+            }
             this.logOut();
         } else {
             // We are still within the refresh range, so check the access expiration and see if we
