@@ -72,11 +72,19 @@ export class MatchInputFormComponent implements OnInit {
 
   public onSetOpponentCharacter(event: ICharacterViewModel): void {
     // Event properties aren't accessible in the template
-    this.match.opponentCharacterId = event.characterId;
+    if (event == null) {
+      this.match.opponentCharacterId = null;
+    } else {
+      this.match.opponentCharacterId = event.characterId;
+    }
   }
   public onSetUserCharacter(event: ICharacterViewModel): void {
     // Event properties aren't accessible in the template
-    this.match.userCharacterId = event.characterId;
+    if (event == null) {
+      this.match.userCharacterId = null;
+    } else {
+      this.match.userCharacterId = event.characterId;
+    }
   }
   public createEntry(): void {
     if (!this.validateMatch()) {

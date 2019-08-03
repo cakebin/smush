@@ -119,8 +119,12 @@ export class ProfileEditComponent implements OnInit {
     savedChar.name = event.characterName;
   }
   public onSelectDefaultCharacter(event: ICharacterViewModel): void {
+    if (event == null) {
+      this.editedUser.defaultCharacterId = null;
+    } else {
       this.editedUser.defaultCharacterId = event.characterId;
-      this.formChanged = this.getChangedStatus();
+    }
+    this.formChanged = this.getChangedStatus();
   }
   public updateUser(): void {
     this.userService.updateUser(this.editedUser).subscribe(
