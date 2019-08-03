@@ -3,7 +3,7 @@ package api
 import (
 	"time"
 
-	"github.com/cakebin/smush/server/services/database"
+	"github.com/cakebin/smush/server/services/db"
 )
 
 // Response is a generic response, returned
@@ -18,7 +18,7 @@ type Response struct {
 type AuthResponse struct {
 	Success           bool                      `json:"success"`
 	Error             error                     `json:"error"`
-	User              *database.UserProfileView `json:"user"`
+	User              *db.UserProfileView `json:"user"`
 	AccessExpiration  time.Time                 `json:"accessExpiration"`
 	RefreshExpiration time.Time                 `json:"refreshExpiration"`
 }

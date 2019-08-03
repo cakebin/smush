@@ -9,7 +9,7 @@ import (
 
   "github.com/cakebin/smush/server/api"
   "github.com/cakebin/smush/server/env"
-  "github.com/cakebin/smush/server/services/database"
+  "github.com/cakebin/smush/server/services/db"
   "github.com/cakebin/smush/server/util/routing"
 )
 
@@ -74,7 +74,7 @@ func (r *Router) handleGetByID(res http.ResponseWriter, req *http.Request) {
 
 func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  var user database.User
+  var user db.User
 
   err := decoder.Decode(&user)
   if err != nil {
@@ -98,7 +98,7 @@ func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
 
 func (r *Router) handleUpdate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  var userProfileUpdate database.UserProfileUpdate
+  var userProfileUpdate db.UserProfileUpdate
 
   err := decoder.Decode(&userProfileUpdate)
   if err != nil {

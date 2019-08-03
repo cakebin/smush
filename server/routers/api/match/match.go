@@ -8,7 +8,7 @@ import (
 
   "github.com/cakebin/smush/server/api"
   "github.com/cakebin/smush/server/env"
-  "github.com/cakebin/smush/server/services/database"
+  "github.com/cakebin/smush/server/services/db"
   "github.com/cakebin/smush/server/util/routing"
 )
 
@@ -85,7 +85,7 @@ func (r *Router) handleGetAll(res http.ResponseWriter, req *http.Request) {
 
 func (r *Router) handleCreate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  var match database.Match
+  var match db.Match
 
   err := decoder.Decode(&match)
   if err != nil {
