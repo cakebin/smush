@@ -40,18 +40,18 @@ export class UserManagementService {
         );
     }
     public logOut(): void {
-        if (!this.cachedUser.value) {
-            return;
+        localStorage.removeItem('smush_user');
+        localStorage.removeItem('smush_refresh_expire');
+        localStorage.removeItem('smush_access_expire');
+        this.router.navigate(['/home']);
+
+        if (this.cachedUser.value) {
+            this.httpClient.post(`${this.authApiUrl}/logout`, this.cachedUser.value)
+            .subscribe(res => {
+                this.cachedUser.next(null);
+                this.cachedUser.pipe(publish(), refCount());
+            });
         }
-        this.httpClient.post(`${this.authApiUrl}/logout`, this.cachedUser.value)
-        .subscribe(res => {
-            this.cachedUser.next(null);
-            this.cachedUser.pipe(publish(), refCount());
-            localStorage.removeItem('smush_user');
-            localStorage.removeItem('smush_refresh_expire');
-            localStorage.removeItem('smush_access_expire');
-            this.router.navigate(['/home']);
-        });
     }
     public createUser(user: IUserViewModel): Observable<{}> {
         return this.httpClient.post(`${this.authApiUrl}/register`, user);
@@ -121,6 +121,7 @@ export class UserManagementService {
         const accessExpireMs: number = new Date(JSON.parse(accessExpiration)).getTime();
 
         if (dateNowMs >= refreshExpireMs) {
+            this.logOut();
             // It is after the refresh expiry date. Log user out and don't refresh their token.
             if (!isInitialCheck) {
                 this.commonUxService.openConfirmModal(
@@ -129,7 +130,6 @@ export class UserManagementService {
                     'Okey'
                 );
             }
-            this.logOut();
         } else {
             // We are still within the refresh range, so check the access expiration and see if we
             // need to refresh it (within 2 min of expiration) or get a new one (if it's gone).
