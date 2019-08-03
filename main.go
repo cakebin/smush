@@ -8,7 +8,7 @@ import (
   "github.com/cakebin/smush/server/auth"
   "github.com/cakebin/smush/server/env"
   "github.com/cakebin/smush/server/routers/app"
-  "github.com/cakebin/smush/server/services/database"
+  "github.com/cakebin/smush/server/services/db"
 )
 
 
@@ -19,7 +19,7 @@ func main() {
   }
 
   dbURL := os.Getenv(("DATABASE_URL"))
-  db, err := database.New(dbURL)
+  db, err := db.New(dbURL)
   if err != nil {
     log.Fatalf("Error opening database: %q", err)
   }
