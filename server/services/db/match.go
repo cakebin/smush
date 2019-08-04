@@ -1,5 +1,10 @@
 package db
 
+import (
+  "database/sql"
+)
+
+
 /*---------------------------------
           Data Structures
 ----------------------------------*/
@@ -7,16 +12,16 @@ package db
 // Match describes the required and optional data
 // needed to create a new match in our matches table
 type Match struct {
-  OpponentCharacterID int `json:"opponentCharacterId"`
-  UserID              int `json:"userId"`
+  OpponentCharacterID   int            `json:"opponentCharacterId"`
+  UserID                int            `json:"userId"`
 
-  OpponentCharacterGsp *int  `json:"opponentCharacterGsp,omitempty"`
-  OpponentTeabag       *bool `json:"opponentTeabag,omitempty"`
-  OpponentCamp         *bool `json:"opponentCamp,omitempty"`
-  OpponentAwesome      *bool `json:"opponentAwesome,omitempty"`
-  UserCharacterID      *int  `json:"userCharacterId,omitempty"`
-  UserCharacterGsp     *int  `json:"userCharacterGsp,omitempty"`
-  UserWin              *bool `json:"userWin,omitempty"`
+  OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp,omitempty"`
+  OpponentTeabag        sql.NullBool   `json:"opponentTeabag,omitempty"`
+  OpponentCamp          sql.NullBool   `json:"opponentCamp,omitempty"`
+  OpponentAwesome       sql.NullBool   `json:"opponentAwesome,omitempty"`
+  UserCharacterID       sql.NullInt64  `json:"userCharacterId,omitempty"`
+  UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp,omitempty"`
+  UserWin               sql.NullBool   `json:"userWin,omitempty"`
 }
 
 /*---------------------------------

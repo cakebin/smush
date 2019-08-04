@@ -10,6 +10,7 @@ package db
 type Character struct {
   CharacterID        *int     `json:"characterId,omitempty"`
   CharacterName      string   `json:"characterName"`
+  CharacterStockImg  string   `json:"characterStockImg"`
 }
 
 
@@ -74,15 +75,16 @@ func (db *DB) CreateCharacter(character Character) (int, error) {
   var characterID int
   sqlStatement := `
     INSERT INTO characters
-      (character_name)
+      (character_name, character_stock_img)
     VALUES
-      ($1)
+      ($1, $2)
     RETURNING
       character_id
   `
   row := db.QueryRow(
     sqlStatement,
     character.CharacterName,
+    character.CharacterStockImg,
   )
   err := row.Scan(characterID)
 
