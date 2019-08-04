@@ -23,6 +23,7 @@ import { HomeComponent } from './page-components/home/home.component';
 import { MatchesComponent } from './page-components/matches/matches.component';
 import { InsightsComponent } from './page-components/insights/insights.component';
 import { ProfileEditComponent } from './page-components/profiles/profile-edit.component';
+import { AdminComponent } from './page-components/admin/admin.component';
 import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 
 // Services
@@ -40,6 +41,7 @@ import { CommonUxService } from './modules/common-ux/common-ux.service';
     HomeComponent,
     MatchesComponent,
     InsightsComponent,
+    AdminComponent,
     ProfileEditComponent,
   ],
   imports: [

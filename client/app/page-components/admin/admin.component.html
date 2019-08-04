@@ -1,0 +1,76 @@
+<div class="row">
+  <div class="col-2"></div>
+  <div class="col-8">
+    <div class="card border-0">
+      <div class="card-body">
+
+        <!-- Add character -->
+        <h4 class="mb-2">Add character</h4>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="add-character-name">Character name</label>
+                <input type="text" name="add-character-name" class="form-control" /> 
+            </div>
+            <div class="form-group col-6">
+                <label for="add-character-stock">Stock image filename</label>
+                <input type="text" name="add-character-stock" class="form-control" /> 
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="add-character-image">Image filename</label>
+                <input type="text" name="add-character-image" class="form-control" /> 
+            </div>
+            <div class="form-group col-6">
+                <label for="add-character-archetype">Archetype</label>
+                <input type="text" name="add-character-archetype" class="form-control" /> 
+            </div>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary">Create character</button>
+        </div>
+        
+        
+        <!-- Edit character -->
+        <h4 class="mt-4 mb-2">Edit character</h4>
+        <div class="form-row">
+            <div class="form-group col">
+                <label for="edit-character">Character to edit</label>
+                <common-ux-typeahead 
+                    [items]="characters" 
+                    [textPropertyName]="'characterName'" 
+                    [valuePropertyName]="'characterId'" 
+                    [value]="editCharacter.characterId" 
+                    (selectItem)="onSelectEditCharacter($event)" 
+                    id="edit-character"></common-ux-typeahead>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="edit-character-name">Character name</label>
+                <input type="text" name="edit-character-name" class="form-control" /> 
+            </div>
+            <div class="form-group col-6">
+                <label for="edit-character-stock">Stock icon image filename</label>
+                <input type="text" name="edit-character-stock" class="form-control" /> 
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="edit-character-image">Image filename</label>
+                <input type="text" name="edit-character-image" class="form-control" /> 
+            </div>
+            <div class="form-group col-6">
+                <label for="edit-character-archetype">Archetype</label>
+                <input type="text" name="edit-character-archetype" class="form-control" /> 
+            </div>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary">Update character</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="col-2"></div>
+</div>
