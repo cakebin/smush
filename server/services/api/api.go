@@ -4,22 +4,37 @@ import (
   "net/http"
 
   "github.com/cakebin/smush/server/env"
-  "github.com/cakebin/smush/server/routers/api/auth"
-  "github.com/cakebin/smush/server/routers/api/character"
-  "github.com/cakebin/smush/server/routers/api/match"
-  "github.com/cakebin/smush/server/routers/api/user"
   "github.com/cakebin/smush/server/util/routing"
 )
+
+
+/*---------------------------------
+             Responses
+----------------------------------*/
+
+// Response is the data 
+type Response struct {
+  Success  bool         `json:"success"`
+  Error    error        `json:"error"`
+  Data     interface{}  `json:"data"`
+}
+
+
+/*---------------------------------
+             Router
+----------------------------------*/
 
 // Router is responsible for serving "/api"
 // or delegating to the appropriate sub api-router
 type Router struct {
-  SysUtils        *env.SysUtils
-  AuthRouter      *auth.Router
-  MatchRouter     *match.Router
-  UserRouter      *user.Router
-  CharacterRouter *character.Router
+  SysUtils         *env.SysUtils
+  AuthRouter       *AuthRouter
+  MatchRouter      *MatchRouter
+  UserRouter       *UserRouter
+  CharacterRouter  *CharacterRouter
 }
+
+
 
 func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   var head string
@@ -63,14 +78,15 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   }
 }
 
+
 // NewRouter makes a new api router and sets up its children
 // routers with access to the "SysUtils" environment object
 func NewRouter(sysUtils *env.SysUtils) *Router {
   router := new(Router)
   router.SysUtils = sysUtils
-  router.AuthRouter = auth.NewRouter(sysUtils)
-  router.MatchRouter = match.NewRouter(sysUtils)
-  router.UserRouter = user.NewRouter(sysUtils)
-  router.CharacterRouter = character.NewRouter(sysUtils)
+  router.AuthRouter = &AuthRouter{SysUtils:  sysUtils}
+  router.MatchRouter = &MatchRouter{SysUtils:  sysUtils}
+  router.UserRouter = &UserRouter{SysUtils:  sysUtils}
+  router.CharacterRouter = &CharacterRouter{SysUtils:  sysUtils}
   return router
 }

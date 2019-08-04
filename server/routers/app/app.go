@@ -4,7 +4,7 @@ import (
   "net/http"
 
   "github.com/cakebin/smush/server/env"
-  "github.com/cakebin/smush/server/routers/api"
+  "github.com/cakebin/smush/server/services/api"
   "github.com/cakebin/smush/server/util/routing"
 )
 
