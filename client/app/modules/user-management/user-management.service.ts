@@ -20,8 +20,6 @@ export class UserManagementService {
         @Inject('UserApiUrl') private apiUrl: string,
         @Inject('AuthApiUrl') private authApiUrl: string,
     ) {
-        // Check and instantiate existing login
-        this._onSiteLoad();
         // Start interval for login check (runs once a minute)
         this._startIntervalSessionCheck();
     }
@@ -40,9 +38,7 @@ export class UserManagementService {
         );
     }
     public logOut(): void {
-        localStorage.removeItem('smush_user');
-        localStorage.removeItem('smush_refresh_expire');
-        localStorage.removeItem('smush_access_expire');
+        this._clearStorage();
         this.router.navigate(['/home']);
 
         if (this.cachedUser.value) {
@@ -81,17 +77,6 @@ export class UserManagementService {
             refCount()
         );
     }
-    private _onSiteLoad() {
-        const refreshExpiration = localStorage.getItem('smush_refresh_expire');
-        const refreshExpiresAt = JSON.parse(refreshExpiration);
-        if (new Date() <= new Date(refreshExpiresAt)) {
-            const savedUserJson = localStorage.getItem('smush_user');
-            const savedUser = JSON.parse(savedUserJson);
-            if (savedUser) {
-                this._loadUser(savedUser);
-            }
-        }
-    }
     private _startIntervalSessionCheck() {
         if (this._checkSessionInterval) {
             clearInterval(this._checkSessionInterval);
@@ -111,7 +96,8 @@ export class UserManagementService {
         const accessExpiration: string = localStorage.getItem('smush_access_expire');
 
         if (!refreshExpiration || !accessExpiration) {
-            // This user never got and saved a token. Don't do anything (wait for them to log in)
+            // This user never got and saved a token. Don't try to refresh
+            this._clearStorage();
             return;
         }
 
@@ -135,6 +121,16 @@ export class UserManagementService {
             // need to refresh it (within 2 min of expiration) or get a new one (if it's gone).
             const accessExpired = dateNowMs > accessExpireMs;
             const accessAboutToExpire = (dateNowMs < accessExpireMs) && (accessExpireMs - dateNowMs < 120000);
+
+            // If this is on pageload, load the user because they still have a refresh token
+            if (isInitialCheck) {
+                const savedUserJson = localStorage.getItem('smush_user');
+                const savedUser = JSON.parse(savedUserJson);
+                if (savedUser) {
+                    this._loadUser(savedUser);
+                }
+            }
+
             if (accessExpired || accessAboutToExpire) {
                 // I was a bit concerned about creating a subscription every three minutes,
                 // but it turns out HttpClient destroys subscriptions on completion of the request so memory leaks are not an issue.
@@ -146,5 +142,10 @@ export class UserManagementService {
                     });
                 }
         }
+    }
+    private _clearStorage(): void {
+        localStorage.removeItem('smush_user');
+        localStorage.removeItem('smush_refresh_expire');
+        localStorage.removeItem('smush_access_expire');
     }
 }

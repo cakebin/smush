@@ -13,11 +13,9 @@ export class CharacterManagementService {
         private httpClient: HttpClient,
         @Inject('CharacterApiUrl') private apiUrl: string,
     ) {
-        this.loadAllCharacters();
     }
     public loadAllCharacters(): void {
         this.httpClient.get<ICharacterViewModel[]>(`${this.apiUrl}/getall`).pipe(
-            // Retry in case we're attempting to get data when the user is still being re-authed
             retryWhen(errors => errors.pipe(delay(1000), take(3)))
         ).subscribe(
             res => {
