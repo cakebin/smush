@@ -5,9 +5,6 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { UserManagementService } from '../../modules/user-management/user-management.service';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { IUserViewModel, ILogInViewModel, IServerResponse, IAuthServerResponse, LogInViewModel } from 'client/app/app.view-models';
-import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
-import { CharacterManagementService } from 'client/app/modules/character-management/character-management.service';
-
 
 @Component({
   selector: 'top-nav-bar',
@@ -29,8 +26,6 @@ export class TopNavBarComponent implements OnInit {
     constructor(
       private commonUxService: CommonUxService,
       private userService: UserManagementService,
-      private matchService: MatchManagementService,
-      private characterService: CharacterManagementService,
       private router: Router,
     ) {
     }
@@ -65,8 +60,6 @@ export class TopNavBarComponent implements OnInit {
       this.userService.logIn(this.logInModel).subscribe((res: IAuthServerResponse) => {
         if (res.success) {
           this.resetPane();
-          this.matchService.loadAllMatches();
-          this.characterService.loadAllCharacters();
           this.router.navigate(['/matches']);
         } else {
           this.invalidEmailPassword = true;
