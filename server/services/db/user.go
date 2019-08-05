@@ -71,7 +71,7 @@ func (db *DB) GetUserIDByEmail(email string) (int, error) {
       email_address = $1
   `
   row := db.QueryRow(sqlStatement, email)
-  err := row.Scan(userID)
+  err := row.Scan(&userID)
 
   if err != nil {
     return 0, err
