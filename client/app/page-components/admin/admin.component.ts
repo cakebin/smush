@@ -33,6 +33,8 @@ export class AdminComponent implements OnInit {
       // Copy cached character into edit character (we don't want to edit the app version directly)
       const cachedCharacter = this.characters.find(c => c.characterId === event.characterId);
       Object.assign(this.editCharacter, cachedCharacter);
+    } else {
+      this.editCharacter = {} as ICharacterViewModel;
     }
   }
   public createCharacter(): void {
@@ -67,10 +69,10 @@ export class AdminComponent implements OnInit {
       return;
     }
 
-    this.characterService.updateCharacter(this.newCharacter).subscribe(
+    this.characterService.updateCharacter(this.editCharacter).subscribe(
       (res: IServerResponse) => {
         if (res.success) {
-          this.newCharacter = {} as ICharacterViewModel;
+          this.editCharacter = {} as ICharacterViewModel;
           this.commonUxService.showSuccessToast('Character updated!');
         } else {
           this.commonUxService.showDangerToast('Unable to update character.');
