@@ -28,9 +28,26 @@ type UserUpdateRequestData struct {
 }
 
 
+/*---------------------------------
+          Response Data
+----------------------------------*/
+
+// UserGetResponseData is the data we send back
+// after a successfully getting all user's info
+type UserGetResponseData struct {
+  User  *UserProfileView  `json:"user"`
+}
+
+
+// UserUpdateResponseData is the data we send
+// back after a successfully creating a new user
+type UserUpdateResponseData struct {
+  User  *UserProfileView  `json:"user"`
+}
+
 
 /*---------------------------------
-          SQL --> API
+          API <--> SQL
 ----------------------------------*/
 
 // UserProfileView is a translation from the SQL result
@@ -47,24 +64,35 @@ type UserProfileView struct {
 }
 
 
-/*---------------------------------
-          Response Data
-----------------------------------*/
+// ToAPIUserProfileView maps from a db.UserProfileView
+// (which has things like sql.NullString) into
+// an api.UserProfileView, which is JSON representable
+func ToAPIUserProfileView(dbUserProfileView *db.UserProfileView) *UserProfileView {
+  userProfileView := new(UserProfileView)
+  userProfileView.UserID = dbUserProfileView.UserID
+  userProfileView.UserName = dbUserProfileView.UserName
+  userProfileView.EmailAddress = dbUserProfileView.EmailAddress
+  userProfileView.Created = dbUserProfileView.Created
+  userProfileView.DefaultCharacterGsp = FromNullInt64(dbUserProfileView.DefaultCharacterGsp)
+  userProfileView.DefaultCharacterID = FromNullInt64(dbUserProfileView.DefaultCharacterID)
+  userProfileView.DefaultCharacterName = FromNullString(dbUserProfileView.DefaultCharacterName)
 
-
-
-// UserGetResponseData is the data we send back
-// after a successfully getting all user's info
-type UserGetResponseData struct {
-  User  UserProfileView  `json:"user"`
+  return userProfileView
 }
 
 
-// UserUpdateResponseData is the data we send
-// back after a successfully creating a new user
-type UserUpdateResponseData struct {
-  UserID  int  `json:"userId"`
+// ToDBUserUpdate maps from an api.UserUpdateRequestDat 
+// into a sb.UserProfileUpdate, which has things like sql.NullInt64
+func ToDBUserUpdate(userUpdateRequestData *UserUpdateRequestData) *db.UserProfileUpdate {
+  dbUserUpdate := new(db.UserProfileUpdate)
+  dbUserUpdate.UserID = userUpdateRequestData.UserID
+  dbUserUpdate.UserName = userUpdateRequestData.UserName
+  dbUserUpdate.DefaultCharacterID = ToNullInt64(userUpdateRequestData.DefaultCharacterID)
+  dbUserUpdate.DefaultCharacterGsp = ToNullInt64(userUpdateRequestData.DefaultCharacterGsp)
+
+  return dbUserUpdate
 }
+
 
 
 /*---------------------------------
@@ -128,14 +156,7 @@ func (r *UserRouter) handleGetByID(res http.ResponseWriter, req *http.Request) {
     http.Error(res, fmt.Sprintf("Error getting user with id %q: %s", id, err.Error()), http.StatusInternalServerError)
     return
   }
-
-  var userProfileView UserProfileView
-  userProfileView.UserID = dbUserProfileView.UserID
-  userProfileView.UserName = dbUserProfileView.UserName
-  userProfileView.EmailAddress = dbUserProfileView.EmailAddress
-  userProfileView.Created = dbUserProfileView.Created
-  userProfileView.DefaultCharacterID = FromNullInt64(dbUserProfileView.DefaultCharacterID)
-  userProfileView.DefaultCharacterName = FromNullString(dbUserProfileView.DefaultCharacterName)
+  userProfileView := ToAPIUserProfileView(dbUserProfileView)
 
   response := &Response{
     Success:  true,
@@ -152,33 +173,29 @@ func (r *UserRouter) handleGetByID(res http.ResponseWriter, req *http.Request) {
 
 func (r *UserRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  var updateRequestData UserUpdateRequestData
+  updateRequestData := new(UserUpdateRequestData)
 
-  err := decoder.Decode(&updateRequestData)
+  err := decoder.Decode(updateRequestData)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
-  var userProfileUpdate db.UserProfileUpdate
-  userProfileUpdate.UserID = updateRequestData.UserID
-  userProfileUpdate.UserName = updateRequestData.UserName
-  // Convert to sql.NullInt64 because a user can have no default character info
-  userProfileUpdate.DefaultCharacterID = ToNullInt64(updateRequestData.DefaultCharacterID)
-  userProfileUpdate.DefaultCharacterGsp = ToNullInt64(updateRequestData.DefaultCharacterGsp)
-
-
-  userID, err := r.SysUtils.Database.UpdateUserProfile(userProfileUpdate)
+  dbUserProfileUpdate := ToDBUserUpdate(updateRequestData)
+  userID, err := r.SysUtils.Database.UpdateUserProfile(dbUserProfileUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error updating user in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
+  dbUserProfileView, err := r.SysUtils.Database.GetUserProfileViewByID(userID)
+  userProfileView := ToAPIUserProfileView(dbUserProfileView)
+  
 
   response := &Response{
     Success:  true,
     Error:    nil,
     Data:     UserUpdateResponseData{
-      UserID:  userID,
+      User:  userProfileView,
     },
   }
 

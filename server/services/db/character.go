@@ -50,8 +50,8 @@ type CharacterCreate struct {
 type CharacterManager interface {
   GetAllCharacters() ([]*Character, error)
 
-  CreateCharacter(character CharacterCreate) (*Character, error)
-  UpdateCharacter(update CharacterUpdate) (*Character, error)
+  CreateCharacter(characterCreate *CharacterCreate) (*Character, error)
+  UpdateCharacter(characterUpdate *CharacterUpdate) (*Character, error)
 }
 
 
@@ -105,7 +105,7 @@ func (db *DB) GetAllCharacters() ([]*Character, error) {
 
 
 // CreateCharacter adds a new entry to the characters table in our database
-func (db *DB) CreateCharacter(characterCreate CharacterCreate) (*Character, error) {
+func (db *DB) CreateCharacter(characterCreate *CharacterCreate) (*Character, error) {
   sqlStatement := `
     INSERT INTO characters
       (character_name, character_stock_img, character_img, character_archetype)
@@ -143,7 +143,7 @@ func (db *DB) CreateCharacter(characterCreate CharacterCreate) (*Character, erro
 
 
 // UpdateCharacter updates an existing entry in the characters table in our database
-func (db *DB) UpdateCharacter(characterUpdate CharacterUpdate) (*Character, error) {
+func (db *DB) UpdateCharacter(characterUpdate *CharacterUpdate) (*Character, error) {
   sqlStatement := `
     UPDATE
       characters

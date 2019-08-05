@@ -55,9 +55,9 @@ type RefreshRequestData struct {
 // LoginResponseData is the data we
 // send back after a successful log in
 type LoginResponseData struct {
-  User               UserProfileView     `json:"user"`
-  AccessExpiration   time.Time           `json:"accessExpiration"`
-  RefreshExpiration  time.Time           `json:"refreshExpiration"`
+  User               *UserProfileView  `json:"user"`
+  AccessExpiration   time.Time         `json:"accessExpiration"`
+  RefreshExpiration  time.Time         `json:"refreshExpiration"`
 }
 
 
@@ -235,9 +235,10 @@ func (r *AuthRouter) handleLogin(res http.ResponseWriter, req *http.Request) {
   }
 
   // Also store this refresh token in the user table
-  var userRefreshUpdate db.UserRefreshUpdate
+  userRefreshUpdate := new(db.UserRefreshUpdate)
   userRefreshUpdate.UserID = userCredentialsView.UserID
   userRefreshUpdate.RefreshToken = refreshTokenStr
+
   _, err = r.SysUtils.Database.UpdateUserRefreshToken(userRefreshUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error adding new refresh token to database: %s", err.Error()), http.StatusInternalServerError)
@@ -268,15 +269,7 @@ func (r *AuthRouter) handleLogin(res http.ResponseWriter, req *http.Request) {
     http.Error(res, fmt.Sprintf("Could not get user data for id %d: %s", userCredentialsView.UserID, err.Error()), http.StatusBadRequest)
     return
   }
-  
-  var userProfileView UserProfileView
-  userProfileView.UserID = dbUserProfileView.UserID
-  userProfileView.UserName = dbUserProfileView.UserName
-  userProfileView.EmailAddress = dbUserProfileView.EmailAddress
-  userProfileView.Created = dbUserProfileView.Created
-  userProfileView.DefaultCharacterGsp = FromNullInt64(dbUserProfileView.DefaultCharacterGsp)
-  userProfileView.DefaultCharacterID = FromNullInt64(dbUserProfileView.DefaultCharacterID)
-  userProfileView.DefaultCharacterName = FromNullString(dbUserProfileView.DefaultCharacterName)
+  userProfileView := ToAPIUserProfileView(dbUserProfileView)
 
   response := &Response{
     Success:           true,
@@ -348,7 +341,7 @@ func (r *AuthRouter) handleLogout(res http.ResponseWriter, req *http.Request) {
   }
 
   // We want to delete the refresh token when a user logs out
-  var userRefreshUpdate db.UserRefreshUpdate
+  userRefreshUpdate :=  new(db.UserRefreshUpdate)
   userRefreshUpdate.UserID = logoutRequestData.UserID
   userRefreshUpdate.RefreshToken = ""
   userID, err := r.SysUtils.Database.UpdateUserRefreshToken(userRefreshUpdate)

@@ -15,14 +15,28 @@ type Match struct {
   MatchID               *int           `json:"matchId,omitempty"`
   OpponentCharacterID   int            `json:"opponentCharacterId"`
   UserID                int            `json:"userId"`
+  OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp"`
+  OpponentTeabag        sql.NullBool   `json:"opponentTeabag"`
+  OpponentCamp          sql.NullBool   `json:"opponentCamp"`
+  OpponentAwesome       sql.NullBool   `json:"opponentAwesome"`
+  UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
+  UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
+  UserWin               sql.NullBool   `json:"userWin"`
+}
 
-  OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp,omitempty"`
-  OpponentTeabag        sql.NullBool   `json:"opponentTeabag,omitempty"`
-  OpponentCamp          sql.NullBool   `json:"opponentCamp,omitempty"`
-  OpponentAwesome       sql.NullBool   `json:"opponentAwesome,omitempty"`
-  UserCharacterID       sql.NullInt64  `json:"userCharacterId,omitempty"`
-  UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp,omitempty"`
-  UserWin               sql.NullBool   `json:"userWin,omitempty"`
+
+// MatchCreate describes the data needed 
+// to create a given match in our db
+type MatchCreate struct {
+  OpponentCharacterID   int            `json:"opponentCharacterId"`
+  UserID                int            `json:"userId"`
+  OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp"`
+  OpponentTeabag        sql.NullBool   `json:"opponentTeabag"`
+  OpponentCamp          sql.NullBool   `json:"opponentCamp"`
+  OpponentAwesome       sql.NullBool   `json:"opponentAwesome"`
+  UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
+  UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
+  UserWin               sql.NullBool   `json:"userWin"`
 }
 
 /*---------------------------------
@@ -32,7 +46,7 @@ type Match struct {
 // MatchManager describes all of the methods used
 // to interact with the matches table in our database
 type MatchManager interface {
-  CreateMatch(match Match) (int, error)
+  CreateMatch(matchCreate *MatchCreate) (int, error)
 }
 
 /*---------------------------------
@@ -40,7 +54,7 @@ type MatchManager interface {
 ----------------------------------*/
 
 // CreateMatch adds a new entry to the matches table in our database
-func (db *DB) CreateMatch(match Match) (int, error) {
+func (db *DB) CreateMatch(matchCreate *MatchCreate) (int, error) {
   var matchID int
   sqlStatement := `
     INSERT INTO matches (
@@ -60,15 +74,15 @@ func (db *DB) CreateMatch(match Match) (int, error) {
   `
   row := db.QueryRow(
     sqlStatement,
-    match.OpponentCharacterID,
-    match.UserID,
-    match.OpponentCharacterGsp.Int64,
-    match.OpponentTeabag.Bool,
-    match.OpponentCamp.Bool,
-    match.OpponentAwesome.Bool,
-    match.UserCharacterID.Int64,
-    match.UserCharacterGsp.Int64,
-    match.UserWin.Bool,
+    matchCreate.OpponentCharacterID,
+    matchCreate.UserID,
+    matchCreate.OpponentCharacterGsp.Int64,
+    matchCreate.OpponentTeabag.Bool,
+    matchCreate.OpponentCamp.Bool,
+    matchCreate.OpponentAwesome.Bool,
+    matchCreate.UserCharacterID.Int64,
+    matchCreate.UserCharacterGsp.Int64,
+    matchCreate.UserWin.Bool,
   )
 
   err := row.Scan(&matchID)
