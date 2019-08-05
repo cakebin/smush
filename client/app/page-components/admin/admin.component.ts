@@ -24,6 +24,8 @@ export class AdminComponent implements OnInit {
   }
 
   public onSelectEditCharacter(event: ICharacterViewModel): void {
-    this.editCharacter.characterId = event.characterId;
+    if (event) {
+      this.editCharacter.characterId = event.characterId;
+    }
   }
 }

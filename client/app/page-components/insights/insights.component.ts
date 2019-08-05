@@ -45,8 +45,10 @@ export class InsightsComponent implements OnInit {
 
   ngOnInit() {
     this.matchService.cachedMatches.subscribe(res => {
-      this.matches = res;
-      this.publishCharacterUsageChartData();
+      if (res) {
+        this.matches = res;
+        this.publishCharacterUsageChartData();
+      }
     },
     err => {
         this.commonUxService.showDangerToast('Unable to get data.');
