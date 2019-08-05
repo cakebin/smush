@@ -10,6 +10,7 @@ package db
 type Character struct {
   CharacterID        *int     `json:"characterId,omitempty"`
   CharacterName      string   `json:"characterName"`
+  CharacterStockImg  string   `json:"characterStockImg"`
 }
 
 
@@ -35,7 +36,8 @@ func (db *DB) GetAllCharacters() ([]*Character, error) {
   sqlStatement := `
     SELECT
       character_id,
-      character_name
+      character_name,
+      character_stock_img
     FROM
       characters
   `
@@ -51,6 +53,7 @@ func (db *DB) GetAllCharacters() ([]*Character, error) {
     err := rows.Scan(
       &character.CharacterID,
       &character.CharacterName,
+      &character.CharacterStockImg,
     )
 
     if err != nil {
@@ -74,17 +77,18 @@ func (db *DB) CreateCharacter(character Character) (int, error) {
   var characterID int
   sqlStatement := `
     INSERT INTO characters
-      (character_name)
+      (character_name, character_stock_img)
     VALUES
-      ($1)
+      ($1, $2)
     RETURNING
       character_id
   `
   row := db.QueryRow(
     sqlStatement,
     character.CharacterName,
+    character.CharacterStockImg,
   )
-  err := row.Scan(characterID)
+  err := row.Scan(&characterID)
 
   if err != nil {
     return 0, nil

@@ -1,6 +1,7 @@
 package db
 
 import (
+  "database/sql"
   "time"
 )
 
@@ -13,24 +14,25 @@ import (
 // containing all of the data necessary to show a "match" in the front end
 type MatchView struct {
   // Data from matches
-  Created                time.Time  `json:"created"`
-  MatchID                *int       `json:"matchId"`
-  UserID                 int        `json:"userId"`
-  UserCharacterID        *int       `json:"userCharacterId"`
-  OpponentCharacterID    int        `json:"opponentCharacterId"`
-  OpponentCharacterGsp   *int       `json:"opponentCharacterGsp,omitempty"`
-  OpponentTeabag         *bool      `json:"opponentTeabag,omitempty"`
-  OpponentCamp           *bool      `json:"opponentCamp,omitempty"`
-  OpponentAwesome        *bool      `json:"opponentAwesome,omitempty"`
-  UserCharacterGsp       *int       `json:"userCharacterGsp,omitempty"`
-  UserWin                *bool      `json:"userWin,omitempty"`
+  Created                time.Time       `json:"created"`
+  UserID                 int             `json:"userId"`
+  MatchID                int             `json:"matchId"`
+  OpponentCharacterID    int             `json:"opponentCharacterId"`
+
+  UserCharacterID        sql.NullInt64   `json:"userCharacterId"`
+  OpponentCharacterGsp   sql.NullInt64   `json:"opponentCharacterGsp,omitempty"`
+  OpponentTeabag         sql.NullBool    `json:"opponentTeabag,omitempty"`
+  OpponentCamp           sql.NullBool    `json:"opponentCamp,omitempty"`
+  OpponentAwesome        sql.NullBool    `json:"opponentAwesome,omitempty"`
+  UserCharacterGsp       sql.NullInt64   `json:"userCharacterGsp,omitempty"`
+  UserWin                sql.NullBool    `json:"userWin,omitempty"`
 
   // Data from users
-  UserName               *string    `json:"userName"`
+  UserName               string          `json:"userName"`
 
   // Data from characters
-  OpponentCharacterName  string     `json:"opponentCharacterName"`
-  UserCharacterName      *string    `json:"userCharacterName"`
+  OpponentCharacterName  string          `json:"opponentCharacterName"`
+  UserCharacterName      sql.NullString  `json:"userCharacterName,omitempty"`
 }
 
 
@@ -51,8 +53,7 @@ type MatchViewManager interface {
 ----------------------------------*/
 
 // GetMatchViewByMatchID gets all of the data needed to display
-// a recorded match, which includes joined data from the matches,
-// users, and characters tables for a specific match_id
+// an individual match, which includes joined data from the users and characters table
 func (db *DB) GetMatchViewByMatchID(matchID int) (*MatchView, error) {
   sqlStatement := `
     SELECT
@@ -72,13 +73,12 @@ func (db *DB) GetMatchViewByMatchID(matchID int) (*MatchView, error) {
       user_character.character_name       AS user_character_name
     FROM
       matches
-    JOIN users ON users.user_id = matches.user_id
-    JOIN characters opponent_character ON opponent_character.character_id = matches.opponent_character_id
-    JOIN characters user_character ON user_character.character_id = matches.user_character_id
+    LEFT JOIN users ON users.user_id = matches.user_id
+    LEFT JOIN characters opponent_character ON opponent_character.character_id = matches.opponent_character_id
+    LEFT JOIN characters user_character ON user_character.character_id = matches.user_character_id
     WHERE
-      matches.match_id = $1
+     match_id = $1
   `
-
   row := db.QueryRow(sqlStatement, matchID)
   matchView := new(MatchView)
   err := row.Scan(
@@ -105,7 +105,6 @@ func (db *DB) GetMatchViewByMatchID(matchID int) (*MatchView, error) {
   return matchView, nil
 }
 
-
 // GetAllMatchViews gets all of the data needed to display all recorded matches,
 // which includes joined data from the matches, users, and characters tables
 func (db *DB) GetAllMatchViews() ([]*MatchView, error) {
@@ -127,9 +126,9 @@ func (db *DB) GetAllMatchViews() ([]*MatchView, error) {
       user_character.character_name       AS user_character_name
     FROM
       matches
-    JOIN users ON users.user_id = matches.user_id
-    JOIN characters opponent_character ON opponent_character.character_id = matches.opponent_character_id
-    JOIN characters user_character ON user_character.character_id = matches.user_character_id
+    LEFT JOIN users ON users.user_id = matches.user_id
+    LEFT JOIN characters opponent_character ON opponent_character.character_id = matches.opponent_character_id
+    LEFT JOIN characters user_character ON user_character.character_id = matches.user_character_id
   `
 
   rows, err := db.Query(sqlStatement)

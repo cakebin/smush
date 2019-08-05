@@ -1,5 +1,9 @@
 package db
 
+import (
+  "database/sql"
+)
+
 
 /*---------------------------------
           Data Structures
@@ -8,10 +12,10 @@ package db
 // UserProfileUpdate describes the data needed 
 // to update a given user's profile information
 type UserProfileUpdate struct {
-  UserID               int      `json:"userId"`
-  UserName             string   `json:"userName"`
-  DefaultCharacterID   int      `json:"defaultCharacterId"`
-  DefaultCharacterGsp  int      `json:"defaultCharacterGsp"`
+  UserID               int            `json:"userId"`
+  UserName             string         `json:"userName"`
+  DefaultCharacterID   sql.NullInt64  `json:"defaultCharacterId"`
+  DefaultCharacterGsp  sql.NullInt64  `json:"defaultCharacterGsp"`
 }
 
 
@@ -42,10 +46,10 @@ type User struct {
 // UserManager describes all of the methods used
 // to interact with the users table in our database
 type UserManager interface {
-  GetUserByEmail(email string) (int, error)
+  GetUserIDByEmail(email string) (int, error)
 
   UpdateUserProfile(profileUpdate UserProfileUpdate) (int, error)
-  UpdateUserRefreshToken(token string, id int) (int, error)
+  UpdateUserRefreshToken(refreshUpdate UserRefreshUpdate) (int, error)
 
   CreateUser(user User) (int, error)
 }
@@ -55,8 +59,8 @@ type UserManager interface {
        Method Implementations
 ----------------------------------*/
 
-// GetUserByEmail gets a specific user from the users table by email
-func (db *DB) GetUserByEmail(email string) (int, error) {
+// GetUserIDByEmail gets a specific user's id from the users table by email
+func (db *DB) GetUserIDByEmail(email string) (int, error) {
   var userID int
   sqlStatement := `
     SELECT
@@ -67,7 +71,7 @@ func (db *DB) GetUserByEmail(email string) (int, error) {
       email_address = $1
   `
   row := db.QueryRow(sqlStatement, email)
-  err := row.Scan(userID)
+  err := row.Scan(&userID)
 
   if err != nil {
     return 0, err
@@ -82,9 +86,9 @@ func (db *DB) CreateUser(user User) (int, error) {
   var userID int
   sqlStatement := `
     INSERT INTO users
-      (user_name, email_address, hashed_password, refresh_token)
+      (user_name, email_address, hashed_password)
     VALUES 
-      ($1, $2, $3, $4)
+      ($1, $2, $3)
     RETURNING
       user_id
   `
@@ -93,7 +97,6 @@ func (db *DB) CreateUser(user User) (int, error) {
     user.UserName,
     user.EmailAddress,
     user.HashedPassword,
-    user.RefreshToken,
   )
   err := row.Scan(&userID)
 
@@ -139,7 +142,7 @@ func (db *DB) UpdateUserProfile(profileUpdate UserProfileUpdate) (int, error) {
 
 
 // UpdateUserRefreshToken updates an a user's refresh token; used for auth
-func (db *DB) UpdateUserRefreshToken(token string, id int) (int, error) {
+func (db *DB) UpdateUserRefreshToken(refreshUpdate UserRefreshUpdate) (int, error) {
   var userID int
   sqlStatement := `
     UPDATE
@@ -153,8 +156,8 @@ func (db *DB) UpdateUserRefreshToken(token string, id int) (int, error) {
   `
   row := db.QueryRow(
     sqlStatement,
-    token,
-    id,
+    refreshUpdate.RefreshToken,
+    refreshUpdate.UserID,
   )
   err := row.Scan(&userID)
 

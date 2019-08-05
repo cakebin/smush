@@ -13,25 +13,24 @@ import (
 // and optional data needed for a user's public
 type UserProfileView struct {
   // Data from Users
-  UserID              int           `json:"userId"`
-  UserName            string        `json:"userName"`
-  EmailAddress        string        `json:"emailAddress"`
-  Created             time.Time     `json:"created"`
-  DefaultCharacterGsp sql.NullInt64 `json:"defaultCharacterGsp"`
+  UserID                int             `json:"userId"`
+  UserName              string          `json:"userName"`
+  EmailAddress          string          `json:"emailAddress"`
+  Created               time.Time       `json:"created"`
+  DefaultCharacterGsp   sql.NullInt64   `json:"defaultCharacterGsp"`
 
   // Data from characters
-  DefaultCharacterID   sql.NullInt64  `json:"defaultCharacterId"`
-  DefaultCharacterName sql.NullString `json:"defaultCharacterName"`
+  DefaultCharacterID    sql.NullInt64   `json:"defaultCharacterId"`
+  DefaultCharacterName  sql.NullString  `json:"defaultCharacterName"`
 }
 
 // UserCredentialsView describes all of the data
 // needed for a user's authentication credentials
 type UserCredentialsView struct {
-  UserID         *int    `json:"userId,omitempty"`
-  UserName       *string `json:"userName"`
-  EmailAddress   string  `json:"emailAddress"`
-  Password       *string `json:"password,omitempty"`
-  HashedPassword *string `json:"hashedPassword,omitempty"`
+  EmailAddress    string  `json:"email"`
+  UserID          int     `json:"userId"`
+  UserName        string  `json:"userName"`
+  HashedPassword  string  `json:"hashedPassword"`
 }
 
 /*---------------------------------

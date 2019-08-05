@@ -1,5 +1,10 @@
 package db
 
+import (
+  "database/sql"
+)
+
+
 /*---------------------------------
           Data Structures
 ----------------------------------*/
@@ -7,16 +12,17 @@ package db
 // Match describes the required and optional data
 // needed to create a new match in our matches table
 type Match struct {
-  OpponentCharacterID int `json:"opponentCharacterId"`
-  UserID              int `json:"userId"`
+  MatchID               *int           `json:"matchId,omitempty"`
+  OpponentCharacterID   int            `json:"opponentCharacterId"`
+  UserID                int            `json:"userId"`
 
-  OpponentCharacterGsp *int  `json:"opponentCharacterGsp,omitempty"`
-  OpponentTeabag       *bool `json:"opponentTeabag,omitempty"`
-  OpponentCamp         *bool `json:"opponentCamp,omitempty"`
-  OpponentAwesome      *bool `json:"opponentAwesome,omitempty"`
-  UserCharacterID      *int  `json:"userCharacterId,omitempty"`
-  UserCharacterGsp     *int  `json:"userCharacterGsp,omitempty"`
-  UserWin              *bool `json:"userWin,omitempty"`
+  OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp,omitempty"`
+  OpponentTeabag        sql.NullBool   `json:"opponentTeabag,omitempty"`
+  OpponentCamp          sql.NullBool   `json:"opponentCamp,omitempty"`
+  OpponentAwesome       sql.NullBool   `json:"opponentAwesome,omitempty"`
+  UserCharacterID       sql.NullInt64  `json:"userCharacterId,omitempty"`
+  UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp,omitempty"`
+  UserWin               sql.NullBool   `json:"userWin,omitempty"`
 }
 
 /*---------------------------------
@@ -56,15 +62,16 @@ func (db *DB) CreateMatch(match Match) (int, error) {
     sqlStatement,
     match.OpponentCharacterID,
     match.UserID,
-    match.OpponentCharacterGsp,
-    match.OpponentTeabag,
-    match.OpponentCamp,
-    match.OpponentAwesome,
-    match.UserCharacterID,
-    match.UserCharacterGsp,
-    match.UserWin,
+    match.OpponentCharacterGsp.Int64,
+    match.OpponentTeabag.Bool,
+    match.OpponentCamp.Bool,
+    match.OpponentAwesome.Bool,
+    match.UserCharacterID.Int64,
+    match.UserCharacterGsp.Int64,
+    match.UserWin.Bool,
   )
-  err := row.Scan(matchID)
+
+  err := row.Scan(&matchID)
 
   if err != nil {
     return 0, err

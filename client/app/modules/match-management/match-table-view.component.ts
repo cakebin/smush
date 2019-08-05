@@ -49,10 +49,12 @@ export class MatchTableViewComponent implements OnInit {
     this.isLoading = true;
     this.matchService.cachedMatches.subscribe({
       next: res => {
-        this.isLoading = true;
-        this.sortedMatches = res;
-        this.matches = res;
-        this.initialSort();
+        if (res) {
+          this.isLoading = true;
+          this.sortedMatches = res;
+          this.matches = res;
+          this.initialSort();
+        }
       },
       error: err => {
         this.commonUXService.showDangerToast('Unable to get matches.');
