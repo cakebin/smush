@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, map, finalize, retryWhen, delay, take } from 'rxjs/operators';
+import { publish, refCount, tap, map, finalize, retryWhen, delay, take } from 'rxjs/operators';
 import { IMatchViewModel, IServerResponse } from '../../app.view-models';
 
 @Injectable()
@@ -31,16 +31,17 @@ export class MatchManagementService {
     }
     public createMatch(match: IMatchViewModel): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/create`, match).pipe(
-            finalize(() => {
-                const allMatches: IMatchViewModel[] = this.cachedMatches.value;
-                allMatches.push(match);
-                this.cachedMatches.next(allMatches);
-                this.cachedMatches.pipe(
-                    publish(),
-                    refCount()
-                );
-            })
-        );
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.match) {
+                    const allMatches: IMatchViewModel[] = this.cachedMatches.value;
+                    allMatches.push(res.data.match);
+                    this.cachedMatches.next(allMatches);
+                    this.cachedMatches.pipe(
+                        publish(),
+                        refCount()
+                    );
+                }
+            }));
     }
     public updateMatch(updatedMatch: IMatchViewModel): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/update`, updatedMatch);
