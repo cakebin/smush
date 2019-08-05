@@ -30,8 +30,27 @@ type MatchCreateRequestData struct {
   OpponentAwesome       *bool   `json:"opponentAwesome,omitempty"`
 }
 
+
 /*---------------------------------
-          SQL --> API
+          Response Data
+----------------------------------*/
+
+// MatchGetAllResponseData is the data we send back
+// after a successfully get info for all matches in our db
+type MatchGetAllResponseData struct {
+  Matches  []*MatchView  `json:"matches"`
+}
+
+
+// MatchCreateResponseData is the data we send
+//  back after a successfully creating a new match
+type MatchCreateResponseData struct {
+  Match  *MatchView  `json:"match"`
+}
+
+
+/*---------------------------------
+          API <--> SQL
 ----------------------------------*/
 
 // MatchView is a translation from the SQL result
@@ -61,21 +80,45 @@ type MatchView struct {
 }
 
 
-/*---------------------------------
-          Response Data
-----------------------------------*/
+// ToAPIMatchView maps from a db.MatchView
+// (which has things like sql.NullString) into
+// an api.MatchView, which is JSON representable
+func ToAPIMatchView(dbMatchView *db.MatchView) *MatchView {
+  matchView := new(MatchView)
+  matchView.Created = dbMatchView.Created
+  matchView.UserID = dbMatchView.UserID
+  matchView.MatchID = dbMatchView.MatchID
+  matchView.OpponentCharacterID = dbMatchView.OpponentCharacterID
+  matchView.UserCharacterID = FromNullInt64(dbMatchView.UserCharacterID)
+  matchView.OpponentCharacterGsp = FromNullInt64(dbMatchView.OpponentCharacterGsp)
+  matchView.OpponentTeabag = FromNullBool(dbMatchView.OpponentTeabag)
+  matchView.OpponentCamp = FromNullBool(dbMatchView.OpponentCamp)
+  matchView.OpponentAwesome = FromNullBool(dbMatchView.OpponentAwesome)
+  matchView.UserCharacterGsp = FromNullInt64(dbMatchView.UserCharacterGsp)
+  matchView.UserName = dbMatchView.UserName
+  matchView.OpponentCharacterName = dbMatchView.OpponentCharacterName
+  matchView.UserCharacterName = FromNullString(dbMatchView.UserCharacterName)
+  matchView.UserWin = FromNullBool(dbMatchView.UserWin)
 
-// MatchGetAllResponseData is the data we send back
-// after a successfully get info for all matches in our db
-type MatchGetAllResponseData struct {
-  Matches  []MatchView  `json:"matches"`
+  return matchView
 }
 
 
-// MatchCreateResponseData is the data we send
-//  back after a successfully creating a new match
-type MatchCreateResponseData struct {
-  Match  MatchView  `json:"match"`
+// ToDBMatchCreate maps from an api.MatchCreateRequestDat
+// to a db.MatchCreate, which has fields like sql.NullBool
+func ToDBMatchCreate(matchCreateRequestData *MatchCreateRequestData) *db.MatchCreate {
+  dbMatchCreate := new(db.MatchCreate)
+  dbMatchCreate.UserID = matchCreateRequestData.UserID
+  dbMatchCreate.OpponentCharacterID = matchCreateRequestData.OpponentCharacterID
+  dbMatchCreate.OpponentCharacterGsp = ToNullInt64(matchCreateRequestData.OpponentCharacterGsp)
+  dbMatchCreate.OpponentTeabag = ToNullBool(matchCreateRequestData.OpponentTeabag)
+  dbMatchCreate.OpponentCamp = ToNullBool(matchCreateRequestData.OpponentCamp)
+  dbMatchCreate.OpponentAwesome = ToNullBool(matchCreateRequestData.OpponentAwesome)
+  dbMatchCreate.UserCharacterID = ToNullInt64(matchCreateRequestData.UserCharacterID)
+  dbMatchCreate.UserCharacterGsp = ToNullInt64(matchCreateRequestData.UserCharacterGsp)
+  dbMatchCreate.UserWin = ToNullBool(matchCreateRequestData.UserWin)
+
+  return dbMatchCreate
 }
 
 
@@ -131,23 +174,10 @@ func (r *MatchRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
     return
   }
 
-  matchViews := make([]MatchView, 0)
+  matchViews := make([]*MatchView, 0)
   for _, dbMatchView := range dbMatchViews {
-    matchView := new(MatchView)
-    matchView.Created = dbMatchView.Created
-    matchView.UserID = dbMatchView.UserID
-    matchView.MatchID = dbMatchView.MatchID
-    matchView.OpponentCharacterID = dbMatchView.OpponentCharacterID
-    matchView.UserCharacterID = FromNullInt64(dbMatchView.UserCharacterID)
-    matchView.OpponentCharacterGsp = FromNullInt64(dbMatchView.OpponentCharacterGsp)
-    matchView.OpponentTeabag = FromNullBool(dbMatchView.OpponentTeabag)
-    matchView.OpponentCamp = FromNullBool(dbMatchView.OpponentCamp)
-    matchView.OpponentAwesome = FromNullBool(dbMatchView.OpponentAwesome)
-    matchView.UserName = dbMatchView.UserName
-    matchView.OpponentCharacterName = dbMatchView.OpponentCharacterName
-    matchView.UserCharacterName = FromNullString(dbMatchView.UserCharacterName)
-    matchView.UserWin = FromNullBool(dbMatchView.UserWin)
-    matchViews = append(matchViews, *matchView)
+    matchView := ToAPIMatchView(dbMatchView)
+    matchViews = append(matchViews, matchView)
   }
 
   response := &Response{
@@ -165,49 +195,29 @@ func (r *MatchRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
 
 func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  var createRequestData MatchCreateRequestData
+  createRequestData := new(MatchCreateRequestData)
 
-  err := decoder.Decode(&createRequestData)
+  err := decoder.Decode(createRequestData)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
-  var match db.Match
-  match.UserID = createRequestData.UserID
-  match.OpponentCharacterID = createRequestData.OpponentCharacterID
-  // Convert optional fields to sql.Null variants
-  match.OpponentCharacterGsp = ToNullInt64(createRequestData.OpponentCharacterGsp)
-  match.OpponentTeabag = ToNullBool(createRequestData.OpponentTeabag)
-  match.OpponentCamp = ToNullBool(createRequestData.OpponentCamp)
-  match.OpponentAwesome = ToNullBool(createRequestData.OpponentAwesome)
-  match.UserCharacterID = ToNullInt64(createRequestData.UserCharacterID)
-  match.UserCharacterGsp = ToNullInt64(createRequestData.UserCharacterGsp)
-  match.UserWin = ToNullBool(createRequestData.UserWin)
-  
-  matchID, err := r.SysUtils.Database.CreateMatch(match)
+  // First make a db.MatchCreate from the create request data
+  dbMatchCreate := ToDBMatchCreate(createRequestData)
+
+  // Then make the new match and fetch relevant match view data for it
+  matchID, err := r.SysUtils.Database.CreateMatch(dbMatchCreate)
   dbMatchView, err := r.SysUtils.Database.GetMatchViewByMatchID(matchID)
 
-  matchView := new(MatchView)
-  matchView.Created = dbMatchView.Created
-  matchView.UserID = dbMatchView.UserID
-  matchView.MatchID = dbMatchView.MatchID
-  matchView.OpponentCharacterID = dbMatchView.OpponentCharacterID
-  matchView.UserCharacterID = FromNullInt64(dbMatchView.UserCharacterID)
-  matchView.OpponentCharacterGsp = FromNullInt64(dbMatchView.OpponentCharacterGsp)
-  matchView.OpponentTeabag = FromNullBool(dbMatchView.OpponentTeabag)
-  matchView.OpponentCamp = FromNullBool(dbMatchView.OpponentCamp)
-  matchView.OpponentAwesome = FromNullBool(dbMatchView.OpponentAwesome)
-  matchView.UserName = dbMatchView.UserName
-  matchView.OpponentCharacterName = dbMatchView.OpponentCharacterName
-  matchView.UserCharacterName = FromNullString(dbMatchView.UserCharacterName)
-  matchView.UserWin = FromNullBool(dbMatchView.UserWin)
+  // Finally make a JSON representable version of the db.MatchView fetched results
+  matchView := ToAPIMatchView(dbMatchView)
 
   response := &Response{
     Success:  true,
     Error:    err,
     Data:     MatchCreateResponseData{
-      Match:  *matchView,
+      Match:  matchView,
     },
   }
 

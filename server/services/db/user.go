@@ -48,8 +48,8 @@ type User struct {
 type UserManager interface {
   GetUserIDByEmail(email string) (int, error)
 
-  UpdateUserProfile(profileUpdate UserProfileUpdate) (int, error)
-  UpdateUserRefreshToken(refreshUpdate UserRefreshUpdate) (int, error)
+  UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error)
+  UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int, error)
 
   CreateUser(user User) (int, error)
 }
@@ -109,7 +109,7 @@ func (db *DB) CreateUser(user User) (int, error) {
 
 
 // UpdateUserProfile updates an entry in the users table with the given data
-func (db *DB) UpdateUserProfile(profileUpdate UserProfileUpdate) (int, error) {
+func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error) {
   var userID int
   sqlStatement := `
     UPDATE
@@ -142,7 +142,7 @@ func (db *DB) UpdateUserProfile(profileUpdate UserProfileUpdate) (int, error) {
 
 
 // UpdateUserRefreshToken updates an a user's refresh token; used for auth
-func (db *DB) UpdateUserRefreshToken(refreshUpdate UserRefreshUpdate) (int, error) {
+func (db *DB) UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int, error) {
   var userID int
   sqlStatement := `
     UPDATE
