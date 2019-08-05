@@ -70,6 +70,28 @@ export class MatchInputFormComponent implements OnInit {
     );
   }
 
+  public createEntry(): void {
+    if (!this.validateMatch()) {
+      this.warnings.forEach(warningMessage => {
+        this.commonUxService.showWarningToast(warningMessage);
+      });
+      return;
+    }
+    this.isSaving = true;
+    this.matchService.createMatch(this.match).subscribe((res: number) => {
+      if (res) {
+        console.log('new match is', res);
+      }
+    }, error => {
+      this.commonUxService.showDangerToast('Unable to save match.');
+      console.error(error);
+    }, () => {
+      this._resetMatch();
+      // Set footer warnings to false so it won't show up until the next mouseenter
+      this.showFooterWarnings = false;
+      this.isSaving = false;
+    });
+  }
   public onSetOpponentCharacter(event: ICharacterViewModel): void {
     // Event properties aren't accessible in the template
     if (event == null) {
@@ -86,33 +108,12 @@ export class MatchInputFormComponent implements OnInit {
       this.match.userCharacterId = event.characterId;
     }
   }
-  public createEntry(): void {
-    if (!this.validateMatch()) {
-      this.warnings.forEach(warningMessage => {
-        this.commonUxService.showWarningToast(warningMessage);
-      });
-      return;
-    }
-    this.isSaving = true;
-    console.log('Saving match:', this.match);
-    this.matchService.createMatch(this.match).subscribe(response => {
-      // On success (do nothing)
-    }, error => {
-      this.commonUxService.showDangerToast('Unable to save match.');
-    }, () => {
-      this.resetMatch();
-      // Set footer warnings to false so it won't show up until the next mouseenter
-      this.showFooterWarnings = false;
-      this.isSaving = false;
-    });
-  }
-
   public validateMatch(): boolean {
     this.warnings = [];
     if (!this.match.opponentCharacterId) {
       this.warnings.push('Opponent character required.');
     }
-    if (!this.match.userCharacterId && this.match.userCharacterGsp){
+    if (!this.match.userCharacterId && this.match.userCharacterGsp) {
       this.warnings.push('User GSP must be associated with a user character.');
     }
     if (this.warnings.length) {
@@ -122,7 +123,7 @@ export class MatchInputFormComponent implements OnInit {
     }
   }
 
-  private resetMatch(): void {
+  private _resetMatch(): void {
     this.match = {
       matchId: null,
       userId: this.user.userId,

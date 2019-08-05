@@ -12,6 +12,7 @@ import (
 // Match describes the required and optional data
 // needed to create a new match in our matches table
 type Match struct {
+  MatchID               *int           `json:"matchId,omitempty"`
   OpponentCharacterID   int            `json:"opponentCharacterId"`
   UserID                int            `json:"userId"`
 
@@ -31,7 +32,7 @@ type Match struct {
 // MatchManager describes all of the methods used
 // to interact with the matches table in our database
 type MatchManager interface {
-  CreateMatch(match Match) (int, error)
+  CreateMatch(match Match) (*Match, error)
 }
 
 /*---------------------------------
@@ -39,8 +40,8 @@ type MatchManager interface {
 ----------------------------------*/
 
 // CreateMatch adds a new entry to the matches table in our database
-func (db *DB) CreateMatch(match Match) (int, error) {
-  var matchID int
+func (db *DB) CreateMatch(match Match) (*Match, error) {
+
   sqlStatement := `
     INSERT INTO matches (
       opponent_character_id,
@@ -61,19 +62,21 @@ func (db *DB) CreateMatch(match Match) (int, error) {
     sqlStatement,
     match.OpponentCharacterID,
     match.UserID,
-    match.OpponentCharacterGsp,
-    match.OpponentTeabag,
-    match.OpponentCamp,
-    match.OpponentAwesome,
-    match.UserCharacterID,
-    match.UserCharacterGsp,
-    match.UserWin,
+    match.OpponentCharacterGsp.Int64,
+    match.OpponentTeabag.Bool,
+    match.OpponentCamp.Bool,
+    match.OpponentAwesome.Bool,
+    match.UserCharacterID.Int64,
+    match.UserCharacterGsp.Int64,
+    match.UserWin.Bool,
   )
-  err := row.Scan(matchID)
+
+  createdMatch := new(Match)
+  err := row.Scan(&createdMatch.MatchID)
 
   if err != nil {
-    return 0, err
+    return nil, err
   }
 
-  return matchID, nil
+  return createdMatch, nil
 }

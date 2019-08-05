@@ -55,7 +55,7 @@ type RefreshRequestData struct {
 // LoginResponseData is the data we
 // send back after a successful log in
 type LoginResponseData struct {
-  User               db.UserProfileView  `json:"user"`
+  User               UserProfileView     `json:"user"`
   AccessExpiration   time.Time           `json:"accessExpiration"`
   RefreshExpiration  time.Time           `json:"refreshExpiration"`
 }
@@ -263,17 +263,26 @@ func (r *AuthRouter) handleLogin(res http.ResponseWriter, req *http.Request) {
     },
   )
 
-  userProfileView, err := r.SysUtils.Database.GetUserProfileViewByID(userCredentialsView.UserID)
+  dbUserProfileView, err := r.SysUtils.Database.GetUserProfileViewByID(userCredentialsView.UserID)
   if err != nil {
     http.Error(res, fmt.Sprintf("Could not get user data for id %d: %s", userCredentialsView.UserID, err.Error()), http.StatusBadRequest)
     return
   }
+  
+  var userProfileView UserProfileView
+  userProfileView.UserID = dbUserProfileView.UserID
+  userProfileView.UserName = dbUserProfileView.UserName
+  userProfileView.EmailAddress = dbUserProfileView.EmailAddress
+  userProfileView.Created = dbUserProfileView.Created
+  userProfileView.DefaultCharacterGsp = FromNullInt64(dbUserProfileView.DefaultCharacterGsp)
+  userProfileView.DefaultCharacterID = FromNullInt64(dbUserProfileView.DefaultCharacterID)
+  userProfileView.DefaultCharacterName = FromNullString(dbUserProfileView.DefaultCharacterName)
 
   response := &Response{
     Success:           true,
     Error:             nil,
     Data:  LoginResponseData{
-      User:               *userProfileView,
+      User:               userProfileView,
       AccessExpiration:   accessExpiration,
       RefreshExpiration:  refreshExpiration,
     },
