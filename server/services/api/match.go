@@ -185,8 +185,8 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
   match.UserCharacterGsp = ToNullInt64(createRequestData.UserCharacterGsp)
   match.UserWin = ToNullBool(createRequestData.UserWin)
   
-  dbMatch, err := r.SysUtils.Database.CreateMatch(match)
-  dbMatchView, err := r.SysUtils.Database.GetMatchViewByMatchID(*dbMatch.MatchID)
+  matchID, err := r.SysUtils.Database.CreateMatch(match)
+  dbMatchView, err := r.SysUtils.Database.GetMatchViewByMatchID(matchID)
 
   matchView := new(MatchView)
   matchView.Created = dbMatchView.Created

@@ -88,7 +88,7 @@ func (db *DB) CreateCharacter(character Character) (int, error) {
     character.CharacterName,
     character.CharacterStockImg,
   )
-  err := row.Scan(characterID)
+  err := row.Scan(&characterID)
 
   if err != nil {
     return 0, nil

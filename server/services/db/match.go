@@ -32,7 +32,7 @@ type Match struct {
 // MatchManager describes all of the methods used
 // to interact with the matches table in our database
 type MatchManager interface {
-  CreateMatch(match Match) (*Match, error)
+  CreateMatch(match Match) (int, error)
 }
 
 /*---------------------------------
@@ -40,8 +40,8 @@ type MatchManager interface {
 ----------------------------------*/
 
 // CreateMatch adds a new entry to the matches table in our database
-func (db *DB) CreateMatch(match Match) (*Match, error) {
-
+func (db *DB) CreateMatch(match Match) (int, error) {
+  var matchID int
   sqlStatement := `
     INSERT INTO matches (
       opponent_character_id,
@@ -71,12 +71,11 @@ func (db *DB) CreateMatch(match Match) (*Match, error) {
     match.UserWin.Bool,
   )
 
-  createdMatch := new(Match)
-  err := row.Scan(&createdMatch.MatchID)
+  err := row.Scan(&matchID)
 
   if err != nil {
-    return nil, err
+    return 0, err
   }
 
-  return createdMatch, nil
+  return matchID, nil
 }
