@@ -15,11 +15,47 @@ import (
           Request Data
 ----------------------------------*/
 
-// CharacterCreateRequest describes the data we're 
+// CharacterCreateRequestData describes the data we're 
 // expecting when a user attempts to create a character
-type CharacterCreateRequest struct {
+type CharacterCreateRequestData struct {
   CharacterName      string   `json:"characterName"`
   CharacterStockImg  *string  `json:"characterStockImg,omitempty"`
+}
+
+
+// CharacterUpdateRequestData describes the data we're 
+// expecting when an admin user attempts to update a character
+type CharacterUpdateRequestData struct {
+  CharacterID        int      `json:"characterId"`
+  CharacterName      *string  `json:"characterName,omitempty"`
+  CharacterStockImg  *string  `json:"characterStockImg,omitempty"`
+}
+
+
+/*--------------------------------
+          SQL --> API
+----------------------------------*/
+
+// Character is a translation from the SQL result
+// which can have things like `sql.NullInt64`, so we
+// need to translate that to regular JSON objects
+type Character struct {
+  CharacterID        int      `json:"characterId"`
+  CharacterName      string   `json:"characterName"`
+  CharacterStockImg  *string  `json:"characterStockImg,omitempty"`
+}
+
+
+// FromDBCharacter maps from a db.Character
+// (which has things like sql.NullString) into
+// an api.Character, which is JSON representable
+func FromDBCharacter(dbChar *db.Character) *Character {
+  character := new(Character)
+  character.CharacterID = dbChar.CharacterID
+  character.CharacterName = dbChar.CharacterName
+  character.CharacterStockImg = FromNullString(dbChar.CharacterStockImg)
+
+  return character
 }
 
 
@@ -30,13 +66,20 @@ type CharacterCreateRequest struct {
 // CharacterGetAllResponseData is the data we send back
 // after a successfully getting all character data
 type CharacterGetAllResponseData struct {
-  Characters  []*db.Character  `json:"characters"`
+  Characters  []*Character  `json:"characters"`
 }
 
 
 // CharacterCreateResponseData is the data we send
 //  back after a successfully creating a new character
 type CharacterCreateResponseData struct {
+  CharacterID  int  `json:"characterId"`
+}
+
+
+// CharacterUpdateResponseData is the data we send
+//  back after a successfully udpating a new character
+type CharacterUpdateResponseData struct {
   CharacterID  int  `json:"characterId"`
 }
 
@@ -72,6 +115,8 @@ func (r *CharacterRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) 
     switch head {
     case "create":
       r.handleCreate(res, req)
+    case "update":
+      r.handleUpdate(res, req)
     default:
       http.Error(res, fmt.Sprintf("Unsupported POST path %s", head), http.StatusBadRequest)
       return
@@ -88,10 +133,16 @@ func (r *CharacterRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) 
 ----------------------------------*/
 
 func (r *CharacterRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
-  characters, err := r.SysUtils.Database.GetAllCharacters()
+  dbCharacters, err := r.SysUtils.Database.GetAllCharacters()
   if err != nil {
     http.Error(res, fmt.Sprintf("Error getting all characters from DB: %s", err.Error()), http.StatusInternalServerError)
     return
+  }
+
+  characters := make([]*Character, 0)
+  for _, dbCharacter := range dbCharacters {
+    character := FromDBCharacter(dbCharacter)
+    characters = append(characters, character)
   }
 
   response := &Response{
@@ -109,20 +160,18 @@ func (r *CharacterRouter) handleGetAll(res http.ResponseWriter, req *http.Reques
 
 func (r *CharacterRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  var createRequest CharacterCreateRequest
+  var createRequestData CharacterCreateRequestData
 
-  err := decoder.Decode(&createRequest)
+  err := decoder.Decode(&createRequestData)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
-  var character db.Character
-  character.CharacterName = createRequest.CharacterName
-  if createRequest.CharacterStockImg != nil {
-    character.CharacterStockImg = *createRequest.CharacterStockImg
-  }
-  characterID, err := r.SysUtils.Database.CreateCharacter(character)
+  var characterCreate db.CharacterCreate
+  characterCreate.CharacterName = createRequestData.CharacterName
+  characterCreate.CharacterStockImg = ToNullString(createRequestData.CharacterStockImg)
+  characterID, err := r.SysUtils.Database.CreateCharacter(characterCreate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error creating new character in database: %s", err.Error()), http.StatusInternalServerError)
     return
@@ -132,6 +181,40 @@ func (r *CharacterRouter) handleCreate(res http.ResponseWriter, req *http.Reques
     Success:  true,
     Error:    nil,
     Data:     CharacterCreateResponseData{
+      CharacterID:  characterID,
+    },
+  }
+
+  res.Header().Set("Content-Type", "application/json")
+  json.NewEncoder(res).Encode(response)
+}
+
+
+func (r *CharacterRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
+  decoder := json.NewDecoder(req.Body)
+  var updateRequestData CharacterUpdateRequestData
+
+  err := decoder.Decode(&updateRequestData)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
+    return
+  }
+
+  var characterUpdate db.CharacterUpdate
+  characterUpdate.CharacterID = updateRequestData.CharacterID
+  characterUpdate.CharacterName = ToNullString(updateRequestData.CharacterName)
+  characterUpdate.CharacterStockImg = ToNullString(updateRequestData.CharacterStockImg)
+
+  characterID, err := r.SysUtils.Database.UpdateCharacter(characterUpdate)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error updating character in database: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  response := &Response{
+    Success:  true,
+    Error:    nil,
+    Data:     CharacterUpdateResponseData{
       CharacterID:  characterID,
     },
   }
