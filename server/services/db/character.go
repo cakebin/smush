@@ -12,26 +12,32 @@ import (
 // Character describes the required and optional data
 // needed to create a new character in our characters table
 type Character struct {
-  CharacterID        int             `json:"characterId"`
-  CharacterName      string          `json:"characterName"`
-  CharacterStockImg  sql.NullString  `json:"characterStockImg"`
+  CharacterID         int             `json:"characterId"`
+  CharacterName       string          `json:"characterName"`
+  CharacterStockImg   sql.NullString  `json:"characterStockImg"`
+  CharacterImg        sql.NullString  `json:"characterImg"`
+  CharacterArchetype  sql.NullString  `json:"characterArchetype"`
 }
 
 
 // CharacterUpdate describes the data needed 
 // to update a given character in our db
 type CharacterUpdate struct {
-  CharacterID        int             `json:"characterId"`
-  CharacterName      sql.NullString  `json:"characterName"`
-  CharacterStockImg  sql.NullString  `json:"characterStockImg"`
+  CharacterID         int             `json:"characterId"`
+  CharacterName       sql.NullString  `json:"characterName"`
+  CharacterStockImg   sql.NullString  `json:"characterStockImg"`
+  CharacterImg        sql.NullString  `json:"characterImg"`
+  CharacterArchetype  sql.NullString  `json:"characterArchetype"`
 }
 
 
 // CharacterCreate describes the data needed 
 // to create a given character in our db
 type CharacterCreate struct {
-  CharacterName      string          `json:"characterName"`
-  CharacterStockImg  sql.NullString  `json:"characterStockImg"`
+  CharacterName       string          `json:"characterName"`
+  CharacterStockImg   sql.NullString  `json:"characterStockImg"`
+  CharacterImg        sql.NullString  `json:"characterImg"`
+  CharacterArchetype  sql.NullString  `json:"characterArchetype"`
 }
 
 
@@ -44,8 +50,8 @@ type CharacterCreate struct {
 type CharacterManager interface {
   GetAllCharacters() ([]*Character, error)
 
-  CreateCharacter(character CharacterCreate) (int, error)
-  UpdateCharacter(update CharacterUpdate) (int, error)
+  CreateCharacter(character CharacterCreate) (*Character, error)
+  UpdateCharacter(update CharacterUpdate) (*Character, error)
 }
 
 
@@ -59,7 +65,9 @@ func (db *DB) GetAllCharacters() ([]*Character, error) {
     SELECT
       character_id,
       character_name,
-      character_stock_img
+      character_stock_img,
+      character_img,
+      character_archetype
     FROM
       characters
   `
@@ -76,6 +84,8 @@ func (db *DB) GetAllCharacters() ([]*Character, error) {
       &character.CharacterID,
       &character.CharacterName,
       &character.CharacterStockImg,
+      &character.CharacterImg,
+      &character.CharacterArchetype,
     )
 
     if err != nil {
@@ -95,56 +105,82 @@ func (db *DB) GetAllCharacters() ([]*Character, error) {
 
 
 // CreateCharacter adds a new entry to the characters table in our database
-func (db *DB) CreateCharacter(characterCreate CharacterCreate) (int, error) {
-  var characterID int
+func (db *DB) CreateCharacter(characterCreate CharacterCreate) (*Character, error) {
   sqlStatement := `
     INSERT INTO characters
-      (character_name, character_stock_img)
+      (character_name, character_stock_img, character_img, character_archetype)
     VALUES
-      ($1, $2)
+      ($1, $2, $3, $4)
     RETURNING
-      character_id
+      character_id,
+      character_name,
+      character_stock_img,
+      character_img,
+      character_archetype
   `
   row := db.QueryRow(
     sqlStatement,
     characterCreate.CharacterName,
     characterCreate.CharacterStockImg.String,
+    characterCreate.CharacterImg.String,
+    characterCreate.CharacterArchetype.String,
   )
-  err := row.Scan(&characterID)
+  character := new(Character)
+  err := row.Scan(
+    &character.CharacterID,
+    &character.CharacterName,
+    &character.CharacterStockImg,
+    &character.CharacterImg,
+    &character.CharacterArchetype,
+  )
 
   if err != nil {
-    return 0, nil
+    return nil, nil
   }
 
-  return characterID, nil
+  return character, nil
 }
 
 
 // UpdateCharacter updates an existing entry in the characters table in our database
-func (db *DB) UpdateCharacter(characterUpdate CharacterUpdate) (int, error) {
-  var characterID int
+func (db *DB) UpdateCharacter(characterUpdate CharacterUpdate) (*Character, error) {
   sqlStatement := `
     UPDATE
       characters
     SET
       character_name = $1,
-      character_stock_img = $2
+      character_stock_img = $2,
+      character_img = $3,
+      character_archetype = $4
     WHERE
-      character_id = $3
+      character_id = $5
     RETURNING
-      character_id
+      character_id,
+      character_name,
+      character_stock_img,
+      character_img,
+      character_archetype
   `
   row := db.QueryRow(
     sqlStatement,
     characterUpdate.CharacterName.String,
     characterUpdate.CharacterStockImg.String,
+    characterUpdate.CharacterImg.String,
+    characterUpdate.CharacterArchetype.String,
     characterUpdate.CharacterID,
   )
-  err := row.Scan(&characterID)
+  character := new(Character)
+  err := row.Scan(
+    &character.CharacterID,
+    &character.CharacterName,
+    &character.CharacterStockImg,
+    &character.CharacterImg,
+    &character.CharacterArchetype,
+  )
 
   if err != nil {
-    return 0, err
+    return nil, err
   }
 
-  return characterID, nil
+  return character, nil
 }

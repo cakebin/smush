@@ -18,17 +18,21 @@ import (
 // CharacterCreateRequestData describes the data we're 
 // expecting when a user attempts to create a character
 type CharacterCreateRequestData struct {
-  CharacterName      string   `json:"characterName"`
-  CharacterStockImg  *string  `json:"characterStockImg,omitempty"`
+  CharacterName       string   `json:"characterName"`
+  CharacterStockImg   *string  `json:"characterStockImg,omitempty"`
+  CharacterImg        *string  `json:"characterImg,omitmpty"`
+  CharacterArchetype  *string  `json:"characterArchetype,omitempty"`
 }
 
 
 // CharacterUpdateRequestData describes the data we're 
 // expecting when an admin user attempts to update a character
 type CharacterUpdateRequestData struct {
-  CharacterID        int      `json:"characterId"`
-  CharacterName      *string  `json:"characterName,omitempty"`
-  CharacterStockImg  *string  `json:"characterStockImg,omitempty"`
+  CharacterID         int      `json:"characterId"`
+  CharacterName       *string  `json:"characterName,omitempty"`
+  CharacterStockImg   *string  `json:"characterStockImg,omitempty"`
+  CharacterImg        *string  `json:"characterImg,omitempty"`
+  CharacterArchetype  *string  `json:"characterArchetype,omitempty"`
 }
 
 
@@ -40,9 +44,11 @@ type CharacterUpdateRequestData struct {
 // which can have things like `sql.NullInt64`, so we
 // need to translate that to regular JSON objects
 type Character struct {
-  CharacterID        int      `json:"characterId"`
-  CharacterName      string   `json:"characterName"`
-  CharacterStockImg  *string  `json:"characterStockImg,omitempty"`
+  CharacterID         int      `json:"characterId"`
+  CharacterName       string   `json:"characterName"`
+  CharacterStockImg   *string  `json:"characterStockImg,omitempty"`
+  CharacterImg        *string  `json:"characterImg,omitempty"`
+  CharacterArchetype  *string  `json:"characterArchetype,omitempty"`
 }
 
 
@@ -54,6 +60,8 @@ func FromDBCharacter(dbChar *db.Character) *Character {
   character.CharacterID = dbChar.CharacterID
   character.CharacterName = dbChar.CharacterName
   character.CharacterStockImg = FromNullString(dbChar.CharacterStockImg)
+  character.CharacterImg = FromNullString(dbChar.CharacterImg)
+  character.CharacterArchetype = FromNullString(dbChar.CharacterArchetype)
 
   return character
 }
@@ -73,14 +81,14 @@ type CharacterGetAllResponseData struct {
 // CharacterCreateResponseData is the data we send
 //  back after a successfully creating a new character
 type CharacterCreateResponseData struct {
-  CharacterID  int  `json:"characterId"`
+  Character  *Character  `json:"character"`
 }
 
 
 // CharacterUpdateResponseData is the data we send
 //  back after a successfully udpating a new character
 type CharacterUpdateResponseData struct {
-  CharacterID  int  `json:"characterId"`
+  Character  *Character  `json:"character"`
 }
 
 
@@ -171,17 +179,21 @@ func (r *CharacterRouter) handleCreate(res http.ResponseWriter, req *http.Reques
   var characterCreate db.CharacterCreate
   characterCreate.CharacterName = createRequestData.CharacterName
   characterCreate.CharacterStockImg = ToNullString(createRequestData.CharacterStockImg)
-  characterID, err := r.SysUtils.Database.CreateCharacter(characterCreate)
+  characterCreate.CharacterImg = ToNullString(createRequestData.CharacterImg)
+  characterCreate.CharacterArchetype = ToNullString(createRequestData.CharacterArchetype)
+
+  dbCharacter, err := r.SysUtils.Database.CreateCharacter(characterCreate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error creating new character in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
+  character := FromDBCharacter(dbCharacter)
 
   response := Response{
     Success:  true,
     Error:    nil,
     Data:     CharacterCreateResponseData{
-      CharacterID:  characterID,
+      Character:  character,
     },
   }
 
@@ -204,18 +216,21 @@ func (r *CharacterRouter) handleUpdate(res http.ResponseWriter, req *http.Reques
   characterUpdate.CharacterID = updateRequestData.CharacterID
   characterUpdate.CharacterName = ToNullString(updateRequestData.CharacterName)
   characterUpdate.CharacterStockImg = ToNullString(updateRequestData.CharacterStockImg)
+  characterUpdate.CharacterImg = ToNullString(updateRequestData.CharacterImg)
+  characterUpdate.CharacterArchetype = ToNullString(updateRequestData.CharacterArchetype)
 
-  characterID, err := r.SysUtils.Database.UpdateCharacter(characterUpdate)
+  dbCharacter, err := r.SysUtils.Database.UpdateCharacter(characterUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error updating character in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
+  character := FromDBCharacter(dbCharacter)
 
   response := &Response{
     Success:  true,
     Error:    nil,
     Data:     CharacterUpdateResponseData{
-      CharacterID:  characterID,
+      Character:  character,
     },
   }
 
