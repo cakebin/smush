@@ -85,11 +85,6 @@ export class LogInViewModel implements ILogInViewModel {
 export interface IServerResponse {
     success: boolean;
     error: any;
-}
-export interface IAuthServerResponse {
-    success: boolean;
-    user: IUserViewModel;
-    accessExpiration: Date;
-    refreshExpiration: Date;
+    data: any;
 }
 

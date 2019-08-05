@@ -1,8 +1,8 @@
 import { Injectable, Inject  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, tap, finalize, retryWhen, delay, take } from 'rxjs/operators';
-import { ICharacterViewModel } from '../../app.view-models';
+import { publish, refCount, retryWhen, delay, take } from 'rxjs/operators';
+import { ICharacterViewModel, IServerResponse } from '../../app.view-models';
 
 @Injectable()
 export class CharacterManagementService {
@@ -15,15 +15,17 @@ export class CharacterManagementService {
     ) {
     }
     public loadAllCharacters(): void {
-        this.httpClient.get<ICharacterViewModel[]>(`${this.apiUrl}/getall`).pipe(
+        this.httpClient.get<IServerResponse>(`${this.apiUrl}/getall`).pipe(
             retryWhen(errors => errors.pipe(delay(1000), take(3)))
         ).subscribe(
-            res => {
-                this.characters.next(res);
-                this.characters.pipe(
-                    publish(),
-                    refCount()
-                );
+            (res: IServerResponse) => {
+                if (res && res.data && res.data.characters) {
+                    this.characters.next(res.data.characters);
+                    this.characters.pipe(
+                        publish(),
+                        refCount()
+                    );
+                }
             }
         );
     }

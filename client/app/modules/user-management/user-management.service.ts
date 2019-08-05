@@ -4,7 +4,7 @@ import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { publish, refCount, tap, finalize } from 'rxjs/operators';
-import { IUserViewModel, LogInViewModel, IAuthServerResponse } from '../../app.view-models';
+import { IUserViewModel, LogInViewModel, IServerResponse } from '../../app.view-models';
 
 @Injectable()
 export class UserManagementService {
@@ -24,15 +24,15 @@ export class UserManagementService {
         this._startIntervalSessionCheck();
     }
 
-    public logIn(logInModel: LogInViewModel): Observable<IAuthServerResponse> {
+    public logIn(logInModel: LogInViewModel): Observable<IServerResponse> {
         return this.httpClient.post(`${this.authApiUrl}/login`, logInModel)
         .pipe(
-            tap((res: IAuthServerResponse) => {
-                if (res.success) {
-                    localStorage.setItem('smush_user', JSON.stringify(res.user));
-                    localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.accessExpiration)));
-                    localStorage.setItem('smush_refresh_expire', JSON.stringify(new Date(res.refreshExpiration)));
-                    this._loadUser(res.user);
+            tap((res: IServerResponse) => {
+                if (res.success && res.data) {
+                    localStorage.setItem('smush_user', JSON.stringify(res.data.user));
+                    localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
+                    localStorage.setItem('smush_refresh_expire', JSON.stringify(new Date(res.data.refreshExpiration)));
+                    this._loadUser(res.data.user);
                 }
             })
         );
@@ -136,9 +136,11 @@ export class UserManagementService {
                 // but it turns out HttpClient destroys subscriptions on completion of the request so memory leaks are not an issue.
                 // https://stackoverflow.com/questions/35042929/is-it-necessary-to-unsubscribe-from-observables-created-by-http-methods
                 this.httpClient.post(`${this.authApiUrl}/refresh`, this.cachedUser.value).subscribe(
-                    (res: IAuthServerResponse) => {
-                        // Set the new updated access expiration date
-                        localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.accessExpiration)));
+                    (res: IServerResponse) => {
+                        if (res && res.data) {
+                            // Set the new updated access expiration date
+                            localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
+                        }
                     });
                 }
         }

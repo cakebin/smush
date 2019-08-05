@@ -4,7 +4,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 import { UserManagementService } from '../../modules/user-management/user-management.service';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
-import { IUserViewModel, ILogInViewModel, IServerResponse, IAuthServerResponse, LogInViewModel } from 'client/app/app.view-models';
+import { IUserViewModel, ILogInViewModel, IServerResponse, LogInViewModel } from 'client/app/app.view-models';
 
 @Component({
   selector: 'top-nav-bar',
@@ -45,19 +45,8 @@ export class TopNavBarComponent implements OnInit {
       });
     }
 
-    public togglePanelState(stateToSet: boolean = null): void {
-      if (stateToSet !== null) {
-        this.paneVisible = stateToSet;
-      } else {
-        this.paneVisible = !this.paneVisible;
-      }
-
-      // When the user closes the login panel,
-      // change the form back to the login (not register) form and clear all warnings
-      this.resetPane(false);
-    }
     public logIn(): void {
-      this.userService.logIn(this.logInModel).subscribe((res: IAuthServerResponse) => {
+      this.userService.logIn(this.logInModel).subscribe((res: IServerResponse) => {
         if (res.success) {
           this.resetPane();
           this.router.navigate(['/matches']);
@@ -66,6 +55,7 @@ export class TopNavBarComponent implements OnInit {
         }
       }, error => {
         this.invalidEmailPassword = true;
+        console.error(error);
       });
     }
     public logOut(): void {
@@ -73,7 +63,7 @@ export class TopNavBarComponent implements OnInit {
       this.paneVisible = false;
     }
     public createUser(): void {
-      if (!this.validateNewUser()) {
+      if (!this._validateNewUser()) {
         this.commonUxService.showWarningToast('Please address highlighted errors.');
         return;
       }
@@ -94,6 +84,17 @@ export class TopNavBarComponent implements OnInit {
           }
         );
     }
+    public togglePanelState(stateToSet: boolean = null): void {
+      if (stateToSet !== null) {
+        this.paneVisible = stateToSet;
+      } else {
+        this.paneVisible = !this.paneVisible;
+      }
+
+      // When the user closes the login panel,
+      // change the form back to the login (not register) form and clear all warnings
+      this.resetPane(false);
+    }
     public resetPane(closePane: boolean = true): void {
       this.logInModel = {} as LogInViewModel;
       this.newUser = {} as IUserViewModel;
@@ -106,7 +107,7 @@ export class TopNavBarComponent implements OnInit {
         this.paneVisible = false;
       }
     }
-    private validateNewUser(): boolean {
+    private _validateNewUser(): boolean {
       let isValid: boolean = true;
 
       if (!this.newUser.emailAddress) {

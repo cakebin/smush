@@ -75,7 +75,7 @@ type MatchGetAllResponseData struct {
 // MatchCreateResponseData is the data we send
 //  back after a successfully creating a new match
 type MatchCreateResponseData struct {
-  MatchID  int  `json:"matchId"`
+  Match  MatchView  `json:"match"`
 }
 
 
@@ -146,6 +146,7 @@ func (r *MatchRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
     matchView.UserName = dbMatchView.UserName
     matchView.OpponentCharacterName = dbMatchView.OpponentCharacterName
     matchView.UserCharacterName = FromNullString(dbMatchView.UserCharacterName)
+    matchView.UserWin = FromNullBool(dbMatchView.UserWin)
     matchViews = append(matchViews, *matchView)
   }
 
@@ -183,13 +184,30 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
   match.UserCharacterID = ToNullInt64(createRequestData.UserCharacterID)
   match.UserCharacterGsp = ToNullInt64(createRequestData.UserCharacterGsp)
   match.UserWin = ToNullBool(createRequestData.UserWin)
-  matchID, err := r.SysUtils.Database.CreateMatch(match)
+  
+  dbMatch, err := r.SysUtils.Database.CreateMatch(match)
+  dbMatchView, err := r.SysUtils.Database.GetMatchViewByMatchID(*dbMatch.MatchID)
+
+  matchView := new(MatchView)
+  matchView.Created = dbMatchView.Created
+  matchView.UserID = dbMatchView.UserID
+  matchView.MatchID = dbMatchView.MatchID
+  matchView.OpponentCharacterID = dbMatchView.OpponentCharacterID
+  matchView.UserCharacterID = FromNullInt64(dbMatchView.UserCharacterID)
+  matchView.OpponentCharacterGsp = FromNullInt64(dbMatchView.OpponentCharacterGsp)
+  matchView.OpponentTeabag = FromNullBool(dbMatchView.OpponentTeabag)
+  matchView.OpponentCamp = FromNullBool(dbMatchView.OpponentCamp)
+  matchView.OpponentAwesome = FromNullBool(dbMatchView.OpponentAwesome)
+  matchView.UserName = dbMatchView.UserName
+  matchView.OpponentCharacterName = dbMatchView.OpponentCharacterName
+  matchView.UserCharacterName = FromNullString(dbMatchView.UserCharacterName)
+  matchView.UserWin = FromNullBool(dbMatchView.UserWin)
 
   response := &Response{
     Success:  true,
     Error:    err,
     Data:     MatchCreateResponseData{
-      MatchID:  matchID,
+      Match:  *matchView,
     },
   }
 

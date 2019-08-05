@@ -20,8 +20,9 @@ import (
 // UserUpdateRequestData describes the data we're 
 // expecting when a user attempts to update their profile
 type UserUpdateRequestData struct {
-  EmailAddress         string  `json:"emailAddress"`
-  UserName             string  `json:"userName"`
+  UserID               int       `json:"userId"`
+  EmailAddress         string    `json:"emailAddress"`
+  UserName             string    `json:"userName"`
   DefaultCharacterID   *int64    `json:"defaultCharacterId,omitempty"`
   DefaultCharacterGsp  *int64    `json:"defaultCharacterGsp,omitempty"`
 }
@@ -40,7 +41,8 @@ type UserProfileView struct {
   UserName              string     `json:"userName"`
   EmailAddress          string     `json:"emailAddress"`
   Created               time.Time  `json:"created"`
-  DefaultCharacterID    *int64     `json:"defaultCharacterGsp,omitempty"`
+  DefaultCharacterGsp   *int64     `json:"defaultCharacterGsp,omitempty"`
+  DefaultCharacterID    *int64     `json:"defaultCharacterId,omitempty"`
   DefaultCharacterName  *string    `json:"defaultCharacterName,omitempty"`
 }
 
@@ -159,6 +161,7 @@ func (r *UserRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
   }
 
   var userProfileUpdate db.UserProfileUpdate
+  userProfileUpdate.UserID = updateRequestData.UserID
   userProfileUpdate.UserName = updateRequestData.UserName
   // Convert to sql.NullInt64 because a user can have no default character info
   userProfileUpdate.DefaultCharacterID = ToNullInt64(updateRequestData.DefaultCharacterID)

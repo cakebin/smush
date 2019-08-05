@@ -36,7 +36,8 @@ func (db *DB) GetAllCharacters() ([]*Character, error) {
   sqlStatement := `
     SELECT
       character_id,
-      character_name
+      character_name,
+      character_stock_img
     FROM
       characters
   `
@@ -52,6 +53,7 @@ func (db *DB) GetAllCharacters() ([]*Character, error) {
     err := rows.Scan(
       &character.CharacterID,
       &character.CharacterName,
+      &character.CharacterStockImg,
     )
 
     if err != nil {
