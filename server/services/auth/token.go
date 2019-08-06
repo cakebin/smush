@@ -14,7 +14,7 @@ import (
           Data Structures
 ----------------------------------*/
 
-var jwtKey = []byte(os.Getenv("PORT"))
+var jwtKey = []byte(os.Getenv("JWT_TOKEN_SECRET"))
 
 
 // Claims is a custom extended jwt.StandardClaims to include
