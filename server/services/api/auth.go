@@ -209,7 +209,7 @@ func (r *AuthRouter) handleLogin(res http.ResponseWriter, req *http.Request) {
     return
   }
 
-  err = r.SysUtils.Authenticator.CheckPassword(
+  _, err = r.SysUtils.Authenticator.CheckPassword(
     userCredentialsView.HashedPassword,
     loginRequestData.Password,
   )

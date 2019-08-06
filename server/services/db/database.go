@@ -7,7 +7,7 @@ import (
 )
 
 
-// DB is the struct that we're going to use to implement all of out
+// DB is the struct that we're going to use to implement all of our
 // Datasbase interfaces; All of the methods defined on each of our
 // interfaces will be implemented on this DB struct
 type DB struct {

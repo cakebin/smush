@@ -10,6 +10,10 @@ import (
 )
 
 
+/*---------------------------------
+          Data Structures
+----------------------------------*/
+
 var jwtKey = []byte(os.Getenv("PORT"))
 
 
@@ -20,6 +24,23 @@ type Claims struct {
   jwt.StandardClaims
 }
 
+
+/*---------------------------------
+            Interface
+----------------------------------*/
+
+// JWTManager describes all of the methods used
+// for handling the JSON web token side of our auth layer
+type JWTManager interface {
+  GetNewJWTToken(id int, expiration time.Time) (string, error)
+  RefreshJWTAccessToken(token string, expiration time.Time) (string, error)
+  CheckJWTToken(token string) (bool, error)
+}
+
+
+/*---------------------------------
+       Method Implementations
+----------------------------------*/
 
 // GetNewJWTToken generates a new jwt access token
 // for a given user with a given expiration date
