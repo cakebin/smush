@@ -132,7 +132,7 @@ func (r *AuthRouter) handleRefresh(res http.ResponseWriter, req *http.Request) {
   _, err = r.SysUtils.Authenticator.CheckJWTToken(refreshCookie.Value)
   if err != nil {
     // Refresh token is also invalid. This block should never be run in practice.
-    http.Error(res, "Session expired. Please log in again", http.StatusUnauthorized)
+    http.Error(res, fmt.Sprintf("Session expired. Please log in again. Token error: %s", err.Error()), http.StatusUnauthorized)
     return
   }
 
@@ -209,7 +209,7 @@ func (r *AuthRouter) handleLogin(res http.ResponseWriter, req *http.Request) {
     return
   }
 
-  err = r.SysUtils.Authenticator.CheckPassword(
+  _, err = r.SysUtils.Authenticator.CheckPassword(
     userCredentialsView.HashedPassword,
     loginRequestData.Password,
   )

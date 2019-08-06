@@ -1,7 +1,7 @@
 package env
 
 import (
-  "github.com/cakebin/smush/server/auth"
+  "github.com/cakebin/smush/server/services/auth"
   "github.com/cakebin/smush/server/services/db"
 )
 

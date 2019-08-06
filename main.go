@@ -5,9 +5,9 @@ import (
   "net/http"
   "os"
 
-  "github.com/cakebin/smush/server/auth"
   "github.com/cakebin/smush/server/env"
   "github.com/cakebin/smush/server/routers/app"
+  "github.com/cakebin/smush/server/services/auth"
   "github.com/cakebin/smush/server/services/db"
 )
 
@@ -24,7 +24,7 @@ func main() {
     log.Fatalf("Error opening database: %q", err)
   }
 
-  authenticator := auth.NewAuthenticator()
+  authenticator := auth.New()
 
   sysUtils := &env.SysUtils{
     Database: db,
