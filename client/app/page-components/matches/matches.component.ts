@@ -5,9 +5,9 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './matches.component.html',
 })
 export class MatchesComponent implements OnInit {
-  constructor(){
+  constructor() {
   }
-  
+
   ngOnInit() {
   }
 }

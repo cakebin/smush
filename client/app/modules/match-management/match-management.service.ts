@@ -13,11 +13,7 @@ export class MatchManagementService {
     }
 
     public loadAllMatches(): void {
-        this.httpClient.get<IServerResponse>(`${this.apiUrl}/getall`).pipe(
-            // Retry that probably won't be necessary... it's here in case
-            // https://stackoverflow.com/questions/44979131/rxjs-retry-with-delay-function
-            retryWhen(errors => errors.pipe(delay(1000), take(3)))
-        ).subscribe(
+        this.httpClient.get<IServerResponse>(`${this.apiUrl}/getall`).subscribe(
             (res: IServerResponse) => {
                 if (res && res.data) {
                     this.cachedMatches.next(res.data.matches);

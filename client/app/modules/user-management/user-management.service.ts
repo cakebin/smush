@@ -137,12 +137,13 @@ export class UserManagementService {
                 // https://stackoverflow.com/questions/35042929/is-it-necessary-to-unsubscribe-from-observables-created-by-http-methods
                 this.httpClient.post(`${this.authApiUrl}/refresh`, this.cachedUser.value).subscribe(
                     (res: IServerResponse) => {
-                        if (res && res.data) {
+                        if (res && res.success && res.data) {
                             // Set the new updated access expiration date
                             localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
                         }
-                    });
-                }
+                    }
+                );
+            }
         }
     }
     private _clearStorage(): void {
