@@ -12,7 +12,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let match of sortedMatches">
+        <tr *ngFor="let match of sortedMatches" [ngClass]="{'highlight':match.isNew}">
             <td class="align-middle">{{match.matchId}}</td>
             <td class="align-middle">{{match.userName}}</td>
             <td class="align-middle">{{match.userCharacterName}}</td>

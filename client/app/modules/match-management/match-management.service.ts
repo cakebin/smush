@@ -29,6 +29,9 @@ export class MatchManagementService {
         return this.httpClient.post(`${this.apiUrl}/create`, match).pipe(
             tap((res: IServerResponse) => {
                 if (res && res.data && res.data.match) {
+                    // Set "isNew" property for highlighting
+                    res.data.match.isNew = true;
+
                     const allMatches: IMatchViewModel[] = this.cachedMatches.value;
                     allMatches.push(res.data.match);
                     this.cachedMatches.next(allMatches);

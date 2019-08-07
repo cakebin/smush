@@ -60,22 +60,27 @@
             </div>
         </div>
 
-        <div *ngIf="!isLoading && matches?.length && !noFilteredDataToDisplay" class="insights-chart-container">
-            <chart-bar-horizontal 
-                [data]="chartData"
-                [dataUnit]="dataUnit"
-                [xAxisLabel]="xAxisLabel"
-                [yAxisLabel]="yAxisLabel"
-                [xAxisTickFormatting]="xAxisTickFormatting"
-                [yAxisTickFormatting]="yAxisTickFormatting"
-            ></chart-bar-horizontal>
+        <div class="row mt-3">
+            <div class="col">
+                <div *ngIf="!isLoading && matches?.length && !noFilteredDataToDisplay">
+                    <chart-bar-horizontal 
+                        [data]="chartData"
+                        [dataUnit]="dataUnit"
+                        [xAxisLabel]="xAxisLabel"
+                        [yAxisLabel]="yAxisLabel"
+                        [xAxisTickFormatting]="xAxisTickFormatting"
+                        [yAxisTickFormatting]="yAxisTickFormatting"
+                    ></chart-bar-horizontal>
+                </div>
+                <div *ngIf="isLoading" class="text-center insights-chart-container">
+                    <fa-icon [icon]="faCircleNotch" [spin]="true" size="3x" class="text-black-50"></fa-icon>
+                </div>
+                <div *ngIf="!isLoading && (!matches?.length || noFilteredDataToDisplay)" class="text-center no-data-block">
+                    <h3 class="text-black-50">No matches found</h3>
+                </div>
+            </div>
         </div>
-        <div *ngIf="isLoading" class="text-center insights-chart-container">
-            <fa-icon [icon]="faCircleNotch" [spin]="true" size="3x" class="text-black-50"></fa-icon>
-        </div>
-        <div *ngIf="!isLoading && (!matches?.length || noFilteredDataToDisplay)" class="text-center no-data-block">
-            <h3 class="text-black-50">No matches found</h3>
-        </div>
+
     </div>
     <div class="col-2"></div>
 </div>

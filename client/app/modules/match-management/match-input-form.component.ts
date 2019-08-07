@@ -79,9 +79,7 @@ export class MatchInputFormComponent implements OnInit {
     }
     this.isSaving = true;
     this.matchService.createMatch(this.match).subscribe((res: number) => {
-      if (res) {
-        console.log('new match is', res);
-      }
+      // On success, do nothing
     }, error => {
       this.commonUxService.showDangerToast('Unable to save match.');
       console.error(error);
