@@ -15,6 +15,7 @@ export interface IMatchViewModel {
     opponentAwesome: boolean;
     userWin: boolean;
     created: Date; // Set on the server. Read-only
+    isNew: boolean; // Viewmodel only
 }
 export class MatchViewModel implements IMatchViewModel {
     constructor(
@@ -32,6 +33,7 @@ export class MatchViewModel implements IMatchViewModel {
         public opponentAwesome: boolean = null,
         public userWin: boolean = null,
         public created: Date = null,
+        public isNew: boolean = false,
     ) {
     }
 }

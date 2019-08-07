@@ -11,11 +11,6 @@ import { CommonUxService } from 'client/app/modules/common-ux/common-ux.service'
 @Component({
   selector: 'insights',
   templateUrl: './insights.component.html',
-  styles: [`
-    .insights-chart-container {
-      margin-top:50px;
-    }
-  `]
 })
 export class InsightsComponent implements OnInit {
   public chartData: SingleSeries = [];
@@ -92,7 +87,7 @@ export class InsightsComponent implements OnInit {
     if (this.chartUserId) {
       filteredData = filteredData.filter(match => match.userId === this.chartUserId);
     }
-    if (!filteredData.length) {
+    if (!filteredData || !filteredData.length) {
       this.noFilteredDataToDisplay = true;
       return;
     } else {

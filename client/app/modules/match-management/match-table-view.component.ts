@@ -9,7 +9,23 @@ import { MatchManagementService } from './match-management.service';
 
 @Component({
   selector: 'match-table-view',
-  templateUrl: './match-table-view.component.html'
+  templateUrl: './match-table-view.component.html',
+  styles: [`
+    .table-striped tbody tr.highlight {
+      animation: highlight 1500ms ease-out;
+    }
+    @keyframes highlight {
+      0% {
+        background-color: #ffc107;
+      }
+      75% {
+        background-color: #ffc107;
+      }
+      100 {
+        background-color: initial;
+      }
+    }
+  `]
 })
 export class MatchTableViewComponent implements OnInit {
   public headerLabels: HeaderViewModel[] = [
