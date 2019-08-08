@@ -25,6 +25,22 @@ type Match struct {
 }
 
 
+// MatchUpdate describes the data needed 
+// to update a given user's profile information
+type MatchUpdate struct {
+  MatchID               int            `json:"matchId"`
+  OpponentCharacterID   sql.NullInt64  `json:"opponentCharacterId"`
+  OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp"`
+  OpponentTeabag        sql.NullBool   `json:"opponentTeabag"`
+  OpponentCamp          sql.NullBool   `json:"opponentCamp"`
+  OpponentAwesome       sql.NullBool   `json:"opponentAwesome"`
+  UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
+  UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
+  UserWin               sql.NullBool   `json:"userWin"`
+  Created               NullTime       `json:"created"`
+}
+
+
 // MatchCreate describes the data needed 
 // to create a given match in our db
 type MatchCreate struct {
@@ -47,6 +63,7 @@ type MatchCreate struct {
 // to interact with the matches table in our database
 type MatchManager interface {
   CreateMatch(matchCreate *MatchCreate) (int, error)
+  UpdateMatch(matchUpdate *MatchUpdate) (int, error)
 }
 
 /*---------------------------------
@@ -89,6 +106,49 @@ func (db *DB) CreateMatch(matchCreate *MatchCreate) (int, error) {
 
   if err != nil {
     return 0, err
+  }
+
+  return matchID, nil
+}
+
+
+// UpdateMatch updates an entry in the matches table with the given data
+func (db *DB) UpdateMatch(matchUpdate *MatchUpdate) (int, error) {
+  var matchID int
+  sqlStatement := `
+    UPDATE
+      matches
+    SET
+      opponent_character_id = $1,
+      opponent_character_gsp = $2,
+      opponent_teabag = $3,
+      opponent_camp = $4,
+      opponent_awesome = $5,
+      user_character_id = $6,
+      user_character_gsp = $7,
+      user_win = $8,
+      created = $9
+    WHERE
+      match_id = $10
+    RETURNING
+      match_id
+  `
+  row := db.QueryRow(
+    sqlStatement,
+    matchUpdate.OpponentCharacterID,
+    matchUpdate.OpponentCharacterGsp,
+    matchUpdate.OpponentTeabag,
+    matchUpdate.OpponentCamp,
+    matchUpdate.OpponentAwesome,
+    matchUpdate.UserCharacterID,
+    matchUpdate.UserCharacterGsp,
+    matchUpdate.UserWin,
+    matchUpdate.Created,
+  )
+  err := row.Scan(&matchID)
+
+  if err != nil {
+    return 0, nil
   }
 
   return matchID, nil
