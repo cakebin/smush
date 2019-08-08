@@ -76,13 +76,13 @@ func (db *DB) CreateMatch(matchCreate *MatchCreate) (int, error) {
     sqlStatement,
     matchCreate.OpponentCharacterID,
     matchCreate.UserID,
-    matchCreate.OpponentCharacterGsp.Int64,
-    matchCreate.OpponentTeabag.Bool,
-    matchCreate.OpponentCamp.Bool,
-    matchCreate.OpponentAwesome.Bool,
-    matchCreate.UserCharacterID.Int64,
-    matchCreate.UserCharacterGsp.Int64,
-    matchCreate.UserWin.Bool,
+    matchCreate.OpponentCharacterGsp,
+    matchCreate.OpponentTeabag,
+    matchCreate.OpponentCamp,
+    matchCreate.OpponentAwesome,
+    matchCreate.UserCharacterID,
+    matchCreate.UserCharacterGsp,
+    matchCreate.UserWin,
   )
 
   err := row.Scan(&matchID)

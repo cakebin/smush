@@ -121,9 +121,9 @@ func (db *DB) CreateCharacter(characterCreate *CharacterCreate) (*Character, err
   row := db.QueryRow(
     sqlStatement,
     characterCreate.CharacterName,
-    characterCreate.CharacterStockImg.String,
-    characterCreate.CharacterImg.String,
-    characterCreate.CharacterArchetype.String,
+    characterCreate.CharacterStockImg,
+    characterCreate.CharacterImg,
+    characterCreate.CharacterArchetype,
   )
   character := new(Character)
   err := row.Scan(
