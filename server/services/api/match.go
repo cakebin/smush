@@ -31,6 +31,22 @@ type MatchCreateRequestData struct {
 }
 
 
+// MatchUpdateRequestData describes the data we're
+// expecting when a user attempt to update a match
+type MatchUpdateRequestData struct {
+  MatchID               int         `json:"matchId"`
+  OpponentCharacterID   *int64      `json:"opponentCharacterId"`
+  OpponentCharacterGsp  *int64      `json:"opponentCharacterGsp"`
+  OpponentTeabag        *bool       `json:"opponentTeabag"`
+  OpponentCamp          *bool       `json:"opponentCamp"`
+  OpponentAwesome       *bool       `json:"opponentAwesome"`
+  UserCharacterID       *int64      `json:"userCharacterId"`
+  UserCharacterGsp      *int64      `json:"userCharacterGsp"`
+  UserWin               *bool       `json:"userWin"`
+  Created               *time.Time  `json:"created"`
+}
+
+
 /*---------------------------------
           Response Data
 ----------------------------------*/
@@ -43,8 +59,15 @@ type MatchGetAllResponseData struct {
 
 
 // MatchCreateResponseData is the data we send
-//  back after a successfully creating a new match
+// back after a successfully creating a new match
 type MatchCreateResponseData struct {
+  Match  *MatchView  `json:"match"`
+}
+
+
+// MatchUpdateResponseData is the data we send
+// back after successfully updating a match
+type MatchUpdateResponseData struct {
   Match  *MatchView  `json:"match"`
 }
 
@@ -122,6 +145,25 @@ func ToDBMatchCreate(matchCreateRequestData *MatchCreateRequestData) *db.MatchCr
 }
 
 
+// ToDBMatchUpdate maps from an api.MatchUpdateRequestData
+// to a db.MatchUpdate, which has fields like sql.NullBool
+func ToDBMatchUpdate(matchUpdateRequestData *MatchUpdateRequestData) *db.MatchUpdate {
+  dbMatchUpdate := new(db.MatchUpdate)
+  dbMatchUpdate.MatchID = matchUpdateRequestData.MatchID
+  dbMatchUpdate.OpponentCharacterID = ToNullInt64(matchUpdateRequestData.OpponentCharacterID)
+  dbMatchUpdate.OpponentCharacterGsp = ToNullInt64(matchUpdateRequestData.OpponentCharacterGsp)
+  dbMatchUpdate.OpponentTeabag = ToNullBool(matchUpdateRequestData.OpponentTeabag)
+  dbMatchUpdate.OpponentCamp = ToNullBool(matchUpdateRequestData.OpponentCamp)
+  dbMatchUpdate.OpponentAwesome = ToNullBool(matchUpdateRequestData.OpponentAwesome)
+  dbMatchUpdate.UserCharacterID = ToNullInt64(matchUpdateRequestData.UserCharacterID)
+  dbMatchUpdate.UserCharacterGsp = ToNullInt64(matchUpdateRequestData.UserCharacterGsp)
+  dbMatchUpdate.UserWin = ToNullBool(matchUpdateRequestData.UserWin)
+  dbMatchUpdate.Created = ToNullTime(matchUpdateRequestData.Created)
+
+  return dbMatchUpdate
+}
+
+
 /*---------------------------------
              Router
 ----------------------------------*/
@@ -153,6 +195,8 @@ func (r *MatchRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
     switch head {
     case "create":
       r.handleCreate(res, req)
+    case "update":
+      r.handleUpdate(res, req)
     default:
       http.Error(res, fmt.Sprintf("Unsupport POST path %s", head), http.StatusBadRequest)
       return
@@ -162,6 +206,7 @@ func (r *MatchRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
     http.Error(res, fmt.Sprintf("Unsupport Method type %s", req.Method), http.StatusBadRequest)
   }
 }
+
 
 /*---------------------------------
              Handlers
@@ -217,6 +262,38 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
     Success:  true,
     Error:    err,
     Data:     MatchCreateResponseData{
+      Match:  matchView,
+    },
+  }
+
+  res.Header().Set("Content-Type", "application/json")
+  json.NewEncoder(res).Encode(response)
+}
+
+
+func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
+  decoder := json.NewDecoder(req.Body)
+  updateRequestData := new(MatchUpdateRequestData)
+
+  err := decoder.Decode(updateRequestData)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
+    return
+  }
+
+  dbMatchUpdate := ToDBMatchUpdate(updateRequestData)
+  matchID, err := r.SysUtils.Database.UpdateMatch(dbMatchUpdate)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error updating match in database: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+  dbMatchView, err := r.SysUtils.Database.GetMatchViewByMatchID(matchID)
+  matchView := ToAPIMatchView(dbMatchView)
+
+  response := &Response{
+    Success:   true,
+    Error:     nil,
+    Data:      MatchUpdateResponseData{
       Match:  matchView,
     },
   }

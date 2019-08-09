@@ -2,6 +2,9 @@ package api
 
 import (
   "database/sql"
+  "time"
+
+  "github.com/lib/pq"
 )
 
 
@@ -38,6 +41,15 @@ func ToNullString(str *string) sql.NullString {
   }
 
   return sql.NullString{String: *str, Valid: true}
+}
+
+
+func ToNullTime(t *time.Time) pq.NullTime {
+  if t == nil {
+    return pq.NullTime{}
+  }
+
+  return pq.NullTime{Time: *t, Valid: true}
 }
 
 
