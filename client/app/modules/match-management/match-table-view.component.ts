@@ -1,16 +1,20 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { faCheck, faTimes, faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
-import { IMatchViewModel } from '../../app.view-models';
+import { IMatchViewModel, ICharacterViewModel } from '../../app.view-models';
 import { CommonUxService } from '../common-ux/common-ux.service';
 import { ISortEvent, SortEvent, SortDirection, HeaderViewModel } from '../common-ux/common-ux.view-models';
 import { SortableTableHeaderComponent } from '../common-ux/components/sortable-table-header/sortable-table-header.component';
 import { MatchManagementService } from './match-management.service';
+import { CharacterManagementService } from '../character-management/character-management.service';
 
 @Component({
   selector: 'match-table-view',
   templateUrl: './match-table-view.component.html',
   styles: [`
+    /deep/ td {
+      white-space: nowrap;
+    }
     .table-striped tbody tr.highlight {
       animation: highlight 1500ms ease-out;
     }
@@ -29,26 +33,29 @@ import { MatchManagementService } from './match-management.service';
 })
 export class MatchTableViewComponent implements OnInit {
   public headerLabels: HeaderViewModel[] = [
-    new HeaderViewModel('matchId', '#'),
-    new HeaderViewModel('userName', 'User'),
-    new HeaderViewModel('userCharacterName', 'Char'),
-    new HeaderViewModel('userCharacterGsp', 'GSP'),
-    new HeaderViewModel('opponentCharacterName', 'Opponent Char'),
-    new HeaderViewModel('opponentCharacterGsp', 'Opponent GSP'),
-    new HeaderViewModel('userWin', 'Win/Loss'),
-    new HeaderViewModel('opponentAwesome', 'Chum'),
-    new HeaderViewModel('opponentCamp', 'Camp'),
-    new HeaderViewModel('opponentTeabag', 'TBag'),
-    new HeaderViewModel('created', 'Created'),
+    new HeaderViewModel('userName', 'User', '100px'),
+    new HeaderViewModel('userCharacterName', 'Char', '150px'),
+    new HeaderViewModel('userCharacterGsp', 'GSP', '150px'),
+    new HeaderViewModel('opponentCharacterName', 'Opponent Char', '150px'),
+    new HeaderViewModel('opponentCharacterGsp', 'Opponent GSP', '150px'),
+    new HeaderViewModel('userWin', 'Win', '50px'),
+    new HeaderViewModel('opponentAwesome', 'Chum', '50px'),
+    new HeaderViewModel('opponentCamp', 'Camp', '50px'),
+    new HeaderViewModel('opponentTeabag', 'TBag', '50px'),
+    new HeaderViewModel('created', 'Created', '120px'),
   ];
   @ViewChildren(SortableTableHeaderComponent) headerComponents: QueryList<SortableTableHeaderComponent>;
 
   public matches: IMatchViewModel[] = [];
+  public characters: ICharacterViewModel[] = [];
 
   public sortedMatches: IMatchViewModel[];
   public sortColumnName: string = '';
   public sortColumnDirection: SortDirection = '';
   public isLoading: boolean = false;
+
+  // Match editing
+  public editedMatch: IMatchViewModel = {} as IMatchViewModel;
 
   public faCheck = faCheck;
   public faTimes = faTimes;
@@ -58,6 +65,7 @@ export class MatchTableViewComponent implements OnInit {
   constructor(
     private commonUXService: CommonUxService,
     private matchService: MatchManagementService,
+    private characterService: CharacterManagementService,
     ) {
   }
 
@@ -80,6 +88,10 @@ export class MatchTableViewComponent implements OnInit {
         this.isLoading = false;
       }
     });
+    this.characterService.characters.subscribe(
+      (res: ICharacterViewModel[]) => {
+        this.characters = res;
+      });
   }
 
   public onSort({column, direction}: ISortEvent) {
@@ -114,6 +126,17 @@ export class MatchTableViewComponent implements OnInit {
     console.log('DELETING match!', matchId);
   }
   private initialSort(): void {
-    this.onSort(new SortEvent('matchId', 'desc'));
+    this.onSort(new SortEvent('created', 'desc'));
+  }
+
+  public onSelectEditUserCharacter(event: ICharacterViewModel): void {
+    if (event) {
+      this.editedMatch.userCharacterId = event.characterId;
+    }
+  }
+  public onSelectEditOpponentCharacter(event: ICharacterViewModel): void {
+    if (event) {
+      this.editedMatch.opponentCharacterId = event.characterId;
+    }
   }
 }
