@@ -6,15 +6,16 @@ export interface IMatchViewModel {
     userName: string; // Viewmodel only, intended to be read-only for match display
     opponentCharacterId: number;
     opponentCharacterName: string;
-    opponentCharacterGsp: number;
+    opponentCharacterGsp: number | string;
     userCharacterId: number;
     userCharacterName: string;
-    userCharacterGsp: number;
+    userCharacterGsp: number | string;
     opponentTeabag: boolean;
     opponentCamp: boolean;
     opponentAwesome: boolean;
     userWin: boolean;
     created: Date; // Set on the server. Read-only
+    editMode: boolean; // Viewmodel only
     isNew: boolean; // Viewmodel only
 }
 export class MatchViewModel implements IMatchViewModel {
@@ -33,6 +34,7 @@ export class MatchViewModel implements IMatchViewModel {
         public opponentAwesome: boolean = null,
         public userWin: boolean = null,
         public created: Date = null,
+        public editMode: boolean = false,
         public isNew: boolean = false,
     ) {
     }

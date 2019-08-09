@@ -1,0 +1,95 @@
+<!-- View row -->
+<ng-container *ngIf="!match.editMode; else editing">
+    <td class="align-middle">{{match.userName}}</td>
+    <td class="align-middle">{{match.userCharacterName}}</td>
+    <td class="align-middle">{{match.userCharacterGsp | number}}</td>
+    <td class="align-middle">{{match.opponentCharacterName}}</td>
+    <td class="align-middle">{{match.opponentCharacterGsp | number}}</td>
+    <td class="text-center align-middle">
+        <span *ngIf="match.userWin==true" class="text-success font-weight-bold">
+            <fa-icon [icon]="faCheck"></fa-icon>
+        </span>
+        <span *ngIf="match.userWin==false" class="text-danger font-weight-bold">
+            <fa-icon [icon]="faTimes"></fa-icon>
+        </span>
+    </td>
+
+    <td class="text-center align-middle">
+        <span *ngIf="match.opponentAwesome" class="text-success font-weight-bold">
+            <fa-icon [icon]="faCheck"></fa-icon>
+        </span>
+    </td>
+    <td class="text-center align-middle">
+        <span *ngIf="match.opponentCamp" class="text-success font-weight-bold">
+            <fa-icon [icon]="faCheck"></fa-icon>
+        </span>
+    </td>
+    <td class="text-center align-middle">
+        <span *ngIf="match.opponentTeabag" class="text-success font-weight-bold">
+            <fa-icon [icon]="faCheck"></fa-icon>
+        </span>
+    </td>
+    <td class="align-middle">{{match.created | date:"MM/dd/yy h:mm a"}}</td>
+    <td class="text-center align-middle">
+        <button (click)="editMatch(match)" class="btn btn-sm btn-link m-0 p-1"><fa-icon [icon]="faPencilAlt"></fa-icon></button>
+        <button (click)="deleteMatch(match.matchId)" class="btn btn-sm btn-link m-0 p-1"><fa-icon [icon]="faTrash"></fa-icon></button>
+    </td>
+</ng-container>
+
+
+<!-- Edit row -->
+<ng-template #editing>
+    <td class="align-middle">{{editedMatch.userName}}</td>
+    <td class="align-middle">
+        <common-ux-typeahead 
+        [items]="characters"
+        [textPropertyName]="'characterName'" 
+        [valuePropertyName]="'characterId'" 
+        [value]="editedMatch.userCharacterId" 
+        (selectItem)="onSelectEditUserCharacter($event)"
+        [size]="'sm'">
+        </common-ux-typeahead>
+    </td>
+    <td class="align-middle">
+        <common-ux-masked-number-input
+            [(numberValue)]="editedMatch.userCharacterGsp"
+            [size]="'sm'">
+        </common-ux-masked-number-input>
+    </td>
+    <td class="align-middle">
+        <common-ux-typeahead 
+        [items]="characters"
+        [textPropertyName]="'characterName'" 
+        [valuePropertyName]="'characterId'" 
+        [value]="editedMatch.userCharacterId" 
+        (selectItem)="onSelectEditOpponentCharacter($event)"
+        [size]="'sm'">
+        </common-ux-typeahead>
+    </td>
+    <td class="align-middle">
+        <common-ux-masked-number-input
+            [(numberValue)]="editedMatch.opponentCharacterGsp"
+            [size]="'sm'">
+        </common-ux-masked-number-input>
+    </td>
+    <td class="text-center align-middle">
+        <input [(ngModel)]="editedMatch.userWin" name="userWin" type="checkbox">
+    </td>
+
+    <td class="text-center align-middle">
+        <input [(ngModel)]="editedMatch.opponentAwesome" name="opponentAwesome" type="checkbox">
+    </td>
+    <td class="text-center align-middle">
+        <input [(ngModel)]="editedMatch.opponentCamp" name="opponentCamp" type="checkbox">
+    </td>
+    <td class="text-center align-middle">
+        <input [(ngModel)]="editedMatch.opponentTeabag" name="opponentTeabag" type="checkbox">
+    </td>
+    <td class="align-middle">{{editedMatch.created | date:"MM/dd/yy h:mm a"}}</td>
+    <td class="text-center align-middle">
+        <div class="btn-group btn-block">
+            <button (click)="saveChanges()" class="btn btn-sm btn-light border-secondary">Save</button>
+            <button (click)="resetState()" class="btn btn-sm btn-light border-secondary">Cancel</button>
+        </div>
+    </td>
+</ng-template>

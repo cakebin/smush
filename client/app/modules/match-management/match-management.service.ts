@@ -42,8 +42,26 @@ export class MatchManagementService {
                 }
             }));
     }
-    public updateMatch(updatedMatch: IMatchViewModel): Observable<{}> {
-        return this.httpClient.post(`${this.apiUrl}/update`, updatedMatch);
+    public updateMatch(updatedMatch: IMatchViewModel): Observable<IMatchViewModel> {
+        return this.httpClient.post(`${this.apiUrl}/update`, updatedMatch).pipe(
+            map((res: IServerResponse) => {
+                if (res && res.data && res.data.match) {
+                    const serverMatch: IMatchViewModel = res.data.match;
+                    const allMatches: IMatchViewModel[] = this.cachedMatches.value;
+                    const index = allMatches.findIndex(m => m.matchId === serverMatch.matchId);
+
+                    allMatches[index] = serverMatch;
+                    this.cachedMatches.next(allMatches);
+                    this.cachedMatches.pipe(
+                        publish(),
+                        refCount()
+                    );
+                    return serverMatch;
+                } else {
+                    return null;
+                }
+            })
+        );
     }
     public deleteMatch(matchId: number): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/delete`, matchId);
