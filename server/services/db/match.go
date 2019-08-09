@@ -2,6 +2,8 @@ package db
 
 import (
   "database/sql"
+  
+  "github.com/lib/pq"
 )
 
 
@@ -37,7 +39,7 @@ type MatchUpdate struct {
   UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
   UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
   UserWin               sql.NullBool   `json:"userWin"`
-  Created               NullTime       `json:"created"`
+  Created               pq.NullTime    `json:"created"`
 }
 
 
@@ -144,6 +146,7 @@ func (db *DB) UpdateMatch(matchUpdate *MatchUpdate) (int, error) {
     matchUpdate.UserCharacterGsp,
     matchUpdate.UserWin,
     matchUpdate.Created,
+    matchUpdate.MatchID,
   )
   err := row.Scan(&matchID)
 
