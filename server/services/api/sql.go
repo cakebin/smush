@@ -2,6 +2,9 @@ package api
 
 import (
   "database/sql"
+  "time"
+
+  "github.com/lib/pq"
 )
 
 
@@ -10,7 +13,7 @@ import (
 // optional API request int64 data for use in sql
 func ToNullInt64(integer *int64) sql.NullInt64 {
   if integer == nil {
-    return sql.NullInt64{Int64: 0, Valid: false}
+    return sql.NullInt64{}
   }
 
   return sql.NullInt64{Int64: *integer, Valid: true}
@@ -22,7 +25,7 @@ func ToNullInt64(integer *int64) sql.NullInt64 {
 // optional API request bool data for use in sql
 func ToNullBool(boolean *bool) sql.NullBool {
   if boolean == nil {
-    return sql.NullBool{Bool: false, Valid: false}
+    return sql.NullBool{}
   }
 
   return sql.NullBool{Bool: *boolean, Valid: true}
@@ -34,10 +37,19 @@ func ToNullBool(boolean *bool) sql.NullBool {
 // optional API request string data for use in sql
 func ToNullString(str *string) sql.NullString {
   if str == nil {
-    return sql.NullString{String: "", Valid: false}
+    return sql.NullString{}
   }
 
   return sql.NullString{String: *str, Valid: true}
+}
+
+
+func ToNullTime(t *time.Time) pq.NullTime {
+  if t == nil {
+    return pq.NullTime{}
+  }
+
+  return pq.NullTime{Time: *t, Valid: true}
 }
 
 
