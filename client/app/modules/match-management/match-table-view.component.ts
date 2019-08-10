@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { faCheck, faTimes, faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
-import { IMatchViewModel, ICharacterViewModel } from '../../app.view-models';
+import { IMatchViewModel, ICharacterViewModel, IUserViewModel } from '../../app.view-models';
 import { CommonUxService } from '../common-ux/common-ux.service';
 import { ISortEvent, SortEvent, SortDirection, HeaderViewModel } from '../common-ux/common-ux.view-models';
 import { SortableTableHeaderComponent } from '../common-ux/components/sortable-table-header/sortable-table-header.component';
 import { MatchManagementService } from './match-management.service';
 import { CharacterManagementService } from '../character-management/character-management.service';
+import { UserManagementService } from '../user-management/user-management.service';
 
 @Component({
   selector: 'match-table-view',
@@ -47,12 +48,13 @@ export class MatchTableViewComponent implements OnInit {
   @ViewChildren(SortableTableHeaderComponent) headerComponents: QueryList<SortableTableHeaderComponent>;
 
   public matches: IMatchViewModel[] = [];
+  public user: IUserViewModel;
   public characters: ICharacterViewModel[] = [];
 
   public sortedMatches: IMatchViewModel[];
   public sortColumnName: string = '';
   public sortColumnDirection: SortDirection = '';
-  public isLoading: boolean = false;
+  public isInitialLoad: boolean = true;
 
   // Match editing
   public editedMatch: IMatchViewModel = {} as IMatchViewModel;
@@ -66,31 +68,37 @@ export class MatchTableViewComponent implements OnInit {
     private commonUXService: CommonUxService,
     private matchService: MatchManagementService,
     private characterService: CharacterManagementService,
+    private userService: UserManagementService,
     ) {
   }
 
   ngOnInit() {
-    this.isLoading = true;
     this.matchService.cachedMatches.subscribe({
       next: res => {
         if (res) {
-          this.isLoading = true;
           this.sortedMatches = res;
           this.matches = res;
-          this.initialSort();
+
+          if (this.isInitialLoad) {
+            this._initialSort();
+            this.isInitialLoad = false;
+          } else {
+            this._sort();
+          }
         }
       },
       error: err => {
         this.commonUXService.showDangerToast('Unable to get matches.');
         console.error(err);
-      },
-      complete: () => {
-        this.isLoading = false;
       }
     });
     this.characterService.characters.subscribe(
       (res: ICharacterViewModel[]) => {
         this.characters = res;
+      });
+    this.userService.cachedUser.subscribe(
+      (res: IUserViewModel) => {
+        this.user = res;
       });
   }
 
@@ -103,7 +111,6 @@ export class MatchTableViewComponent implements OnInit {
         }
       });
     }
-
     // Sorting items
     if (direction === '') {
       this.sortColumnName = '';
@@ -118,17 +125,6 @@ export class MatchTableViewComponent implements OnInit {
       });
     }
   }
-
-  public editMatch(match: IMatchViewModel): void {
-    console.log('Editing match!', match);
-  }
-  public deleteMatch(matchId: number): void {
-    console.log('DELETING match!', matchId);
-  }
-  private initialSort(): void {
-    this.onSort(new SortEvent('created', 'desc'));
-  }
-
   public onSelectEditUserCharacter(event: ICharacterViewModel): void {
     if (event) {
       this.editedMatch.userCharacterId = event.characterId;
@@ -138,5 +134,16 @@ export class MatchTableViewComponent implements OnInit {
     if (event) {
       this.editedMatch.opponentCharacterId = event.characterId;
     }
+  }
+
+  /*------------------------
+       Private helpers
+  -------------------------*/
+  private _initialSort(): void {
+    this.onSort(new SortEvent('created', 'desc'));
+  }
+  private _sort(): void {
+    // For programmatic sorting on match load using existing column / direction
+    this.onSort(new SortEvent(this.sortColumnName, this.sortColumnDirection));
   }
 }

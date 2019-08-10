@@ -15,25 +15,6 @@ export class MatchInputFormComponent implements OnInit {
   public match: IMatchViewModel = new MatchViewModel();
   public characters: ICharacterViewModel[] = [];
 
-  // The masking returns a string, but GSPs are numbers, so we need to convert
-  // and set our model to the number value on every change
-  private _opponentCharacterGspString: string = '';
-  private _userCharacterGspString: string = '';
-  public set opponentCharacterGspString(value: string) {
-    this._opponentCharacterGspString = value;
-    this.match.opponentCharacterGsp = parseInt(value.replace(/\D/g, ''), 10);
-  }
-  public get opponentCharacterGspString(): string {
-    return this._opponentCharacterGspString;
-  }
-  public set userCharacterGspString(value: string) {
-    this._userCharacterGspString = value;
-    this.match.userCharacterGsp = parseInt(value.replace(/\D/g, ''), 10);
-  }
-  public get userCharacterGspString(): string {
-    return this._userCharacterGspString;
-  }
-
   public showFooterWarnings: boolean = false;
   public warnings: string[] = [];
   public isSaving: boolean = false;
@@ -58,11 +39,10 @@ export class MatchInputFormComponent implements OnInit {
             this.match.userCharacterId = res.defaultCharacterId;
           }
           if (res.defaultCharacterGsp) {
-            this.userCharacterGspString = res.defaultCharacterGsp.toString();
+            this.match.userCharacterGsp = res.defaultCharacterGsp;
           }
         }
     });
-
     this.characterService.characters.subscribe(
       res => {
         this.characters = res;
@@ -121,6 +101,9 @@ export class MatchInputFormComponent implements OnInit {
     }
   }
 
+  /*-----------------------
+       Private helpers
+  ------------------------*/
   private _resetMatch(): void {
     this.match = {
       matchId: null,
@@ -137,6 +120,5 @@ export class MatchInputFormComponent implements OnInit {
       opponentCamp: null,
       userWin: null
     } as IMatchViewModel;
-    this.opponentCharacterGspString = '';
   }
 }

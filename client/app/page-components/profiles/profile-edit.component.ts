@@ -29,27 +29,17 @@ class SavedCharacter implements ISavedCharacter {
 })
 export class ProfileEditComponent implements OnInit {
   public savedCharactersTestData: ISavedCharacter[] = [];
-
   public editChar: ISavedCharacter = {} as ISavedCharacter;
 
   public characters: ICharacterViewModel[] = [];
   public user: IUserViewModel = {} as IUserViewModel;
   public editedUser: IUserViewModel = {} as IUserViewModel;
 
-  public set defaultCharacterGspString(value: string) {
-    this._defaultCharacterGspString = value;
-    this.editedUser.defaultCharacterGsp = parseInt(value.replace(/\D/g, ''), 10);
-  }
-  public get defaultCharacterGspString(): string {
-    return this._defaultCharacterGspString;
-  }
-  private _defaultCharacterGspString: string = '';
-
   public showFooterWarnings = false;
   public warnings: string[] = [];
   public isSaving = false;
-  public faQuestionCircle = faQuestionCircle;
   public formChanged: boolean = false;
+  public faQuestionCircle = faQuestionCircle;
 
   constructor(
     private commonUxService: CommonUxService,
@@ -70,10 +60,6 @@ export class ProfileEditComponent implements OnInit {
         if (res) {
           Object.assign(this.user, res);
           Object.assign(this.editedUser, res);
-
-          if (this.editedUser.defaultCharacterGsp) {
-            this.defaultCharacterGspString = this.editedUser.defaultCharacterGsp.toString();
-          }
         }
       },
       error: err => {
@@ -95,7 +81,6 @@ export class ProfileEditComponent implements OnInit {
       }
     );
   }
-
   public setDefaultSavedCharacter(defaultCharId: number) {
     this.savedCharactersTestData.forEach(char => {
       if (char.id === defaultCharId) {

@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="form-group col-6">
                     <label for="opponent-character">Opponent character*</label>
-                    <common-ux-typeahead #opponentCharacterNameInput 
+                    <common-ux-typeahead 
                     [items]="characters"
                     [textPropertyName]="'characterName'"
                     [valuePropertyName]="'characterId'"
@@ -14,7 +14,7 @@
                 </div>
                 <div class="form-group col-6">
                     <label for="opponent-gsp">Opponent character's GSP</label>
-                    <common-ux-masked-number-input #opponentCharacterGspInput [(numberValue)]="opponentCharacterGspString"></common-ux-masked-number-input>      
+                    <common-ux-masked-number-input [(numberValue)]="match.opponentCharacterGsp"></common-ux-masked-number-input>      
                 </div>
             </div>
 
@@ -23,7 +23,7 @@
                     <label for="user-character">
                         Your character<span *ngIf="match.userCharacterGsp">*</span>
                     </label>
-                    <common-ux-typeahead #userCharacterNameInput 
+                    <common-ux-typeahead 
                     [items]="characters" 
                     [textPropertyName]="'characterName'"
                     [valuePropertyName]="'characterId'"
@@ -33,7 +33,7 @@
                 </div>
                 <div class="form-group col-6">
                     <label for="user-gsp">Your character's GSP</label>
-                    <common-ux-masked-number-input #userCharacterGspInput [(numberValue)]="userCharacterGspString"></common-ux-masked-number-input>
+                    <common-ux-masked-number-input [(numberValue)]="match.userCharacterGsp"></common-ux-masked-number-input>
                 </div>
             </div>
 
@@ -87,38 +87,4 @@
             </div>  
         </div>
     </form>
-</div>
-
-
-
-
-
-<div *ngIf="false" class="card mt-4">
-    <div class="card-header">Last Saved Match
-        <span *ngIf="lastSavedMatch.userWin!=null && lastSavedMatch.userWin==true" class="badge badge-success" style="position:relative;top:-1px">Win</span>
-        <span *ngIf="lastSavedMatch.userWin!=null && lastSavedMatch.userWin==false" class="badge badge-secondary" style="position:relative;top:-1px">Loss</span>
-    </div>
-    <div class="card-body">
-        <div class="row h2">
-            <div class="col">
-                <span *ngIf="lastSavedMatch.userCharacterName">
-                    <span class="font-weight-bold">{{lastSavedMatch.userCharacterName}}</span>
-                    <span *ngIf="lastSavedMatch.userCharacterGsp" class="text-black-50 ml-1">{{lastSavedMatch.userCharacterGsp}}</span>
-                    <span class="ml-2 mr-2">vs.</span>
-                </span>
-                <span *ngIf="lastSavedMatch.opponentCharacterName">
-                    <span class="font-weight-bold text-primary">{{lastSavedMatch.opponentCharacterName}}</span>
-                    <span *ngIf="lastSavedMatch.opponentCharacterGsp" class="text-black-50 ml-1">{{lastSavedMatch.opponentCharacterGsp}}</span>
-                </span>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col">
-                <span *ngIf="lastSavedMatch.opponentAwesome" class="badge badge-success mr-1">A good bloke</span>
-                <span *ngIf="lastSavedMatch.opponentCamp"class="badge badge-warning mr-1">Camper</span>
-                <span *ngIf="lastSavedMatch.opponentTeabag" class="badge badge-danger">Teabagger</span>
-            </div>
-        </div>
-    </div>
 </div>
