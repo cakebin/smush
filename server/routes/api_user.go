@@ -1,4 +1,4 @@
-package api
+package routes
 
 import (
   "encoding/json"
@@ -7,9 +7,7 @@ import (
   "strconv"
   "time"
 
-  "github.com/cakebin/smush/server/env"
   "github.com/cakebin/smush/server/services/db"
-  "github.com/cakebin/smush/server/util/routing"
 )
 
 
@@ -94,7 +92,6 @@ func ToDBUserUpdate(userUpdateRequestData *UserUpdateRequestData) *db.UserProfil
 }
 
 
-
 /*---------------------------------
              Router
 ----------------------------------*/
@@ -103,13 +100,13 @@ func ToDBUserUpdate(userUpdateRequestData *UserUpdateRequestData) *db.UserProfil
 // Basically, connecting to our Postgres DB for all
 // of the CRUD operations for our "User" models
 type UserRouter struct {
-  SysUtils  *env.SysUtils
+  Services  *Services
 }
 
 
 func (r *UserRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   var head string
-  head, req.URL.Path = routing.ShiftPath(req.URL.Path)
+  head, req.URL.Path = ShiftPath(req.URL.Path)
 
   switch req.Method {
   // GET Request Handlers
@@ -143,7 +140,7 @@ func (r *UserRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 
 func (r *UserRouter) handleGetByID(res http.ResponseWriter, req *http.Request) {
   var head string
-  head, req.URL.Path = routing.ShiftPath(req.URL.Path)
+  head, req.URL.Path = ShiftPath(req.URL.Path)
 
   id, err := strconv.Atoi(head)
   if err != nil {
@@ -151,7 +148,7 @@ func (r *UserRouter) handleGetByID(res http.ResponseWriter, req *http.Request) {
     return
   }
 
-  dbUserProfileView, err := r.SysUtils.Database.GetUserProfileViewByID(id)
+  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByID(id)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error getting user with id %q: %s", id, err.Error()), http.StatusInternalServerError)
     return
@@ -182,12 +179,12 @@ func (r *UserRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
   }
 
   dbUserProfileUpdate := ToDBUserUpdate(updateRequestData)
-  userID, err := r.SysUtils.Database.UpdateUserProfile(dbUserProfileUpdate)
+  userID, err := r.Services.Database.UpdateUserProfile(dbUserProfileUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error updating user in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
-  dbUserProfileView, err := r.SysUtils.Database.GetUserProfileViewByID(userID)
+  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByID(userID)
   userProfileView := ToAPIUserProfileView(dbUserProfileView)
   
 
@@ -201,4 +198,14 @@ func (r *UserRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
 
   res.Header().Set("Content-Type", "application/json")
   json.NewEncoder(res).Encode(response)
+}
+
+
+// NewUserRouter makes a new api/user router and hooks up its services
+func NewUserRouter(routerServices *Services) *UserRouter {
+  router := new(UserRouter)
+
+  router.Services = routerServices
+
+  return router
 }
