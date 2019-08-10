@@ -1,13 +1,11 @@
-package api
+package routes
 
 import (
   "encoding/json"
   "fmt"
   "net/http"
 
-  "github.com/cakebin/smush/server/env"
   "github.com/cakebin/smush/server/services/db"
-  "github.com/cakebin/smush/server/util/routing"
 )
 
 
@@ -126,13 +124,13 @@ func ToDBCharacterUpdate(characterUpdateRequestData *CharacterUpdateRequestData)
 // Basically, connecting to our Postgres DB for all
 // of the CRUD operations for our "Character" models
 type CharacterRouter struct {
-  SysUtils  *env.SysUtils
+  Services  *Services
 }
 
 
 func (r *CharacterRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   var head string
-  head, req.URL.Path = routing.ShiftPath(req.URL.Path)
+  head, req.URL.Path = ShiftPath(req.URL.Path)
 
   switch req.Method {
   // GET Request Handlers
@@ -167,7 +165,7 @@ func (r *CharacterRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) 
 ----------------------------------*/
 
 func (r *CharacterRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
-  dbCharacters, err := r.SysUtils.Database.GetAllCharacters()
+  dbCharacters, err := r.Services.Database.GetAllCharacters()
   if err != nil {
     http.Error(res, fmt.Sprintf("Error getting all characters from DB: %s", err.Error()), http.StatusInternalServerError)
     return
@@ -203,7 +201,7 @@ func (r *CharacterRouter) handleCreate(res http.ResponseWriter, req *http.Reques
   }
 
   dbCharacterCreate := ToDBCharacterCreate(createRequestData)
-  dbCharacter, err := r.SysUtils.Database.CreateCharacter(dbCharacterCreate)
+  dbCharacter, err := r.Services.Database.CreateCharacter(dbCharacterCreate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error creating new character in database: %s", err.Error()), http.StatusInternalServerError)
     return
@@ -234,7 +232,7 @@ func (r *CharacterRouter) handleUpdate(res http.ResponseWriter, req *http.Reques
   }
 
   dbCharacterUpdate := ToDBCharacterUpdate(updateRequestData)
-  dbCharacter, err := r.SysUtils.Database.UpdateCharacter(dbCharacterUpdate)
+  dbCharacter, err := r.Services.Database.UpdateCharacter(dbCharacterUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error updating character in database: %s", err.Error()), http.StatusInternalServerError)
     return
@@ -251,4 +249,14 @@ func (r *CharacterRouter) handleUpdate(res http.ResponseWriter, req *http.Reques
 
   res.Header().Set("Content-Type", "application/json")
   json.NewEncoder(res).Encode(response)
+}
+
+
+// NewCharacterRouter makes a new api/character router and hooks up its services
+func NewCharacterRouter(routerServices *Services) *CharacterRouter {
+  router := new(CharacterRouter)
+
+  router.Services = routerServices
+
+  return router
 }

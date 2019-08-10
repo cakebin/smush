@@ -1,4 +1,4 @@
-package api
+package routes
 
 import (
   "encoding/json"
@@ -6,9 +6,7 @@ import (
   "net/http"
   "time"
 
-  "github.com/cakebin/smush/server/env"
   "github.com/cakebin/smush/server/services/db"
-  "github.com/cakebin/smush/server/util/routing"
 )
 
 
@@ -172,13 +170,13 @@ func ToDBMatchUpdate(matchUpdateRequestData *MatchUpdateRequestData) *db.MatchUp
 // Basically, connecting to our Postgres DB for all
 // of the CRUD operations for our "Match" models
 type MatchRouter struct {
-  SysUtils  *env.SysUtils
+  Services  *Services
 }
 
 
 func (r *MatchRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   var head string
-  head, req.URL.Path = routing.ShiftPath(req.URL.Path)
+  head, req.URL.Path = ShiftPath(req.URL.Path)
 
   switch req.Method {
   // GET Request Handlers
@@ -213,7 +211,7 @@ func (r *MatchRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 ----------------------------------*/
 
 func (r *MatchRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
-  dbMatchViews, err := r.SysUtils.Database.GetAllMatchViews()
+  dbMatchViews, err := r.Services.Database.GetAllMatchViews()
   if err != nil {
     http.Error(res, fmt.Sprintf("Error getting all matches from DB: %s", err.Error()), http.StatusInternalServerError)
     return
@@ -252,8 +250,8 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
   dbMatchCreate := ToDBMatchCreate(createRequestData)
 
   // Then make the new match and fetch relevant match view data for it
-  matchID, err := r.SysUtils.Database.CreateMatch(dbMatchCreate)
-  dbMatchView, err := r.SysUtils.Database.GetMatchViewByMatchID(matchID)
+  matchID, err := r.Services.Database.CreateMatch(dbMatchCreate)
+  dbMatchView, err := r.Services.Database.GetMatchViewByMatchID(matchID)
 
   // Finally make a JSON representable version of the db.MatchView fetched results
   matchView := ToAPIMatchView(dbMatchView)
@@ -282,12 +280,12 @@ func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
   }
 
   dbMatchUpdate := ToDBMatchUpdate(updateRequestData)
-  matchID, err := r.SysUtils.Database.UpdateMatch(dbMatchUpdate)
+  matchID, err := r.Services.Database.UpdateMatch(dbMatchUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error updating match in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
-  dbMatchView, err := r.SysUtils.Database.GetMatchViewByMatchID(matchID)
+  dbMatchView, err := r.Services.Database.GetMatchViewByMatchID(matchID)
   matchView := ToAPIMatchView(dbMatchView)
 
   response := &Response{
@@ -300,4 +298,14 @@ func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
 
   res.Header().Set("Content-Type", "application/json")
   json.NewEncoder(res).Encode(response)
+}
+
+
+// NewMatchRouter makes a new api/match router and hooks up its services
+func NewMatchRouter(routerServices *Services) *MatchRouter {
+  router := new(MatchRouter)
+
+  router.Services = routerServices
+
+  return router
 }
