@@ -1,10 +1,7 @@
-package api
+package routes
 
 import (
   "net/http"
-
-  "github.com/cakebin/smush/server/env"
-  "github.com/cakebin/smush/server/util/routing"
 )
 
 
@@ -26,8 +23,8 @@ type Response struct {
 
 // Router is responsible for serving "/api"
 // or delegating to the appropriate sub api-router
-type Router struct {
-  SysUtils         *env.SysUtils
+type APIRouter struct {
+  Services         *Services
   AuthRouter       *AuthRouter
   MatchRouter      *MatchRouter
   UserRouter       *UserRouter
@@ -36,9 +33,9 @@ type Router struct {
 
 
 
-func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
+func (r *APIRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   var head string
-  head, req.URL.Path = routing.ShiftPath(req.URL.Path)
+  head, req.URL.Path = ShiftPath(req.URL.Path)
 
   if head == "auth" {
     r.AuthRouter.ServeHTTP(res, req)
@@ -55,7 +52,7 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   if err == nil {
     // If this is run, and there is an error (token is invalid),
     // err will not be nil in the next if block
-    _, err = r.SysUtils.Authenticator.CheckJWTToken(accessCookie.Value)
+    _, err = r.Services.Auth.CheckJWTToken(accessCookie.Value)
   }
 
   // Access token is invalid, or there wasn't an access cookie in the first place
@@ -80,13 +77,15 @@ func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 
 
 // NewRouter makes a new api router and sets up its children
-// routers with access to the "SysUtils" environment object
-func NewRouter(sysUtils *env.SysUtils) *Router {
-  router := new(Router)
-  router.SysUtils = sysUtils
-  router.AuthRouter = &AuthRouter{SysUtils:  sysUtils}
-  router.MatchRouter = &MatchRouter{SysUtils:  sysUtils}
-  router.UserRouter = &UserRouter{SysUtils:  sysUtils}
-  router.CharacterRouter = &CharacterRouter{SysUtils:  sysUtils}
+// routers with access to our router services
+func NewAPIRouter(routerServices *Services) *APIRouter {
+  router := new(APIRouter)
+
+  router.Services = routerServices
+  router.AuthRouter = NewAuthRouter(routerServices)
+  router.MatchRouter = NewMatchRouter(routerServices)
+  router.UserRouter = NewUserRouter(routerServices)
+  router.CharacterRouter = NewCharacterRouter(routerServices)
+
   return router
 }

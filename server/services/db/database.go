@@ -2,6 +2,7 @@ package db
 
 import (
   "database/sql"
+  "os"
 
   _ "github.com/lib/pq" // Needed for the postgres driver
 )
@@ -15,6 +16,7 @@ type DB struct {
 }
 
 
+// DatabaseManager combines all of the database interactions into one
 type DatabaseManager interface {
   MatchManager
   MatchViewManager
@@ -27,8 +29,8 @@ type DatabaseManager interface {
 // New initializes a new postgres database connection and attaches
 // said connection to our DB struct, which we can then call all of
 // the methods described by the our varies Database interfaces
-func New(dataSourceName string) (*DB, error) {
-  db, err := sql.Open("postgres", dataSourceName)
+func New() (*DB, error) {
+  db, err := sql.Open("postgres", os.Getenv(("DATABASE_URL")))
   if err != nil {
     return nil, err
   }
@@ -37,5 +39,3 @@ func New(dataSourceName string) (*DB, error) {
   }
   return &DB{db}, nil
 }
-
-

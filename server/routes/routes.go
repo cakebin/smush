@@ -1,4 +1,4 @@
-package routing
+package routes
 
 import (
   "path"
@@ -16,3 +16,4 @@ func ShiftPath(p string) (head, tail string) {
   }
   return p[1:i], p[i:]
 }
+
