@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { faCheck, faTimes, faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
-import { IMatchViewModel, ICharacterViewModel } from '../../app.view-models';
+import { IMatchViewModel, ICharacterViewModel, IUserViewModel } from '../../app.view-models';
 import { CommonUxService } from '../common-ux/common-ux.service';
 import { ISortEvent, SortEvent, SortDirection, HeaderViewModel } from '../common-ux/common-ux.view-models';
 import { SortableTableHeaderComponent } from '../common-ux/components/sortable-table-header/sortable-table-header.component';
 import { MatchManagementService } from './match-management.service';
 import { CharacterManagementService } from '../character-management/character-management.service';
+import { UserManagementService } from '../user-management/user-management.service';
 
 @Component({
   selector: 'match-table-view',
@@ -47,6 +48,7 @@ export class MatchTableViewComponent implements OnInit {
   @ViewChildren(SortableTableHeaderComponent) headerComponents: QueryList<SortableTableHeaderComponent>;
 
   public matches: IMatchViewModel[] = [];
+  public user: IUserViewModel;
   public characters: ICharacterViewModel[] = [];
 
   public sortedMatches: IMatchViewModel[];
@@ -66,6 +68,7 @@ export class MatchTableViewComponent implements OnInit {
     private commonUXService: CommonUxService,
     private matchService: MatchManagementService,
     private characterService: CharacterManagementService,
+    private userService: UserManagementService,
     ) {
   }
 
@@ -92,7 +95,11 @@ export class MatchTableViewComponent implements OnInit {
       (res: ICharacterViewModel[]) => {
         this.characters = res;
       });
-  }
+    this.userService.cachedUser.subscribe(
+      (res: IUserViewModel) => {
+        this.user = res;
+      });
+}
 
   public onSort({column, direction}: ISortEvent) {
     // Resetting all headers. This needs to be done in a parent, no way around it

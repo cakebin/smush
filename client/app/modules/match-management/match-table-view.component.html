@@ -15,6 +15,7 @@
         <tr *ngFor="let match of sortedMatches"
             match-row 
             [match]="match" 
+            [isUserOwned]="match.userId==user?.userId"
             [characters]="characters" 
             [ngClass]="{'highlight':match.isNew}">
         </tr>

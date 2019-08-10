@@ -43,8 +43,12 @@ export class MatchManagementService {
             }));
     }
     public updateMatch(updatedMatch: IMatchViewModel): Observable<IMatchViewModel> {
-        updatedMatch.userCharacterGsp = parseInt(updatedMatch.userCharacterGsp.toString().replace(/\D/g, ''), 10);
-        updatedMatch.opponentCharacterGsp = parseInt(updatedMatch.opponentCharacterGsp.toString().replace(/\D/g, ''), 10);
+        if (updatedMatch.userCharacterGsp) {
+            updatedMatch.userCharacterGsp = parseInt(updatedMatch.userCharacterGsp.toString().replace(/\D/g, ''), 10);
+        }
+        if (updatedMatch.opponentCharacterGsp) {
+            updatedMatch.opponentCharacterGsp = parseInt(updatedMatch.opponentCharacterGsp.toString().replace(/\D/g, ''), 10);
+        }
 
         return this.httpClient.post(`${this.apiUrl}/update`, updatedMatch).pipe(
             map((res: IServerResponse) => {

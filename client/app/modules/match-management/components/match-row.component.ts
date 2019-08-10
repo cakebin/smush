@@ -11,6 +11,7 @@ import { CommonUxService } from '../../common-ux/common-ux.service';
 })
 export class MatchRowComponent {
   @Input() match: IMatchViewModel = {} as IMatchViewModel;
+  @Input() isUserOwned: boolean = false;
   @Input() characters: ICharacterViewModel[] = [];
 
   public editedMatch: IMatchViewModel = {} as IMatchViewModel;
@@ -31,6 +32,10 @@ export class MatchRowComponent {
     Object.assign(this.editedMatch, originalMatch);
   }
   public saveChanges(): void {
+    if (!this.editedMatch.opponentCharacterId) {
+      this.commonUxService.showWarningToast('Opponent character required.');
+      return;
+    }
     this.matchService.updateMatch(this.editedMatch).subscribe(
       (res: IMatchViewModel) => {
         if (res) {
@@ -47,11 +52,15 @@ export class MatchRowComponent {
   public onSelectEditOpponentCharacter(event: ICharacterViewModel): void {
     if (event) {
       this.editedMatch.opponentCharacterId = event.characterId;
+    } else {
+      this.editedMatch.opponentCharacterId = null;
     }
   }
   public onSelectEditUserCharacter(event: ICharacterViewModel): void {
     if (event) {
       this.editedMatch.userCharacterId = event.characterId;
+    } else {
+      this.editedMatch.userCharacterId = null;
     }
   }
 }
