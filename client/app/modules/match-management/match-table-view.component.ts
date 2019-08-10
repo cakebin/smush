@@ -54,7 +54,7 @@ export class MatchTableViewComponent implements OnInit {
   public sortedMatches: IMatchViewModel[];
   public sortColumnName: string = '';
   public sortColumnDirection: SortDirection = '';
-  public isLoading: boolean = false;
+  public isInitialLoad: boolean = true;
 
   // Match editing
   public editedMatch: IMatchViewModel = {} as IMatchViewModel;
@@ -73,22 +73,23 @@ export class MatchTableViewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.isLoading = true;
     this.matchService.cachedMatches.subscribe({
       next: res => {
         if (res) {
-          this.isLoading = true;
           this.sortedMatches = res;
           this.matches = res;
-          this.initialSort();
+
+          if (this.isInitialLoad) {
+            this._initialSort();
+            this.isInitialLoad = false;
+          } else {
+            this._sort();
+          }
         }
       },
       error: err => {
         this.commonUXService.showDangerToast('Unable to get matches.');
         console.error(err);
-      },
-      complete: () => {
-        this.isLoading = false;
       }
     });
     this.characterService.characters.subscribe(
@@ -99,7 +100,7 @@ export class MatchTableViewComponent implements OnInit {
       (res: IUserViewModel) => {
         this.user = res;
       });
-}
+  }
 
   public onSort({column, direction}: ISortEvent) {
     // Resetting all headers. This needs to be done in a parent, no way around it
@@ -110,7 +111,6 @@ export class MatchTableViewComponent implements OnInit {
         }
       });
     }
-
     // Sorting items
     if (direction === '') {
       this.sortColumnName = '';
@@ -125,17 +125,6 @@ export class MatchTableViewComponent implements OnInit {
       });
     }
   }
-
-  public editMatch(match: IMatchViewModel): void {
-    console.log('Editing match!', match);
-  }
-  public deleteMatch(matchId: number): void {
-    console.log('DELETING match!', matchId);
-  }
-  private initialSort(): void {
-    this.onSort(new SortEvent('created', 'desc'));
-  }
-
   public onSelectEditUserCharacter(event: ICharacterViewModel): void {
     if (event) {
       this.editedMatch.userCharacterId = event.characterId;
@@ -145,5 +134,16 @@ export class MatchTableViewComponent implements OnInit {
     if (event) {
       this.editedMatch.opponentCharacterId = event.characterId;
     }
+  }
+
+  /*------------------------
+       Private helpers
+  -------------------------*/
+  private _initialSort(): void {
+    this.onSort(new SortEvent('created', 'desc'));
+  }
+  private _sort(): void {
+    // For programmatic sorting on match load using existing column / direction
+    this.onSort(new SortEvent(this.sortColumnName, this.sortColumnDirection));
   }
 }

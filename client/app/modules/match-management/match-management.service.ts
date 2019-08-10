@@ -16,40 +16,37 @@ export class MatchManagementService {
         this.httpClient.get<IServerResponse>(`${this.apiUrl}/getall`).subscribe(
             (res: IServerResponse) => {
                 if (res && res.data) {
-                    this.cachedMatches.next(res.data.matches);
-                    this.cachedMatches.pipe(
-                        publish(),
-                        refCount()
-                    );
+                    this._updateCachedMatches(res.data.matches);
                 }
             }
         );
     }
     public createMatch(match: IMatchViewModel): Observable<{}> {
+        match = this._prepareMatchForApi(match);
         return this.httpClient.post(`${this.apiUrl}/create`, match).pipe(
             tap((res: IServerResponse) => {
                 if (res && res.data && res.data.match) {
                     // Set "isNew" property for highlighting
                     res.data.match.isNew = true;
-
-                    const allMatches: IMatchViewModel[] = this.cachedMatches.value;
+                    let allMatches: IMatchViewModel[] = this.cachedMatches.value;
                     allMatches.push(res.data.match);
-                    this.cachedMatches.next(allMatches);
-                    this.cachedMatches.pipe(
-                        publish(),
-                        refCount()
-                    );
+                    this._updateCachedMatches(allMatches);
+
+                    // Remove "isNew" property after 3 seconds so it won't re-highlight.
+                    // The subscribers have no way of knowing if a match is new or old
+                    // if they're not the component creating matches, so this service
+                    // has to keep track of that info for them
+                    setTimeout(() => {
+                        allMatches = this.cachedMatches.value;
+                        const latestMatch: IMatchViewModel = allMatches.find(m => m.matchId === res.data.match.matchId);
+                        latestMatch.isNew = false;
+                        this._updateCachedMatches(allMatches);
+                    }, 3000);
                 }
             }));
     }
     public updateMatch(updatedMatch: IMatchViewModel): Observable<IMatchViewModel> {
-        if (updatedMatch.userCharacterGsp) {
-            updatedMatch.userCharacterGsp = parseInt(updatedMatch.userCharacterGsp.toString().replace(/\D/g, ''), 10);
-        }
-        if (updatedMatch.opponentCharacterGsp) {
-            updatedMatch.opponentCharacterGsp = parseInt(updatedMatch.opponentCharacterGsp.toString().replace(/\D/g, ''), 10);
-        }
-
+        updatedMatch = this._prepareMatchForApi(updatedMatch);
         return this.httpClient.post(`${this.apiUrl}/update`, updatedMatch).pipe(
             map((res: IServerResponse) => {
                 if (res && res.data && res.data.match) {
@@ -58,11 +55,7 @@ export class MatchManagementService {
                     const index = allMatches.findIndex(m => m.matchId === serverMatch.matchId);
 
                     allMatches[index] = serverMatch;
-                    this.cachedMatches.next(allMatches);
-                    this.cachedMatches.pipe(
-                        publish(),
-                        refCount()
-                    );
+                    this._updateCachedMatches(allMatches);
                     return serverMatch;
                 } else {
                     return null;
@@ -72,5 +65,27 @@ export class MatchManagementService {
     }
     public deleteMatch(matchId: number): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/delete`, matchId);
+    }
+
+
+    /*-----------------------
+         Private helpers
+    ------------------------*/
+    private _prepareMatchForApi(match: IMatchViewModel): IMatchViewModel {
+        // Do all type conversions & other misc translations here before sending to API
+        if (match.userCharacterGsp) {
+            match.userCharacterGsp = parseInt(match.userCharacterGsp.toString().replace(/\D/g, ''), 10);
+        }
+        if (match.opponentCharacterGsp) {
+            match.opponentCharacterGsp = parseInt(match.opponentCharacterGsp.toString().replace(/\D/g, ''), 10);
+        }
+        return match;
+    }
+    private _updateCachedMatches(updatedMatches: IMatchViewModel[]): void {
+        this.cachedMatches.next(updatedMatches);
+        this.cachedMatches.pipe(
+            publish(),
+            refCount()
+        );
     }
 }

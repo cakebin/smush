@@ -38,7 +38,7 @@ export class UserManagementService {
         );
     }
     public logOut(): void {
-        this._clearStorage();
+        this._clearLocalStorage();
         this.router.navigate(['/home']);
 
         if (this.cachedUser.value) {
@@ -53,6 +53,7 @@ export class UserManagementService {
         return this.httpClient.post(`${this.authApiUrl}/register`, user);
     }
     public updateUser(updatedUser: IUserViewModel): Observable<{}> {
+        updatedUser = this._prepareUserForApi(updatedUser);
         return this.httpClient.post(`${this.apiUrl}/update`, updatedUser).pipe(
             tap(res => {
                 localStorage.setItem('smush_user', JSON.stringify(updatedUser));
@@ -65,11 +66,16 @@ export class UserManagementService {
         return this.httpClient.post(`${this.apiUrl}/delete`, userId);
     }
 
-
-
-
-
-    // Private auth handlers
+    /*-----------------------
+         Private helpers
+    ------------------------*/
+    private _prepareUserForApi(user: IUserViewModel): IUserViewModel {
+        // Do all type conversions & other misc translations here before sending to API
+        if (user.defaultCharacterGsp) {
+            user.defaultCharacterGsp = parseInt(user.defaultCharacterGsp.toString().replace(/\D/g, ''), 10);
+        }
+        return user;
+    }
     private _loadUser(user: IUserViewModel): void {
         this.cachedUser.next(user);
         this.cachedUser.pipe(
@@ -90,6 +96,11 @@ export class UserManagementService {
            this._runSessionCheck();
         }, 60000);
     }
+    private _clearLocalStorage(): void {
+        localStorage.removeItem('smush_user');
+        localStorage.removeItem('smush_refresh_expire');
+        localStorage.removeItem('smush_access_expire');
+    }
     private _runSessionCheck(isInitialCheck: boolean = false) {
         const dateNow = new Date();
         const refreshExpiration: string = localStorage.getItem('smush_refresh_expire');
@@ -97,7 +108,7 @@ export class UserManagementService {
 
         if (!refreshExpiration || !accessExpiration) {
             // This user never got and saved a token. Don't try to refresh
-            this._clearStorage();
+            this._clearLocalStorage();
             return;
         }
 
@@ -145,10 +156,5 @@ export class UserManagementService {
                 );
             }
         }
-    }
-    private _clearStorage(): void {
-        localStorage.removeItem('smush_user');
-        localStorage.removeItem('smush_refresh_expire');
-        localStorage.removeItem('smush_access_expire');
     }
 }
