@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS "matches";
 CREATE TABLE "matches" (
   "match_id" SERIAL NOT NULL,
   "user_id" INTEGER NOT NULL DEFAULT -1,
-  "user_character_id" INTEGER NOT NULL DEFAULT -1,
+  "user_character_id" INTEGER,
   "opponent_character_id" INTEGER NOT NULL DEFAULT -1,
   "user_character_gsp" INTEGER,
   "user_win" BOOLEAN,
