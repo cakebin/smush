@@ -79,6 +79,12 @@ export class MatchManagementService {
         if (match.opponentCharacterGsp) {
             match.opponentCharacterGsp = parseInt(match.opponentCharacterGsp.toString().replace(/\D/g, ''), 10);
         }
+        if (match.userCharacterGsp === '') {
+            match.userCharacterGsp = null;
+        }
+        if (match.opponentCharacterGsp === '') {
+            match.opponentCharacterGsp = null;
+        }
         return match;
     }
     private _updateCachedMatches(updatedMatches: IMatchViewModel[]): void {
