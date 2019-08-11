@@ -62,7 +62,7 @@
 
         <div class="row mt-3">
             <div class="col">
-                <div *ngIf="!isLoading && matches?.length && !noFilteredDataToDisplay">
+                <div *ngIf="!isInitialLoad && matches?.length && !noFilteredDataToDisplay">
                     <chart-bar-horizontal 
                         [data]="chartData"
                         [dataUnit]="dataUnit"
@@ -72,10 +72,24 @@
                         [yAxisTickFormatting]="yAxisTickFormatting"
                     ></chart-bar-horizontal>
                 </div>
-                <div *ngIf="isLoading" class="text-center insights-chart-container">
-                    <fa-icon [icon]="faCircleNotch" [spin]="true" size="3x" class="text-black-50"></fa-icon>
+                <div *ngIf="isInitialLoad" class="text-center insights-chart-container">
+                    <div class="skeleton-chart text-center mt-2">
+                        <div class="filler-bar-container border-left border-dark">
+                            <div 
+                            *ngFor="let percent of fillerPercents; index as i"
+                            [ngStyle]="{'width':percent+'%'}"
+                            [ngClass]="{'mb-2': i!=fillerPercents.length-1}"
+                            class="filler-bar rounded-right bg-dark"></div>
+                        </div>
+                        <div class="filler-x-label bg-dark rounded-pill mt-4"></div>
+                        <div class="filler-y-label bg-dark rounded-pill"></div>
+                        <div class="filler-tooltip">
+                            <div class="tooltip-body rounded-sm bg-dark"></div>
+                            <div class="triangle"></div>
+                        </div>
+                    </div>
                 </div>
-                <div *ngIf="!isLoading && (!matches?.length || noFilteredDataToDisplay)" class="text-center no-data-block">
+                <div *ngIf="!isInitialLoad && (!matches?.length || noFilteredDataToDisplay)" class="text-center no-data-block">
                     <h3 class="text-black-50">No matches found</h3>
                 </div>
             </div>

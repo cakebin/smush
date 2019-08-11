@@ -1,17 +1,10 @@
 .chart-container {
-  flex: 1;
+  width:700px;
+  position:absolute;
+  left:50%;
+  margin-left:-400px;
+  margin-bottom:20px;
 }
 .tooltip-data {
     font-size: 1.25em;
-}
-.flex-container {
-  position:absolute;
-  top:0px;
-  bottom:0;
-  left:0;
-  right:0;
-  display: flex;
-  align-items: center;
-  min-height: 550px;
-  justify-content: center;
 }

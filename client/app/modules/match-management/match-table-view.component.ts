@@ -12,25 +12,7 @@ import { UserManagementService } from '../user-management/user-management.servic
 @Component({
   selector: 'match-table-view',
   templateUrl: './match-table-view.component.html',
-  styles: [`
-    /deep/ td {
-      white-space: nowrap;
-    }
-    .table-striped tbody tr.highlight {
-      animation: highlight 1500ms ease-out;
-    }
-    @keyframes highlight {
-      0% {
-        background-color: #ffc107;
-      }
-      75% {
-        background-color: #ffc107;
-      }
-      100 {
-        background-color: initial;
-      }
-    }
-  `]
+  styleUrls: ['./match-table-view.component.css'],
 })
 export class MatchTableViewComponent implements OnInit {
   public headerLabels: HeaderViewModel[] = [

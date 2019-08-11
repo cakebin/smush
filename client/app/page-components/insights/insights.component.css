@@ -1,0 +1,45 @@
+.skeleton-chart {
+  position: absolute;
+  width: 600px;
+  height: 300px;
+  left: 50%;
+  margin-left: -300px;
+  opacity: 0.2;
+}
+.filler-bar {
+  height: 20px;
+}
+.filler-x-label {
+  width: 120px;
+  height: 10px;
+  margin: 0 auto;
+  opacity: 0.4;
+}
+.filler-y-label {
+  position: absolute;
+  width: 10px;
+  height: 120px;
+  left: -35px;
+  top: 50%;
+  margin-top: -60px;
+  opacity: 0.4;
+}
+.filler-tooltip {
+  position: absolute;
+  bottom: 64px;
+  right: 250px;
+  opacity: 0.4;
+}
+.filler-tooltip .triangle {
+  position: absolute;
+  width: 0; 
+  height: 0; 
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #343a40;
+  left: 17px;
+}
+.filler-tooltip .tooltip-body {
+  width: 50px;
+  height: 30px;
+}
