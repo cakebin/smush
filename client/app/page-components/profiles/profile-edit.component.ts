@@ -117,7 +117,7 @@ export class ProfileEditComponent implements OnInit {
         // Copy changes from edited user to the actual user object
         Object.assign(this.user, this.editedUser);
         this.formChanged = this.getChangedStatus();
-        this.commonUxService.showSuccessToast('User information updated!');
+        this.commonUxService.showStandardToast('User information updated!');
       },
       error => {
         this.commonUxService.showDangerToast('Unable to update user information.');

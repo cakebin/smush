@@ -75,17 +75,29 @@
         </common-ux-masked-number-input>
     </td>
     <td class="text-center align-middle">
-        <input [(ngModel)]="editedMatch.userWin" name="userWin" type="checkbox">
+        <select [(ngModel)]="editedMatch.userWin" name="userWin" class="form-control-sm">
+            <option [ngValue]="null">N/A</option>
+            <option *ngFor="let option of boolOptions" [ngValue]="option.value">{{option.name}}</option>  
+        </select>
     </td>
 
     <td class="text-center align-middle">
-        <input [(ngModel)]="editedMatch.opponentAwesome" name="opponentAwesome" type="checkbox">
+        <select [(ngModel)]="editedMatch.opponentAwesome" name="opponentAwesome" class="form-control-sm">
+            <option [ngValue]="null">N/A</option>
+            <option *ngFor="let option of boolOptions" [ngValue]="option.value">{{option.name}}</option>  
+        </select>
     </td>
     <td class="text-center align-middle">
-        <input [(ngModel)]="editedMatch.opponentCamp" name="opponentCamp" type="checkbox">
+        <select [(ngModel)]="editedMatch.opponentCamp" name="opponentCamp" class="form-control-sm">
+            <option [ngValue]="null">N/A</option>
+            <option *ngFor="let option of boolOptions" [ngValue]="option.value">{{option.name}}</option>  
+        </select>
     </td>
     <td class="text-center align-middle">
-        <input [(ngModel)]="editedMatch.opponentTeabag" name="opponentTeabag" type="checkbox">
+        <select [(ngModel)]="editedMatch.opponentTeabag" name="opponentTeabag" class="form-control-sm">
+            <option [ngValue]="null">N/A</option>
+            <option *ngFor="let option of boolOptions" [ngValue]="option.value">{{option.name}}</option>  
+        </select>
     </td>
     <td class="align-middle">{{editedMatch.created | date:"MM/dd/yy h:mm a"}}</td>
     <td class="text-center align-middle">

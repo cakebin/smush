@@ -39,10 +39,10 @@ export class MatchTableViewComponent implements OnInit {
     new HeaderViewModel('userCharacterGsp', 'GSP', '150px'),
     new HeaderViewModel('opponentCharacterName', 'Opponent Char', '150px'),
     new HeaderViewModel('opponentCharacterGsp', 'Opponent GSP', '150px'),
-    new HeaderViewModel('userWin', 'Win', '50px'),
-    new HeaderViewModel('opponentAwesome', 'Chum', '50px'),
-    new HeaderViewModel('opponentCamp', 'Camp', '50px'),
-    new HeaderViewModel('opponentTeabag', 'TBag', '50px'),
+    new HeaderViewModel('userWin', 'Win', '80px'),
+    new HeaderViewModel('opponentAwesome', 'Chum', '80px'),
+    new HeaderViewModel('opponentCamp', 'Camp', '80px'),
+    new HeaderViewModel('opponentTeabag', 'TBag', '80px'),
     new HeaderViewModel('created', 'Created', '120px'),
   ];
   @ViewChildren(SortableTableHeaderComponent) headerComponents: QueryList<SortableTableHeaderComponent>;
