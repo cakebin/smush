@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { SingleSeries, DataItem } from '@swimlane/ngx-charts';
-import { faCircleNotch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
 import { IMatchViewModel } from 'client/app/app.view-models';
@@ -28,8 +28,7 @@ export class InsightsComponent implements OnInit {
   public chartUserId: number;
 
   public noFilteredDataToDisplay: boolean = false;
-  public isLoading: boolean = false;
-  public faCircleNotch = faCircleNotch;
+  public isInitialLoad: boolean = true;
   public faCalendarAlt = faCalendarAlt;
 
   constructor(
@@ -40,8 +39,11 @@ export class InsightsComponent implements OnInit {
 
   ngOnInit() {
     this.matchService.cachedMatches.subscribe(res => {
-      this.matches = res;
-      this.publishCharacterUsageChartData();
+      if (res && res.length) {
+        this.matches = res;
+        this.publishCharacterUsageChartData();
+        this.isInitialLoad = true; // false;
+      }
     },
     err => {
         this.commonUxService.showDangerToast('Unable to get data.');

@@ -62,7 +62,7 @@
 
         <div class="row mt-3">
             <div class="col">
-                <div *ngIf="!isLoading && matches?.length && !noFilteredDataToDisplay">
+                <div *ngIf="!isInitialLoad && matches?.length && !noFilteredDataToDisplay">
                     <chart-bar-horizontal 
                         [data]="chartData"
                         [dataUnit]="dataUnit"
@@ -72,10 +72,34 @@
                         [yAxisTickFormatting]="yAxisTickFormatting"
                     ></chart-bar-horizontal>
                 </div>
-                <div *ngIf="isLoading" class="text-center insights-chart-container">
-                    <fa-icon [icon]="faCircleNotch" [spin]="true" size="3x" class="text-black-50"></fa-icon>
+                <div *ngIf="isInitialLoad" class="text-center insights-chart-container">
+                    <style>
+                        .skeleton-chart {
+                            position:absolute;
+                            width:600px;
+                            height:300px;
+                            left:50%;
+                            margin-left:-300px;
+                            opacity:0.3;
+                            overflow:hidden;
+                        }
+                        .filler-bar {
+                            height:20px;
+                            opacity:0.3;
+                        }
+                        .filler-bar-container {
+                            margin-top:0px;
+                        }
+                    </style>
+                    <div class="skeleton-chart border-left border-bottom border-dark mt-1">
+                        <div class="filler-bar-container">
+                            <div *ngFor="let percent of [65, 100, 26, 70, 30, 27, 22, 15, 30, 60, 78]"
+                            [ngStyle]="{'width':percent+'%'}"
+                            class="filler-bar rounded-right bg-dark mb-2"></div>
+                        </div>
+                    </div>
                 </div>
-                <div *ngIf="!isLoading && (!matches?.length || noFilteredDataToDisplay)" class="text-center no-data-block">
+                <div *ngIf="!isInitialLoad && (!matches?.length || noFilteredDataToDisplay)" class="text-center no-data-block">
                     <h3 class="text-black-50">No matches found</h3>
                 </div>
             </div>
