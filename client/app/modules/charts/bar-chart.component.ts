@@ -30,7 +30,7 @@ export class BarChartComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    const charHeight: number = 20;
+    const charHeight: number = 14;
     this.calcHeight = charHeight * this.data.length;
   }
 }
