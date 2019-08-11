@@ -11,6 +11,7 @@ import { CommonUxService } from 'client/app/modules/common-ux/common-ux.service'
 @Component({
   selector: 'insights',
   templateUrl: './insights.component.html',
+  styleUrls: ['./insights.component.css']
 })
 export class InsightsComponent implements OnInit {
   public chartData: SingleSeries = [];
@@ -30,6 +31,7 @@ export class InsightsComponent implements OnInit {
   public noFilteredDataToDisplay: boolean = false;
   public isInitialLoad: boolean = true;
   public faCalendarAlt = faCalendarAlt;
+  public fillerPercents = [65, 100, 26, 70, 30, 27, 22, 15, 30, 60, 95];
 
   constructor(
     private matchService: MatchManagementService,
@@ -42,7 +44,7 @@ export class InsightsComponent implements OnInit {
       if (res && res.length) {
         this.matches = res;
         this.publishCharacterUsageChartData();
-        this.isInitialLoad = true; // false;
+        this.isInitialLoad = false;
       }
     },
     err => {

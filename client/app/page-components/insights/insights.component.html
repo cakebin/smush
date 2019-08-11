@@ -73,29 +73,19 @@
                     ></chart-bar-horizontal>
                 </div>
                 <div *ngIf="isInitialLoad" class="text-center insights-chart-container">
-                    <style>
-                        .skeleton-chart {
-                            position:absolute;
-                            width:600px;
-                            height:300px;
-                            left:50%;
-                            margin-left:-300px;
-                            opacity:0.3;
-                            overflow:hidden;
-                        }
-                        .filler-bar {
-                            height:20px;
-                            opacity:0.3;
-                        }
-                        .filler-bar-container {
-                            margin-top:0px;
-                        }
-                    </style>
-                    <div class="skeleton-chart border-left border-bottom border-dark mt-1">
-                        <div class="filler-bar-container">
-                            <div *ngFor="let percent of [65, 100, 26, 70, 30, 27, 22, 15, 30, 60, 78]"
+                    <div class="skeleton-chart text-center mt-2">
+                        <div class="filler-bar-container border-left border-dark">
+                            <div 
+                            *ngFor="let percent of fillerPercents; index as i"
                             [ngStyle]="{'width':percent+'%'}"
-                            class="filler-bar rounded-right bg-dark mb-2"></div>
+                            [ngClass]="{'mb-2': i!=fillerPercents.length-1}"
+                            class="filler-bar rounded-right bg-dark"></div>
+                        </div>
+                        <div class="filler-x-label bg-dark rounded-pill mt-4"></div>
+                        <div class="filler-y-label bg-dark rounded-pill"></div>
+                        <div class="filler-tooltip">
+                            <div class="tooltip-body rounded-sm bg-dark"></div>
+                            <div class="triangle"></div>
                         </div>
                     </div>
                 </div>

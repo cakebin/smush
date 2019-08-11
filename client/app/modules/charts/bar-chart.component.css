@@ -3,6 +3,7 @@
   position:absolute;
   left:50%;
   margin-left:-400px;
+  margin-bottom:20px;
 }
 .tooltip-data {
     font-size: 1.25em;
