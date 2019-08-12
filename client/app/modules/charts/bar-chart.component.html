@@ -1,25 +1,24 @@
-<div class="flex-container">
-    <ngx-charts-bar-horizontal class="chart-container"
-        [results]="data"
-        [xAxisLabel]="xAxisLabel"
-        [yAxisLabel]="yAxisLabel"
-        [view]="[700]"
-        [xAxis]="true"
-        [yAxis]="true"
-        [showXAxisLabel]="true"
-        [showYAxisLabel]="true"
-        [xAxisTickFormatting]="xAxisTickFormatting"
-        [yAxisTickFormatting]="yAxisTickFormatting"
-        [scheme]="colorScheme"
-        >
-        <ng-template #tooltipTemplate let-model="model">
-        <div class="text-center p-1">
-            <div>{{model.name}}</div>
-            <div class="tooltip-data">
-            <span *ngIf="!dataUnit">{{model.value}}</span>
-            <span *ngIf="dataUnit=='percent'">{{model.value?.toFixed(2)}}%</span>
-            </div>
+<ngx-charts-bar-horizontal class="chart-container"
+    [results]="data"
+    [xAxisLabel]="xAxisLabel"
+    [yAxisLabel]="yAxisLabel"
+    [view]="[700, calcHeight]"
+    [barPadding]="4"
+    [xAxis]="true"
+    [yAxis]="true"
+    [showXAxisLabel]="true"
+    [showYAxisLabel]="true"
+    [xAxisTickFormatting]="xAxisTickFormatting"
+    [yAxisTickFormatting]="yAxisTickFormatting"
+    [scheme]="colorScheme"
+    >
+    <ng-template #tooltipTemplate let-model="model">
+    <div class="text-center p-1">
+        <div>{{model.name}}</div>
+        <div class="tooltip-data">
+        <span *ngIf="!dataUnit">{{model.value}}</span>
+        <span *ngIf="dataUnit=='percent'">{{model.value?.toFixed(2)}}%</span>
         </div>
-        </ng-template>
-    </ngx-charts-bar-horizontal>
-</div>
+    </div>
+    </ng-template>
+</ngx-charts-bar-horizontal>

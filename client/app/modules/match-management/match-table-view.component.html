@@ -1,4 +1,4 @@
-<table *ngIf="sortedMatches?.length; else noDataBlock" class="table table-borderless table-sm table-striped table-hover">
+<table *ngIf="!isInitialLoad && sortedMatches?.length" class="table table-borderless table-sm table-striped table-hover">
     <thead class="thead-dark">
         <tr>
             <th common-ux-sortable-table-header
@@ -21,8 +21,34 @@
         </tr>
     </tbody>
 </table>
-<ng-template #noDataBlock>
-    <div class="text-center no-data-block">
-        <h3 class="text-black-50">No matches found</h3>
-    </div>
-</ng-template>
+
+<div *ngIf="!isInitialLoad && !sortedMatches?.length" class="text-center no-data-block">
+    <h3 class="text-black-50">No matches found</h3>
+</div>
+
+<div *ngIf="isInitialLoad" class="skeleton-table">
+    <table class="table table-borderless table-sm table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th *ngFor="let header of headerLabels" class="align-middle" [ngStyle]="{'width':header.width}">
+                    <div class="filler-text bg-transparent"></div>
+                </th>
+                <th style="width:120px;">
+                    <div class="filler-text rounded-pill bg-transparent"></div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let row of [0, 1, 2, 3, 4, 5]">
+                <td *ngFor="let header of headerLabels" class="align-middle">
+                    <div class="filler-text rounded-pill bg-dark"></div>
+                </td>
+                <td class="text-center">
+                    <div class="filler-action rounded-pill bg-dark"></div>
+                    <div class="filler-action ml-1 rounded-pill bg-dark"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="skeleton-gradient-overlay"></div>
+</div>
