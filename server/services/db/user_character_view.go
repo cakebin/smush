@@ -54,7 +54,7 @@ func (db *DB) GetUserCharacterViewsByUserID(userID int) ([]*UserCharacterView, e
       users.user_id                      AS  user_id
     FROM
       user_characters
-    LEFT JOIN users on users.user_id = user_characters.user_id
+    LEFT JOIN users ON users.user_id = user_characters.user_id
     LEFT JOIN characters ON characters.character_id = user_characters.character_id
     WHERE
       users.user_id = $1

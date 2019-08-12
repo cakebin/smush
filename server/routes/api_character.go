@@ -46,14 +46,14 @@ type CharacterGetAllResponseData struct {
 
 
 // CharacterCreateResponseData is the data we send
-//  back after a successfully creating a new character
+// back after a successfully creating a new character
 type CharacterCreateResponseData struct {
   Character  *Character  `json:"character"`
 }
 
 
 // CharacterUpdateResponseData is the data we send
-//  back after a successfully udpating a new character
+// back after a successfully udpating a new character
 type CharacterUpdateResponseData struct {
   Character  *Character  `json:"character"`
 }

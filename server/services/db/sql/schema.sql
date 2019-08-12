@@ -8,6 +8,8 @@ DROP TABLE IF EXISTS "matches" CASCADE;
 DROP TABLE IF EXISTS "users" CASCADE;
 DROP TABLE IF EXISTS "characters" CASCADE;
 DROP TABLE IF EXISTS "user_characters" CASCADE;
+DROP TABLE IF EXISTS "tags" CASCADE;
+DROP TABLE IF EXISTS "match_tags" CASCADE;
 
 -- ---
 -- Table 'matches'
@@ -24,9 +26,6 @@ CREATE TABLE "matches" (
   "user_character_gsp" INTEGER,
   "user_win" BOOLEAN,
   "opponent_character_gsp" INTEGER,
-  "opponent_teabag" BOOLEAN,
-  "opponent_camp" BOOLEAN,
-  "opponent_awesome" BOOLEAN,
   "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY ("match_id")
 );
@@ -85,6 +84,35 @@ CREATE TABLE "user_characters" (
 
 
 -- ---
+-- Table 'tags'
+--
+-- ---
+
+DROP TABLE IF EXISTS "tags";
+
+CREATE TABLE "tags" (
+  "tag_id" SERIAL NOT NULL,
+  "tag_name" VARCHAR(100) NOT NULL,
+  PRIMARY KEY ("tag_id")
+);
+
+
+-- ---
+-- Table 'match_tags'
+--
+-- ---
+
+DROP TABLE IF EXISTS "match_tags";
+
+CREATE TABLE "match_tags" (
+  "match_tag_id" SERIAL NOT NULL,
+  "match_id" INTEGER NOT NULL DEFAULT -1,
+  "tag_id" INTEGER NOT NULL DEFAULT -1,
+  PRIMARY KEY ("match_tag_id")
+);
+
+
+-- ---
 -- Foreign Keys
 -- ---
 
@@ -94,6 +122,8 @@ ALTER TABLE "matches" ADD FOREIGN KEY ("opponent_character_id") REFERENCES "char
 ALTER TABLE "users" ADD FOREIGN KEY ("default_user_character_id") REFERENCES "user_characters" ("user_character_id") ON DELETE CASCADE;
 ALTER TABLE "user_characters" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") ON DELETE CASCADE;
 ALTER TABLE "user_characters" ADD FOREIGN KEY ("character_id") REFERENCES "characters" ("character_id") ON DELETE CASCADE;
+ALTER TABLE "match_tags" ADD FOREIGN KEY ("match_id") REFERENCES "matches" ("match_id") ON DELETE CASCADE;
+ALTER TABLE "match_tags" ADD FOREIGN KEY ("tag_id") REFERENCES "tags" ("tag_id") ON DELETE CASCADE;
 
 -- ---
 -- Table Properties

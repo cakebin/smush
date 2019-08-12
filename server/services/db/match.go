@@ -18,9 +18,6 @@ type Match struct {
   OpponentCharacterID   int            `json:"opponentCharacterId"`
   UserID                int            `json:"userId"`
   OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp"`
-  OpponentTeabag        sql.NullBool   `json:"opponentTeabag"`
-  OpponentCamp          sql.NullBool   `json:"opponentCamp"`
-  OpponentAwesome       sql.NullBool   `json:"opponentAwesome"`
   UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
   UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
   UserWin               sql.NullBool   `json:"userWin"`
@@ -33,9 +30,6 @@ type MatchUpdate struct {
   MatchID               int            `json:"matchId"`
   OpponentCharacterID   sql.NullInt64  `json:"opponentCharacterId"`
   OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp"`
-  OpponentTeabag        sql.NullBool   `json:"opponentTeabag"`
-  OpponentCamp          sql.NullBool   `json:"opponentCamp"`
-  OpponentAwesome       sql.NullBool   `json:"opponentAwesome"`
   UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
   UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
   UserWin               sql.NullBool   `json:"userWin"`
@@ -49,9 +43,6 @@ type MatchCreate struct {
   OpponentCharacterID   int            `json:"opponentCharacterId"`
   UserID                int            `json:"userId"`
   OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp"`
-  OpponentTeabag        sql.NullBool   `json:"opponentTeabag"`
-  OpponentCamp          sql.NullBool   `json:"opponentCamp"`
-  OpponentAwesome       sql.NullBool   `json:"opponentAwesome"`
   UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
   UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
   UserWin               sql.NullBool   `json:"userWin"`
@@ -80,14 +71,11 @@ func (db *DB) CreateMatch(matchCreate *MatchCreate) (int, error) {
       opponent_character_id,
       user_id,
       opponent_character_gsp,
-      opponent_teabag,
-      opponent_camp,
-      opponent_awesome,
       user_character_id,
       user_character_gsp,
       user_win
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING
       match_id
   `
@@ -96,9 +84,6 @@ func (db *DB) CreateMatch(matchCreate *MatchCreate) (int, error) {
     matchCreate.OpponentCharacterID,
     matchCreate.UserID,
     matchCreate.OpponentCharacterGsp,
-    matchCreate.OpponentTeabag,
-    matchCreate.OpponentCamp,
-    matchCreate.OpponentAwesome,
     matchCreate.UserCharacterID,
     matchCreate.UserCharacterGsp,
     matchCreate.UserWin,
@@ -123,15 +108,12 @@ func (db *DB) UpdateMatch(matchUpdate *MatchUpdate) (int, error) {
     SET
       opponent_character_id = $1,
       opponent_character_gsp = $2,
-      opponent_teabag = $3,
-      opponent_camp = $4,
-      opponent_awesome = $5,
-      user_character_id = $6,
-      user_character_gsp = $7,
-      user_win = $8,
-      created = $9
+      user_character_id = $3,
+      user_character_gsp = $4,
+      user_win = $5,
+      created = $6
     WHERE
-      match_id = $10
+      match_id = $7
     RETURNING
       match_id
   `
@@ -139,9 +121,6 @@ func (db *DB) UpdateMatch(matchUpdate *MatchUpdate) (int, error) {
     sqlStatement,
     matchUpdate.OpponentCharacterID,
     matchUpdate.OpponentCharacterGsp,
-    matchUpdate.OpponentTeabag,
-    matchUpdate.OpponentCamp,
-    matchUpdate.OpponentAwesome,
     matchUpdate.UserCharacterID,
     matchUpdate.UserCharacterGsp,
     matchUpdate.UserWin,
