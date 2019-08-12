@@ -77,20 +77,23 @@ img {
 .player-2 .player-name {
   background-color: #1976d2;
 }
+.player-2 .player-name div {
+  line-height:19px;
+}
 .player-name div {
   font-family: 'Nunito', sans-serif;
   padding-left: 14px;
   padding-right: 11px;
   font-size: 0.7em;
+  line-height:17px;
   font-style: italic;
-  line-height:1.6em;
-  transform: skew(15deg);
+  transform: skew(16deg);
 }
 .match-card-top-overlay {
-  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.3));
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2));
   position: absolute;
   bottom: 0;
-  height: 15%;
+  height: 18%;
   width: 100%;
 }
 .loss img {
@@ -111,57 +114,59 @@ img.smush-logo {
 */
 img[data-character="Lucina"] {
   top: 20px;
+  left: -235px;
 }
 img[data-character="Piranha Plant"] {
-  width:160px;
+  width: 160px;
   top: 30px;
   left: -15px;
 }
 img[data-character="Hero"] {
   top: -10px;
-  left: -250px;
+  left: -265px;
 }
 img[data-character="Joker"] {
-  top: -10px;
-  left: -200px;
+  width: 500px;
+  top: 0px;
+  left: -165px;
 }
 img[data-character="Incineroar"] {
-  width:300px;
+  width: 300px;
   top: 15px;
-  left: -20px;
+  left: -5px;
 }
 img[data-character="Isabelle"] {
-  width:250px;
+  width: 250px;
   top: -20px;
   left: -44px;
 }
 img[data-character="King K. Rool"] {
-  width:300px;
+  width: 300px;
   top: 3px;
   left: -60px;
 }
 img[data-character="Richter"] {
-  width:450px;
-  top: -42px;
-  left: -120px;
+  width: 500px;
+  top: -45px;
+  left: -132px;
 }
 img[data-character="Simon"] {
-  width:450px;
+  width: 490px;
   top: -8px;
-  left: -120px;
+  left: -132px;
 }
 img[data-character="Ridley"] {
-  width:300px;
+  width: 300px;
   top: -35px;
   left: -40px;
 }
 img[data-character="Inkling"] {
-  width:220px;
+  width: 220px;
   top: -5px;
-  left: -30px;
+  left: -31px;
 }
 img[data-character="Bayonetta"] {
-  width:550px;
+  width: 550px;
   top: -10px;
   left: -175px;
 }
@@ -171,23 +176,23 @@ img[data-character="Corrin"] {
   left: -210px;
 }
 img[data-character="Cloud"] {
-  width:520px;
+  width: 540px;
   top: -18px;
-  left: -105px;
+  left: -108px;
 }
 img[data-character="Ken"] {
-  width: 325px;
-  top: 22px;
-  left: -125px;
+  width: 370px;
+  top: 20px;
+  left: -160px;
 }
 img[data-character="Ryu"] {
-  width: 550px;
-  top: 5px;
-  left: -190px;
+  width: 570px;
+  top: 2px;
+  left: -218px;
 }
 img[data-character="Duck Hunt"] {
   width: 160px;
-  top: -20px;
+  top: -10px;
   left: -15px;
 }
 img[data-character="Bowser Jr."] {
@@ -198,17 +203,17 @@ img[data-character="Bowser Jr."] {
 img[data-character="Shulk"] {
   width: 450px;
   top: -60px;
-  left: -88px;
+  left: -90px;
 }
 img[data-character="Robin"] {
   width: 500px;
   top: -25px;
-  left: -165px;
+  left: -155px;
 }
 img[data-character="Pac-man"] {
-  width: 200px;
+  width: 180px;
   top: 35px;
-  left: -15px;
+  left: 0px;
 }
 img[data-character="Palutena"] {
   width: 600px;
@@ -236,9 +241,9 @@ img[data-character="Greninja"] {
   left: -40px;
 }
 img[data-character="Little Mac"] {
-  width: 300px;
-  top: 18px;
-  left: -35px;
+  width: 320px;
+  top: 15px;
+  left: -40px;
 }
 img[data-character="Rosalina & Luma"] {
   width: 320px;
@@ -315,9 +320,9 @@ img[data-character="Ike"] {
   left: -132px;
 }
 img[data-character="Snake"] {
-  width: 420px;
+  width: 460px;
   top: 25px;
-  left: -150px;
+  left: -175px;
 }
 img[data-character="Wario"] {
   width: 220px;
@@ -464,7 +469,7 @@ img[data-character="Yoshi"] {
 img[data-character="Dark Samus"] {
   width: 300px;
   top: 20px;
-  left: -100px;
+  left: -110px;
 }
 img[data-character="Samus"] {
   width: 300px;

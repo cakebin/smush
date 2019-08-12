@@ -42,3 +42,6 @@
     background-color: initial;
   }
 }
+.card-deck {
+  justify-content: center;
+}

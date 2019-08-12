@@ -23,12 +23,11 @@
         <div class="vs text-white">Vs.</div>
         <div class="match-card-top-overlay"></div>
     </div>
-    <div class="card-body pl-2 pr-2 pb-2 pt-1">
-        <span class="badge badge-secondary mr-1">Laggy</span>
-        <span class="badge badge-secondary mr-1">Camper</span>
-        <span class="badge badge-secondary mr-1">Teabagger</span>
-        <span class="badge badge-secondary mr-1">Homie</span>
-        <span class="badge badge-secondary mr-1">Non-standard stage</span>
+    <div *ngIf="match.opponentCamp || match.opponentTeabag || match.opponentAwesome"
+        class="card-body pl-2 pr-2 pb-2 pt-1">
+        <span *ngIf="match.opponentCamp" class="badge badge-secondary mr-1">Camper</span>
+        <span *ngIf="match.opponentTeabag" class="badge badge-secondary mr-1">Teabagger</span>
+        <span *ngIf="match.opponentAwesome" class="badge badge-secondary mr-1">Homie</span>
     </div>
     <div class="card-footer p-2">
         <span class="small text-muted">{{match.created | date:"MM/dd/yy h:mm a"}}</span>
