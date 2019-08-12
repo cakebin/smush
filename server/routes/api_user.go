@@ -21,8 +21,6 @@ type UserUpdateRequestData struct {
   UserID               int       `json:"userId"`
   EmailAddress         string    `json:"emailAddress"`
   UserName             string    `json:"userName"`
-  DefaultCharacterID   *int64    `json:"defaultCharacterId,omitempty"`
-  DefaultCharacterGsp  *int64    `json:"defaultCharacterGsp,omitempty"`
 }
 
 
@@ -33,7 +31,8 @@ type UserUpdateRequestData struct {
 // UserGetResponseData is the data we send back
 // after a successfully getting all user's info
 type UserGetResponseData struct {
-  User  *UserProfileView  `json:"user"`
+  User            *UserProfileView   `json:"user"`
+  UserCharacters  []*UserCharacterView  `json:"userCharacters"`
 }
 
 
@@ -56,8 +55,8 @@ type UserProfileView struct {
   UserName              string     `json:"userName"`
   EmailAddress          string     `json:"emailAddress"`
   Created               time.Time  `json:"created"`
-  DefaultCharacterGsp   *int64     `json:"defaultCharacterGsp,omitempty"`
   DefaultCharacterID    *int64     `json:"defaultCharacterId,omitempty"`
+  DefaultCharacterGsp   *int64     `json:"defaultCharacterGsp,omitempty"`
   DefaultCharacterName  *string    `json:"defaultCharacterName,omitempty"`
 }
 
@@ -71,8 +70,8 @@ func ToAPIUserProfileView(dbUserProfileView *db.UserProfileView) *UserProfileVie
   userProfileView.UserName = dbUserProfileView.UserName
   userProfileView.EmailAddress = dbUserProfileView.EmailAddress
   userProfileView.Created = dbUserProfileView.Created
-  userProfileView.DefaultCharacterGsp = FromNullInt64(dbUserProfileView.DefaultCharacterGsp)
   userProfileView.DefaultCharacterID = FromNullInt64(dbUserProfileView.DefaultCharacterID)
+  userProfileView.DefaultCharacterGsp = FromNullInt64(dbUserProfileView.DefaultCharacterGsp)
   userProfileView.DefaultCharacterName = FromNullString(dbUserProfileView.DefaultCharacterName)
 
   return userProfileView
@@ -85,8 +84,6 @@ func ToDBUserUpdate(userUpdateRequestData *UserUpdateRequestData) *db.UserProfil
   dbUserUpdate := new(db.UserProfileUpdate)
   dbUserUpdate.UserID = userUpdateRequestData.UserID
   dbUserUpdate.UserName = userUpdateRequestData.UserName
-  dbUserUpdate.DefaultCharacterID = ToNullInt64(userUpdateRequestData.DefaultCharacterID)
-  dbUserUpdate.DefaultCharacterGsp = ToNullInt64(userUpdateRequestData.DefaultCharacterGsp)
 
   return dbUserUpdate
 }
@@ -100,7 +97,8 @@ func ToDBUserUpdate(userUpdateRequestData *UserUpdateRequestData) *db.UserProfil
 // Basically, connecting to our Postgres DB for all
 // of the CRUD operations for our "User" models
 type UserRouter struct {
-  Services  *Services
+  Services             *Services
+  UserCharacterRouter  *UserCharacterRouter
 }
 
 
@@ -108,29 +106,50 @@ func (r *UserRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   var head string
   head, req.URL.Path = ShiftPath(req.URL.Path)
 
-  switch req.Method {
-  // GET Request Handlers
-  case http.MethodGet:
-    switch head {
-    case "get":
-      r.handleGetByID(res, req)
-    default:
-      http.Error(res, fmt.Sprintf("Unsupported GET path %s", head), http.StatusBadRequest)
-      return
-    }
-  // POST Request Handlers
-  case http.MethodPost:
-    switch head {
-    case "update":
-      r.handleUpdate(res, req)
-    default:
-      http.Error(res, fmt.Sprintf("Unsupport POST path %s", head), http.StatusBadRequest)
-      return
-    }
-  // Unsupported Method Response
+  // Delegate to sub routers first
+  switch head {
+  case "character":
+    r.UserCharacterRouter.ServeHTTP(res, req)
+
+  // Otherwise, handle the user specific requests
   default:
-    http.Error(res, fmt.Sprintf("Unsupported Method type %s", req.Method), http.StatusBadRequest)
+    switch req.Method {
+      // GET Request Handlers
+      case http.MethodGet:
+        switch head {
+        case "get":
+          r.handleGetByID(res, req)
+        default:
+          http.Error(res, fmt.Sprintf("Unsupported GET path %s", head), http.StatusBadRequest)
+          return
+        }
+
+      // POST Request Handlers
+      case http.MethodPost:
+        switch head {
+        case "update":
+          r.handleUpdate(res, req)
+        default:
+          http.Error(res, fmt.Sprintf("Unsupport POST path %s", head), http.StatusBadRequest)
+          return
+        }
+
+      // Unsupported Method Response
+      default:
+        http.Error(res, fmt.Sprintf("Unsupported Method type %s", req.Method), http.StatusBadRequest)
+      }
   }
+}
+
+
+// NewUserRouter makes a new api/user router and hooks up its services
+func NewUserRouter(routerServices *Services) *UserRouter {
+  router := new(UserRouter)
+
+  router.Services = routerServices
+  router.UserCharacterRouter = NewUserCharacterRouter(routerServices)
+
+  return router
 }
 
 
@@ -142,24 +161,38 @@ func (r *UserRouter) handleGetByID(res http.ResponseWriter, req *http.Request) {
   var head string
   head, req.URL.Path = ShiftPath(req.URL.Path)
 
-  id, err := strconv.Atoi(head)
+  userID, err := strconv.Atoi(head)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid user id: %s", head), http.StatusBadRequest)
     return
   }
 
-  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByID(id)
+  // Get the basic user profile information
+  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userID)
   if err != nil {
-    http.Error(res, fmt.Sprintf("Error getting user with id %q: %s", id, err.Error()), http.StatusInternalServerError)
+    http.Error(res, fmt.Sprintf("Error getting user with userID %q: %s", userID, err.Error()), http.StatusInternalServerError)
     return
   }
   userProfileView := ToAPIUserProfileView(dbUserProfileView)
+  
+  // Also get the user's saved characters
+  dbUserCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(userID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error getting user's saved characters with userID %q: %s", userID, err.Error()), http.StatusInternalServerError)
+    return
+  }
+  userCharViews := make([]*UserCharacterView, 0)
+  for _, dbUserCharView := range dbUserCharViews {
+    userCharView := ToAPIUserCharacterView(dbUserCharView)
+    userCharViews = append(userCharViews, userCharView)
+  }
 
   response := &Response{
     Success:  true,
     Error:    nil,
     Data:     UserGetResponseData{
-      User:  userProfileView,
+      User:            userProfileView,
+      UserCharacters:  userCharViews,
     },
   }
 
@@ -184,7 +217,7 @@ func (r *UserRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
     http.Error(res, fmt.Sprintf("Error updating user in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
-  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByID(userID)
+  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userID)
   userProfileView := ToAPIUserProfileView(dbUserProfileView)
   
 
@@ -198,14 +231,4 @@ func (r *UserRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
 
   res.Header().Set("Content-Type", "application/json")
   json.NewEncoder(res).Encode(response)
-}
-
-
-// NewUserRouter makes a new api/user router and hooks up its services
-func NewUserRouter(routerServices *Services) *UserRouter {
-  router := new(UserRouter)
-
-  router.Services = routerServices
-
-  return router
 }

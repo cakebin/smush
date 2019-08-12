@@ -17,11 +17,13 @@ type UserProfileView struct {
   UserName              string          `json:"userName"`
   EmailAddress          string          `json:"emailAddress"`
   Created               time.Time       `json:"created"`
-  DefaultCharacterGsp   sql.NullInt64   `json:"defaultCharacterGsp"`
 
   // Data from characters
   DefaultCharacterID    sql.NullInt64   `json:"defaultCharacterId"`
   DefaultCharacterName  sql.NullString  `json:"defaultCharacterName"`
+
+  // Data from user_characters
+  DefaultCharacterGsp   sql.NullInt64   `json:"defaultCharacterGsp"`
 }
 
 // UserCredentialsView describes all of the data
@@ -40,7 +42,7 @@ type UserCredentialsView struct {
 // UserViewManager describes all of the methods used to interact with
 // user views in our database (data joined between match, character, user, etc)
 type UserViewManager interface {
-  GetUserProfileViewByID(userID int) (*UserProfileView, error)
+  GetUserProfileViewByUserID(userID int) (*UserProfileView, error)
   GetUserCredentialsViewByEmail(email string) (*UserCredentialsView, error)
 }
 
@@ -50,21 +52,22 @@ type UserViewManager interface {
 
 // GetUserProfileViewByID gets all of the data needed to display
 // a user's profile, which includes joined data from the characters table
-func (db *DB) GetUserProfileViewByID(userID int) (*UserProfileView, error) {
+func (db *DB) GetUserProfileViewByUserID(userID int) (*UserProfileView, error) {
   sqlStatement := `
     SELECT
-      users.user_id                     AS user_id,
-      users.user_name                   AS user_name,
-      users.email_address               AS email_address,
-      users.created                     AS created,
-      users.default_character_gsp       AS default_character_gsp,
-      characters.character_id           AS default_character_id,
-      characters.character_name         AS default_character_name
+      users.user_id                     AS  user_id,
+      users.user_name                   AS  user_name,
+      users.email_address               AS  email_address,
+      users.created                     AS  created,
+      characters.character_id           AS  default_character_id,
+      characters.character_name         AS  default_character_name,
+      user_characters.character_gsp     AS  default_character_gsp
     FROM
       users
-    LEFT JOIN characters ON characters.character_id = users.default_character_id
+    LEFT JOIN user_characters ON user_characters.user_character_id = users.default_user_character_id
+    LEFT JOIN characters ON characters.character_id = user_characters.character_id
     WHERE
-      user_id = $1
+      users.user_id = $1
   `
   row := db.QueryRow(sqlStatement, userID)
   userProfileView := new(UserProfileView)
@@ -73,9 +76,9 @@ func (db *DB) GetUserProfileViewByID(userID int) (*UserProfileView, error) {
     &userProfileView.UserName,
     &userProfileView.EmailAddress,
     &userProfileView.Created,
-    &userProfileView.DefaultCharacterGsp,
     &userProfileView.DefaultCharacterID,
     &userProfileView.DefaultCharacterName,
+    &userProfileView.DefaultCharacterGsp,
   )
 
   if err != nil {

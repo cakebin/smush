@@ -109,6 +109,16 @@ func (r *AuthRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 }
 
 
+// NewAuthRouter makes a new api/auth router and hooks up its services
+func NewAuthRouter(routerServices *Services) *AuthRouter {
+  router := new(AuthRouter)
+
+  router.Services = routerServices
+
+  return router
+}
+
+
 /*---------------------------------
              Handlers
 ----------------------------------*/
@@ -262,7 +272,7 @@ func (r *AuthRouter) handleLogin(res http.ResponseWriter, req *http.Request) {
     },
   )
 
-  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByID(userCredentialsView.UserID)
+  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userCredentialsView.UserID)
   if err != nil {
     http.Error(res, fmt.Sprintf("Could not get user data for id %d: %s", userCredentialsView.UserID, err.Error()), http.StatusBadRequest)
     return
@@ -376,14 +386,4 @@ func (r *AuthRouter) handleLogout(res http.ResponseWriter, req *http.Request) {
 
   res.Header().Set("Content-Type", "application/json")
   json.NewEncoder(res).Encode(response)
-}
-
-
-// NewAuthRouter makes a new api/auth router and hooks up its services
-func NewAuthRouter(routerServices *Services) *AuthRouter {
-  router := new(AuthRouter)
-
-  router.Services = routerServices
-
-  return router
 }

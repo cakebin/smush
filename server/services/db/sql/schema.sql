@@ -7,6 +7,7 @@
 DROP TABLE IF EXISTS "matches" CASCADE;
 DROP TABLE IF EXISTS "users" CASCADE;
 DROP TABLE IF EXISTS "characters" CASCADE;
+DROP TABLE IF EXISTS "user_characters" CASCADE;
 
 -- ---
 -- Table 'matches'
@@ -40,10 +41,9 @@ DROP TABLE IF EXISTS "users";
 
 CREATE TABLE "users" (
   "user_id" SERIAL NOT NULL,
-  "default_character_id" INTEGER,
+  "default_user_character_id" INTEGER,
   "user_name" VARCHAR(100) NOT NULL,
   "email_address" VARCHAR(100) NOT NULL,
-  "default_character_gsp" INTEGER,
   "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "hashed_password" VARCHAR(200) NOT NULL,
   "refresh_token" VARCHAR(200),
@@ -69,14 +69,31 @@ CREATE TABLE "characters" (
 
 
 -- ---
+-- Table 'user_characters'
+--
+-- ---
+
+DROP TABLE IF EXISTS "user_characters";
+
+CREATE TABLE "user_characters" (
+  "user_character_id" SERIAL NOT NULL,
+  "user_id" INTEGER NOT NULL DEFAULT -1,
+  "character_id" INTEGER NOT NULL DEFAULT -1,
+  "character_gsp" INTEGER,
+  PRIMARY KEY ("user_character_id")
+);
+
+
+-- ---
 -- Foreign Keys
 -- ---
 
 ALTER TABLE "matches" ADD FOREIGN KEY ("user_id")  REFERENCES "users" ("user_id") ON DELETE CASCADE;
 ALTER TABLE "matches" ADD FOREIGN KEY ("user_character_id") REFERENCES "characters" ("character_id") ON DELETE CASCADE;
 ALTER TABLE "matches" ADD FOREIGN KEY ("opponent_character_id") REFERENCES "characters" ("character_id") ON DELETE CASCADE;
-ALTER TABLE "users" ADD FOREIGN KEY ("default_character_id") REFERENCES "characters" ("character_id") ON DELETE CASCADE;
-
+ALTER TABLE "users" ADD FOREIGN KEY ("default_user_character_id") REFERENCES "user_characters" ("user_character_id") ON DELETE CASCADE;
+ALTER TABLE "user_characters" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") ON DELETE CASCADE;
+ALTER TABLE "user_characters" ADD FOREIGN KEY ("character_id") REFERENCES "characters" ("character_id") ON DELETE CASCADE;
 
 -- ---
 -- Table Properties
