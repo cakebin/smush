@@ -37,9 +37,7 @@ export class MatchTableViewComponent implements OnInit {
   public sortColumnName: string = '';
   public sortColumnDirection: SortDirection = '';
   public isInitialLoad: boolean = true;
-
-  // Match editing
-  public editedMatch: IMatchViewModel = {} as IMatchViewModel;
+  public cardMode: boolean = true;
 
   public faCheck = faCheck;
   public faTimes = faTimes;
@@ -105,16 +103,6 @@ export class MatchTableViewComponent implements OnInit {
         const res = this.commonUXService.compare(a[column], b[column]);
         return direction === 'asc' ? res : -res;
       });
-    }
-  }
-  public onSelectEditUserCharacter(event: ICharacterViewModel): void {
-    if (event) {
-      this.editedMatch.userCharacterId = event.characterId;
-    }
-  }
-  public onSelectEditOpponentCharacter(event: ICharacterViewModel): void {
-    if (event) {
-      this.editedMatch.opponentCharacterId = event.characterId;
     }
   }
 

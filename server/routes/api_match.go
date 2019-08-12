@@ -98,6 +98,8 @@ type MatchView struct {
   // Data from characters
   OpponentCharacterName  string     `json:"opponentCharacterName"`
   UserCharacterName      *string    `json:"userCharacterName,omitempty"`
+  OpponentCharacterImg   string     `json:"opponentCharacterImage"`
+  UserCharacterImg       *string    `json:"userCharacterImage"`
 }
 
 
@@ -120,6 +122,8 @@ func ToAPIMatchView(dbMatchView *db.MatchView) *MatchView {
   matchView.OpponentCharacterName = dbMatchView.OpponentCharacterName
   matchView.UserCharacterName = FromNullString(dbMatchView.UserCharacterName)
   matchView.UserWin = FromNullBool(dbMatchView.UserWin)
+  matchView.OpponentCharacterImg = dbMatchView.OpponentCharacterImg
+  matchView.UserCharacterImg = FromNullString(dbMatchView.UserCharacterImg)
 
   return matchView
 }

@@ -1,5 +1,3 @@
-import { NgStyle } from '@angular/common';
-
 export interface IMatchViewModel {
     matchId: number;
     userId: number;
@@ -7,9 +5,11 @@ export interface IMatchViewModel {
     opponentCharacterId: number;
     opponentCharacterName: string;
     opponentCharacterGsp: number | string;
+    opponentCharacterImage: string;
     userCharacterId: number;
     userCharacterName: string;
     userCharacterGsp: number | string;
+    userCharacterImage: string;
     opponentTeabag: boolean;
     opponentCamp: boolean;
     opponentAwesome: boolean;
@@ -26,9 +26,11 @@ export class MatchViewModel implements IMatchViewModel {
         public opponentCharacterId: number = null,
         public opponentCharacterName: string = '',
         public opponentCharacterGsp: number = null,
+        public opponentCharacterImage: string = '',
         public userCharacterId: number = null,
         public userCharacterName: string = '',
         public userCharacterGsp: number = null,
+        public userCharacterImage: string = '',
         public opponentTeabag: boolean = null,
         public opponentCamp: boolean = null,
         public opponentAwesome: boolean = null,
@@ -48,7 +50,6 @@ export interface IUserViewModel {
     defaultCharacterId: number;
     defaultCharacterName: string;
     defaultCharacterGsp: number;
-    defaultCharacterImageUrl: string; // Join on characters table for this
 }
 export class UserViewModel implements IUserViewModel {
     constructor(
@@ -60,7 +61,6 @@ export class UserViewModel implements IUserViewModel {
         public defaultCharacterId: number = null,
         public defaultCharacterName: string = '',
         public defaultCharacterGsp: number = null,
-        public defaultCharacterImageUrl: string = '',
     ) {
     }
 }

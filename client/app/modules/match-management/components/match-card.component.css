@@ -1,0 +1,488 @@
+.match-card {
+  width: 300px;
+}
+.match-card-top {
+  position:relative;
+  width: 300px;
+  height: 200px;
+}
+.match-player-container {
+  position:relative;
+  width: 149px;
+  height: 200px;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  overflow: hidden;
+}
+img {
+  position: relative;
+  width: 600px;
+  top: 10px;
+  left: -220px;
+}
+.player-1 {
+  background: radial-gradient(circle at top right, #f44336, #000);
+}
+.player-2 {
+  background: radial-gradient(circle at top right, #1976d2, #000);
+}
+.player-header {
+  transform: rotate(-3deg);
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.8);
+  position: absolute;
+  width: 154px;
+  top: 0px;
+  left:-2px;
+  height: 24px;
+  line-height:2.2em;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 0.74em;
+}
+.vs {
+  transform: rotate(-3deg);
+  font-weight: 800;
+  font-style: italic;
+  font-size:2em;
+  position:absolute;
+  top:85px;
+  left:128px;
+}
+.player-header::after {
+  position: absolute;
+  font-size:0.2em;
+  top: -5px;
+  left: 3px;
+}
+.player-1 .player-header::after { 
+  content: "P1";
+  color: #f44336;
+}
+.player-2 .player-header::after { 
+  content: "P2";
+  color: #1976d2;
+}
+.player-name {
+  transform: rotate(-3deg) skew(-20deg);
+  position: absolute;
+  top: 26px;
+  left: -5px;
+  height: 17px;
+}
+.player-1 .player-name {
+  background-color: #f44336;
+}
+.player-2 .player-name {
+  background-color: #1976d2;
+}
+.player-name div {
+  font-family: 'Nunito', sans-serif;
+  padding-left: 14px;
+  padding-right: 11px;
+  font-size: 0.7em;
+  font-style: italic;
+  line-height:1.6em;
+  transform: skew(15deg);
+}
+.match-card-top-overlay {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.3));
+  position: absolute;
+  bottom: 0;
+  height: 15%;
+  width: 100%;
+}
+.loss img {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+
+img.smush-logo {
+  width: 180px;
+  left: 20px;
+  top: 40px;
+  opacity:0.3;
+}
+
+/* Defaults are
+  top: 10px;
+  left: -220px;
+*/
+img[data-character="Lucina"] {
+  top: 20px;
+}
+img[data-character="Piranha Plant"] {
+  width:160px;
+  top: 30px;
+  left: -15px;
+}
+img[data-character="Hero"] {
+  top: -10px;
+  left: -250px;
+}
+img[data-character="Joker"] {
+  top: -10px;
+  left: -200px;
+}
+img[data-character="Incineroar"] {
+  width:300px;
+  top: 15px;
+  left: -20px;
+}
+img[data-character="Isabelle"] {
+  width:250px;
+  top: -20px;
+  left: -44px;
+}
+img[data-character="King K. Rool"] {
+  width:300px;
+  top: 3px;
+  left: -60px;
+}
+img[data-character="Richter"] {
+  width:450px;
+  top: -42px;
+  left: -120px;
+}
+img[data-character="Simon"] {
+  width:450px;
+  top: -8px;
+  left: -120px;
+}
+img[data-character="Ridley"] {
+  width:300px;
+  top: -35px;
+  left: -40px;
+}
+img[data-character="Inkling"] {
+  width:220px;
+  top: -5px;
+  left: -30px;
+}
+img[data-character="Bayonetta"] {
+  width:550px;
+  top: -10px;
+  left: -175px;
+}
+img[data-character="Corrin"] {
+  width:520px;
+  top: 15px;
+  left: -210px;
+}
+img[data-character="Cloud"] {
+  width:520px;
+  top: -18px;
+  left: -105px;
+}
+img[data-character="Ken"] {
+  width: 325px;
+  top: 22px;
+  left: -125px;
+}
+img[data-character="Ryu"] {
+  width: 550px;
+  top: 5px;
+  left: -190px;
+}
+img[data-character="Duck Hunt"] {
+  width: 160px;
+  top: -20px;
+  left: -15px;
+}
+img[data-character="Bowser Jr."] {
+  width: 250px;
+  top: -30px;
+  left: -50px;
+}
+img[data-character="Shulk"] {
+  width: 450px;
+  top: -60px;
+  left: -88px;
+}
+img[data-character="Robin"] {
+  width: 500px;
+  top: -25px;
+  left: -165px;
+}
+img[data-character="Pac-man"] {
+  width: 200px;
+  top: 35px;
+  left: -15px;
+}
+img[data-character="Palutena"] {
+  width: 600px;
+  top: -48px;
+  left: -215px;
+}
+img[data-character="Mii Gunner"] {
+  width: 230px;
+  top: 16px;
+  left: -35px;
+}
+img[data-character="Mii Swordfighter"] {
+  width: 230px;
+  top: 18px;
+  left: -40px;
+}
+img[data-character="Mii Brawler"] {
+  width: 230px;
+  top: 20px;
+  left: -35px;
+}
+img[data-character="Greninja"] {
+  width: 250px;
+  top: 10px;
+  left: -40px;
+}
+img[data-character="Little Mac"] {
+  width: 300px;
+  top: 18px;
+  left: -35px;
+}
+img[data-character="Rosalina & Luma"] {
+  width: 320px;
+  top: 10px;
+  left: -50px;
+}
+img[data-character="Wii Fit Trainer"] {
+  top: 8px;
+  left: -215px;
+}
+img[data-character="Mega Man"] {
+  width: 200px;
+  top: 25px;
+  left: -8px;
+}
+img[data-character="Villager"] {
+  width: 200px;
+  top: 10px;
+  left: -15px;
+}
+img[data-character="Wolf"] {
+  width: 300px;
+  top: 15px;
+  left: -80px;
+}
+img[data-character="Toon Link"] {
+  width: 200px;
+  top: 15px;
+  left: -20px;
+}
+img[data-character="R.O.B."] {
+  width: 220px;
+  top: 38px;
+  left: -52px;
+}
+img[data-character="Lucario"] {
+  width: 250px;
+  top: 0px;
+  left: -52px;
+}
+img[data-character="Olimar"] {
+  width: 220px;
+  top: 15px;
+  left: -40px;
+}
+img[data-character="King Dedede"] {
+  width: 220px;
+  top: 20px;
+  left: -30px;
+}
+img[data-character="Sonic"] {
+  width: 200px;
+  top: 20px;
+  left: -45px;
+}
+img[data-character="Lucas"] {
+  width: 180px;
+  top: 20px;
+  left: -30px;
+}
+img[data-character="Diddy Kong"] {
+  width: 200px;
+  top: 22px;
+  left: -23px;
+}
+img[data-character="Pokemon Trainer"] {
+  width: 400px;
+  top: 15px;
+  left: -108px;
+}
+img[data-character="Ike"] {
+  width: 480px;
+  top: 4px;
+  left: -132px;
+}
+img[data-character="Snake"] {
+  width: 420px;
+  top: 25px;
+  left: -150px;
+}
+img[data-character="Wario"] {
+  width: 220px;
+  top: 30px;
+  left: -30px;
+}
+img[data-character="Dark Pit"] {
+  width: 440px;
+  top: -20px;
+  left: -140px;
+}
+img[data-character="Zero Suit Samus"] {
+  top: -3px;
+  left: -225px;
+}
+img[data-character="Pit"] {
+  width: 440px;
+  top: -30px;
+  left: -130px;
+}
+img[data-character="Meta Knight"] {
+  width: 200px;
+  top: 23px;
+  left: -20px;
+}
+img[data-character="Mr. Game & Watch"] {
+  width: 150px;
+  top: 30px;
+  left: 0px;
+}
+img[data-character="Chrom"] {
+  width:520px;
+  top: -18px;
+  left: -140px;
+}
+img[data-character="Roy"] {
+  width:500px;
+  top: -25px;
+  left: -122px;
+}
+img[data-character="Mewtwo"] {
+  width: 320px;
+  top: 15px;
+  left: -100px;
+}
+img[data-character="Ganondorf"] {
+  width:500px;
+  top: 15px;
+  left: -160px;
+}
+img[data-character="Young Link"] {
+  width: 280px;
+  top: 8px;
+  left: -100px;
+}
+img[data-character="Marth"] {
+  left:-230px;
+}
+img[data-character="Falco"] {
+  width: 300px;
+  top: 0px;
+  left: -55px;
+}
+img[data-character="Pichu"] {
+  width: 200px;
+  top: 8px;
+  left: -30px;
+}
+img[data-character="Dr. Mario"] {
+  width: 250px;
+  top: 15px;
+  left: -55px;
+}
+img[data-character="Zelda"] {
+  width: 520px;
+  top: 12px;
+  left: -170px;
+}
+img[data-character="Sheik"] {
+  width: 420px;
+  top: 0px;
+  left: -140px;
+}
+img[data-character="Ice Climbers"] {
+  width: 180px;
+  top: 10px;
+  left: -10px;
+}
+img[data-character="Bowser"] {
+  width: 280px;
+  top: -30px;
+  left: -95px;
+}
+img[data-character="Daisy"] {
+  width: 380px;
+  top: 0px;
+  left: -90px;
+}
+img[data-character="Peach"] {
+  width: 380px;
+  top: -25px;
+  left: -95px;
+}
+img[data-character="Jigglypuff"] {
+  width: 200px;
+  top: 12px;
+  left: -10px;
+}
+img[data-character="Captain Falcon"] {
+  width: 420px;
+  top: 25px;
+  left: -137px;
+}
+img[data-character="Ness"] {
+  width: 130px;
+  top: 30px;
+  left: 10px;
+}
+img[data-character="Luigi"] {
+  width: 200px;
+  top: 30px;
+  left: -30px;
+}
+img[data-character="Pikachu"] {
+  width: 140px;
+  top: 20px;
+  left: 3px;
+}
+img[data-character="Fox"] {
+  width: 240px;
+  top: 20px;
+  left: -45px;
+}
+img[data-character="Kirby"] {
+  width: 130px;
+  top: 30px;
+  left: 10px;
+}
+img[data-character="Yoshi"] {
+  width: 170px;
+  top: 30px;
+  left: -10px;
+}
+img[data-character="Dark Samus"] {
+  width: 300px;
+  top: 20px;
+  left: -100px;
+}
+img[data-character="Samus"] {
+  width: 300px;
+  top: -2px;
+  left: -65px;
+}
+img[data-character="Link"] {
+  width: 380px;
+  top: -30px;
+  left: -140px;
+}
+img[data-character="Donkey Kong"] {
+  width: 280px;
+  top: -2px;
+  left: -65px;
+}
+img[data-character="Mario"] {
+  width: 180px;
+  top: 8px;
+  left: 0px;
+}

@@ -9,6 +9,7 @@ import { CommonUxService } from '../common-ux/common-ux.service';
 import { MatchInputFormComponent } from './match-input-form.component';
 import { MatchTableViewComponent } from './match-table-view.component';
 import { MatchRowComponent} from './components/match-row.component';
+import { MatchCardComponent } from './components/match-card.component';
 
 import { MatchManagementService } from './match-management.service';
 import { CharacterManagementModule } from '../character-management/character-management.module';
@@ -21,6 +22,7 @@ import { CharacterManagementService } from '../character-management/character-ma
     MatchInputFormComponent,
     MatchTableViewComponent,
     MatchRowComponent,
+    MatchCardComponent,
   ],
   imports: [
     BrowserModule,
