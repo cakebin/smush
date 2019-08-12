@@ -21,7 +21,7 @@ type Response struct {
              Router
 ----------------------------------*/
 
-// Router is responsible for serving "/api"
+// APIRouter is responsible for serving "/api"
 // or delegating to the appropriate sub api-router
 type APIRouter struct {
   Services         *Services
@@ -76,7 +76,7 @@ func (r *APIRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 }
 
 
-// NewRouter makes a new api router and sets up its children
+// NewAPIRouter makes a new api router and sets up its children
 // routers with access to our router services
 func NewAPIRouter(routerServices *Services) *APIRouter {
   router := new(APIRouter)

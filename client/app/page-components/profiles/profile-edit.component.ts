@@ -71,12 +71,6 @@ export class ProfileEditComponent implements OnInit {
       res => {
         if (res) {
           this.characters = res;
-
-          // TEST DATA BEFORE WE HAVE A SAVED CHAR TABLE
-          this.savedCharactersTestData = res.slice(0, 5).map(char => {
-            return new SavedCharacter(char.characterId, char.characterName, 98000);
-          });
-          this.savedCharactersTestData[3].isDefault = true;
         }
       }
     );

@@ -125,6 +125,7 @@ func (db *DB) CreateCharacter(characterCreate *CharacterCreate) (*Character, err
     characterCreate.CharacterImg,
     characterCreate.CharacterArchetype,
   )
+
   character := new(Character)
   err := row.Scan(
     &character.CharacterID,
@@ -133,9 +134,8 @@ func (db *DB) CreateCharacter(characterCreate *CharacterCreate) (*Character, err
     &character.CharacterImg,
     &character.CharacterArchetype,
   )
-
   if err != nil {
-    return nil, nil
+    return nil, err
   }
 
   return character, nil
@@ -163,12 +163,13 @@ func (db *DB) UpdateCharacter(characterUpdate *CharacterUpdate) (*Character, err
   `
   row := db.QueryRow(
     sqlStatement,
-    characterUpdate.CharacterName.String,
-    characterUpdate.CharacterStockImg.String,
-    characterUpdate.CharacterImg.String,
-    characterUpdate.CharacterArchetype.String,
+    characterUpdate.CharacterName,
+    characterUpdate.CharacterStockImg,
+    characterUpdate.CharacterImg,
+    characterUpdate.CharacterArchetype,
     characterUpdate.CharacterID,
   )
+
   character := new(Character)
   err := row.Scan(
     &character.CharacterID,
@@ -177,7 +178,6 @@ func (db *DB) UpdateCharacter(characterUpdate *CharacterUpdate) (*Character, err
     &character.CharacterImg,
     &character.CharacterArchetype,
   )
-
   if err != nil {
     return nil, err
   }

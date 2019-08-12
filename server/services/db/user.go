@@ -1,9 +1,5 @@
 package db
 
-import (
-  "database/sql"
-)
-
 
 /*---------------------------------
           Data Structures
@@ -12,10 +8,8 @@ import (
 // UserProfileUpdate describes the data needed 
 // to update a given user's profile information
 type UserProfileUpdate struct {
-  UserID               int            `json:"userId"`
-  UserName             string         `json:"userName"`
-  DefaultCharacterID   sql.NullInt64  `json:"defaultCharacterId"`
-  DefaultCharacterGsp  sql.NullInt64  `json:"defaultCharacterGsp"`
+  UserID                   int            `json:"userId"`
+  UserName                 string         `json:"userName"`
 }
 
 
@@ -116,8 +110,6 @@ func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error) {
       users
     SET
       user_name = $1,
-      default_character_id = $2,
-      default_character_gsp = $3
     WHERE
       user_id = $4
     RETURNING
@@ -126,8 +118,6 @@ func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error) {
   row := db.QueryRow(
     sqlStatement,
     profileUpdate.UserName,
-    profileUpdate.DefaultCharacterID,
-    profileUpdate.DefaultCharacterGsp,
     profileUpdate.UserID,
   )
   err := row.Scan(&userID)
