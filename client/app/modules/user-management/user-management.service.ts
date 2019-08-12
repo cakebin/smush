@@ -29,10 +29,12 @@ export class UserManagementService {
         .pipe(
             tap((res: IServerResponse) => {
                 if (res.success && res.data) {
-                    localStorage.setItem('smush_user', JSON.stringify(res.data.user));
+                    const user: IUserViewModel = res.data.user;
+                    user.userCharacters = res.data.userCharacters;
+                    localStorage.setItem('smush_user', JSON.stringify(user));
                     localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
                     localStorage.setItem('smush_refresh_expire', JSON.stringify(new Date(res.data.refreshExpiration)));
-                    this._loadUser(res.data.user);
+                    this._loadUser(user);
                 }
             })
         );

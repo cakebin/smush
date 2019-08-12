@@ -52,7 +52,7 @@
 
                 <h4 class="mb-4" style="margin-top:50px;">Saved characters</h4>
                 
-                <ng-container *ngIf="savedCharactersTestData?.length">
+                <ng-container *ngIf="user?.userCharacters?.length">
                     <table class="table table-borderless table-sm table-striped table-hover mb-0">
                         <thead class="thead-light">
                             <tr>
@@ -62,24 +62,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let char of savedCharactersTestData; index as i" [ngClass]="{'bg-primary text-white':char.isDefault}" >
+                            <tr *ngFor="let char of user.userCharacters; index as i" [ngClass]="{'bg-primary text-white':char.isDefault}" >
                                 <td class="align-middle" [ngClass]="{'pl-3':!char.editMode}">
                                     <span *ngIf="char.editMode">
                                         <common-ux-typeahead 
                                         [items]="characters"
                                         [textPropertyName]="'characterName'" 
                                         [valuePropertyName]="'characterId'" 
-                                        [value]="char.id" 
+                                        [value]="char.characterId" 
                                         (selectItem)="onSelectSavedCharacter($event, char)">
                                         </common-ux-typeahead>
                                     </span>
-                                    <span *ngIf="!char.editMode">{{char.name}}</span>
+                                    <span *ngIf="!char.editMode">{{char.characterName}}</span>
                                 </td>
                                 <td class="align-middle" [ngClass]="{'pl-3':!char.editMode}">
                                     <span *ngIf="char.editMode">
                                         <common-ux-masked-number-input [(numberValue)]="char.gsp"></common-ux-masked-number-input>
                                     </span>
-                                    <span *ngIf="!char.editMode">{{char.gsp | stringToNumber | number}}</span>
+                                    <span *ngIf="!char.editMode">{{char.characterGsp | stringToNumber | number}}</span>
                                 </td>
                                 <td class="text-right align-middle">
                                     <div *ngIf="char.editMode" class="btn-group btn-block">
@@ -109,11 +109,11 @@
                                     [items]="characters"
                                     [textPropertyName]="'characterName'" 
                                     [valuePropertyName]="'characterId'" 
-                                    [value]="editChar.id">
+                                    [value]="editChar.characterId">
                                     </common-ux-typeahead>
                                 </td>
                                 <td>
-                                    <common-ux-masked-number-input [(numberValue)]="editChar.gsp"></common-ux-masked-number-input>
+                                    <common-ux-masked-number-input [(numberValue)]="editChar.characterGsp"></common-ux-masked-number-input>
                                 </td>
                                 <td class="text-right align-middle">
                                     <button class="btn btn-block btn-secondary p-1">Add character</button>
@@ -124,7 +124,7 @@
                     <small class="text-muted font-italic">Changes in table are only committed when you click "Save changes".</small>
                 </ng-container>
 
-                <div *ngIf="!savedCharactersTestData?.length" class="text-center no-data-block">
+                <div *ngIf="!user?.userCharacters?.length" class="text-center no-data-block">
                     <h3 class="text-black-50">No characters found</h3>
                 </div>
 

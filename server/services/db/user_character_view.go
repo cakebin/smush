@@ -57,7 +57,7 @@ func (db *DB) GetUserCharacterViewsByUserID(userID int) ([]*UserCharacterView, e
     LEFT JOIN users on users.user_id = user_characters.user_id
     LEFT JOIN characters ON characters.character_id = user_characters.character_id
     WHERE
-      user_id = $1
+      users.user_id = $1
   `
   rows, err := db.Query(sqlStatement, userID)
   if err != nil {

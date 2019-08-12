@@ -170,15 +170,15 @@ func (r *UserRouter) handleGetByID(res http.ResponseWriter, req *http.Request) {
   // Get the basic user profile information
   dbUserProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userID)
   if err != nil {
-    http.Error(res, fmt.Sprintf("Error getting user with userID %q: %s", userID, err.Error()), http.StatusInternalServerError)
+    http.Error(res, fmt.Sprintf("Error getting user with userID %d: %s", userID, err.Error()), http.StatusInternalServerError)
     return
   }
   userProfileView := ToAPIUserProfileView(dbUserProfileView)
-  
+
   // Also get the user's saved characters
   dbUserCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(userID)
   if err != nil {
-    http.Error(res, fmt.Sprintf("Error getting user's saved characters with userID %q: %s", userID, err.Error()), http.StatusInternalServerError)
+    http.Error(res, fmt.Sprintf("Error getting user's saved characters with userID %d: %s", userID, err.Error()), http.StatusInternalServerError)
     return
   }
   userCharViews := make([]*UserCharacterView, 0)
