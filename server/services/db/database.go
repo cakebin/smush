@@ -23,6 +23,8 @@ type DatabaseManager interface {
   UserManager
   UserViewManager
   CharacterManager
+  UserCharacterManager
+  UserCharacterViewManager
 }
 
 

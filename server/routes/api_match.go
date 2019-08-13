@@ -210,6 +210,16 @@ func (r *MatchRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 }
 
 
+// NewMatchRouter makes a new api/match router and hooks up its services
+func NewMatchRouter(routerServices *Services) *MatchRouter {
+  router := new(MatchRouter)
+
+  router.Services = routerServices
+
+  return router
+}
+
+
 /*---------------------------------
              Handlers
 ----------------------------------*/
@@ -302,14 +312,4 @@ func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
 
   res.Header().Set("Content-Type", "application/json")
   json.NewEncoder(res).Encode(response)
-}
-
-
-// NewMatchRouter makes a new api/match router and hooks up its services
-func NewMatchRouter(routerServices *Services) *MatchRouter {
-  router := new(MatchRouter)
-
-  router.Services = routerServices
-
-  return router
 }

@@ -53,9 +53,10 @@ type RefreshRequestData struct {
 // LoginResponseData is the data we
 // send back after a successful log in
 type LoginResponseData struct {
-  User               *UserProfileView  `json:"user"`
-  AccessExpiration   time.Time         `json:"accessExpiration"`
-  RefreshExpiration  time.Time         `json:"refreshExpiration"`
+  User               *UserProfileView      `json:"user"`
+  UserCharacters     []*UserCharacterView  `json:"userCharacters"`
+  AccessExpiration   time.Time             `json:"accessExpiration"`
+  RefreshExpiration  time.Time             `json:"refreshExpiration"`
 }
 
 
@@ -106,6 +107,16 @@ func (r *AuthRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
   default:
     http.Error(res, "404 Not found", http.StatusNotFound)
   }
+}
+
+
+// NewAuthRouter makes a new api/auth router and hooks up its services
+func NewAuthRouter(routerServices *Services) *AuthRouter {
+  router := new(AuthRouter)
+
+  router.Services = routerServices
+
+  return router
 }
 
 
@@ -262,18 +273,32 @@ func (r *AuthRouter) handleLogin(res http.ResponseWriter, req *http.Request) {
     },
   )
 
-  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByID(userCredentialsView.UserID)
+  // Get the basic user profile information
+  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userCredentialsView.UserID)
   if err != nil {
     http.Error(res, fmt.Sprintf("Could not get user data for id %d: %s", userCredentialsView.UserID, err.Error()), http.StatusBadRequest)
     return
   }
   userProfileView := ToAPIUserProfileView(dbUserProfileView)
 
+  // Also get the user's saved characters
+  dbUserCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(userCredentialsView.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error getting user's saved characters with userID %d: %s", userCredentialsView.UserID, err.Error()), http.StatusInternalServerError)
+    return
+  }
+  userCharViews := make([]*UserCharacterView, 0)
+  for _, dbUserCharView := range dbUserCharViews {
+    userCharView := ToAPIUserCharacterView(dbUserCharView)
+    userCharViews = append(userCharViews, userCharView)
+  }
+
   response := &Response{
     Success:           true,
     Error:             nil,
     Data:  LoginResponseData{
       User:               userProfileView,
+      UserCharacters:     userCharViews,
       AccessExpiration:   accessExpiration,
       RefreshExpiration:  refreshExpiration,
     },
@@ -376,14 +401,4 @@ func (r *AuthRouter) handleLogout(res http.ResponseWriter, req *http.Request) {
 
   res.Header().Set("Content-Type", "application/json")
   json.NewEncoder(res).Encode(response)
-}
-
-
-// NewAuthRouter makes a new api/auth router and hooks up its services
-func NewAuthRouter(routerServices *Services) *AuthRouter {
-  router := new(AuthRouter)
-
-  router.Services = routerServices
-
-  return router
 }

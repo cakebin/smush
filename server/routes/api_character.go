@@ -160,6 +160,16 @@ func (r *CharacterRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) 
 }
 
 
+// NewCharacterRouter makes a new api/character router and hooks up its services
+func NewCharacterRouter(routerServices *Services) *CharacterRouter {
+  router := new(CharacterRouter)
+
+  router.Services = routerServices
+
+  return router
+}
+
+
 /*---------------------------------
              Handlers
 ----------------------------------*/
@@ -208,7 +218,7 @@ func (r *CharacterRouter) handleCreate(res http.ResponseWriter, req *http.Reques
   }
   character := ToAPICharacter(dbCharacter)
 
-  response := Response{
+  response := &Response{
     Success:  true,
     Error:    nil,
     Data:     CharacterCreateResponseData{
@@ -249,14 +259,4 @@ func (r *CharacterRouter) handleUpdate(res http.ResponseWriter, req *http.Reques
 
   res.Header().Set("Content-Type", "application/json")
   json.NewEncoder(res).Encode(response)
-}
-
-
-// NewCharacterRouter makes a new api/character router and hooks up its services
-func NewCharacterRouter(routerServices *Services) *CharacterRouter {
-  router := new(CharacterRouter)
-
-  router.Services = routerServices
-
-  return router
 }

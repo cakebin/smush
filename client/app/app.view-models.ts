@@ -50,6 +50,7 @@ export interface IUserViewModel {
     defaultCharacterId: number;
     defaultCharacterName: string;
     defaultCharacterGsp: number;
+    userCharacters: IUserCharacterViewModel[];
 }
 export class UserViewModel implements IUserViewModel {
     constructor(
@@ -61,8 +62,17 @@ export class UserViewModel implements IUserViewModel {
         public defaultCharacterId: number = null,
         public defaultCharacterName: string = '',
         public defaultCharacterGsp: number = null,
+        public userCharacters: IUserCharacterViewModel[] = [],
     ) {
     }
+}
+export interface IUserCharacterViewModel {
+    userCharacterId: number;
+    characterGsp: number|string;
+    characterId: number;
+    characterName: string;
+    userId: number;
+    editMode: boolean;
 }
 export interface ICharacterViewModel {
     characterId: number;
