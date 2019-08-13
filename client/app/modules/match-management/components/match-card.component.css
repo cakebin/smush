@@ -100,7 +100,19 @@ img {
   -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
 }
-
+.loss .player-header .character-name,
+.loss .player-header::after {
+  opacity: 0.5;
+}
+.loss .player-name div {
+  opacity: 0.5;
+}
+.loss.player-1 .player-name {
+  background-color: #642323;
+}
+.loss.player-2 .player-name {
+  background-color: #24405a;
+}
 img.smush-logo {
   width: 180px;
   left: 20px;

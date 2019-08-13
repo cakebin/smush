@@ -5,7 +5,7 @@
             <img *ngIf="!match.userCharacterId" src="/static/assets/smush_logo.png" class="smush-logo" />
 
             <div class="player-header text-white text-uppercase text-center">
-                {{match.userCharacterName ? match.userCharacterName : "???"}}
+                <div class="character-name">{{match.userCharacterName ? match.userCharacterName : "???"}}</div>
             </div>
             <div class="player-name text-white">
                 <div>{{match.userName}}<span *ngIf="match.userCharacterGsp">: {{match.userCharacterGsp | number}}</span></div>
@@ -14,7 +14,7 @@
         <div class="match-player-container player-2" [ngClass]="{'loss':match.userWin}">
             <img [attr.data-character]="match.opponentCharacterName" [src]="'/static/assets/full/'+match.opponentCharacterImage" />
             <div class="player-header text-white text-uppercase text-center">
-                {{match.opponentCharacterName}}
+                <div class="character-name">{{match.opponentCharacterName}}</div>
             </div>
             <div *ngIf="match.userCharacterGsp" class="player-name text-white">
                 <div>{{match.opponentCharacterGsp | number}}</div>
