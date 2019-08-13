@@ -1,35 +1,16 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { CommonUxService } from '../../modules/common-ux/common-ux.service';
-import { UserManagementService } from '../../modules/user-management/user-management.service';
+import { CommonUxService } from '../../common-ux/common-ux.service';
+import { UserManagementService } from '../user-management.service';
 import { CharacterManagementService } from 'client/app/modules/character-management/character-management.service';
-import { IUserViewModel, ICharacterViewModel } from '../../app.view-models';
+import { IUserViewModel, IUserCharacterViewModel, ICharacterViewModel } from '../../../app.view-models';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
-
-
-class ISavedCharacter {
-  id: number;
-  name: string;
-  gsp: number;
-  isDefault: boolean;
-  editMode: boolean;
-}
-class SavedCharacter implements ISavedCharacter {
-  constructor(
-    public id: number = null,
-    public name: string = '',
-    public gsp: number = null,
-    public isDefault: boolean = false,
-    public editMode: boolean = false,
-  ) {}
-}
 
 @Component({
   selector: 'profile-edit',
   templateUrl: './profile-edit.component.html'
 })
 export class ProfileEditComponent implements OnInit {
-  public savedCharactersTestData: ISavedCharacter[] = [];
-  public editChar: ISavedCharacter = {} as ISavedCharacter;
+  public newUserCharacter: IUserCharacterViewModel = {} as IUserCharacterViewModel;
 
   public characters: ICharacterViewModel[] = [];
   public user: IUserViewModel = {} as IUserViewModel;
@@ -75,36 +56,7 @@ export class ProfileEditComponent implements OnInit {
       }
     );
   }
-  public setDefaultSavedCharacter(defaultCharId: number) {
-    this.savedCharactersTestData.forEach(char => {
-      if (char.id === defaultCharId) {
-        char.isDefault = true;
-      } else {
-        char.isDefault = false;
-      }
-    });
-  }
-  public setSavedCharacterEditMode(editCharId: number) {
-    this.savedCharactersTestData.forEach(char => {
-      if (char.id === editCharId) {
-        char.editMode = true;
-      } else {
-        char.editMode = false;
-      }
-    });
-  }
-  public onSelectSavedCharacter(event: ICharacterViewModel, savedChar: ISavedCharacter) {
-    savedChar.id = event.characterId;
-    savedChar.name = event.characterName;
-  }
-  public onSelectDefaultCharacter(event: ICharacterViewModel): void {
-    if (event == null) {
-      this.editedUser.defaultCharacterId = null;
-    } else {
-      this.editedUser.defaultCharacterId = event.characterId;
-    }
-    this.formChanged = this.getChangedStatus();
-  }
+
   public updateUser(): void {
     this.userService.updateUser(this.editedUser).subscribe(
       res => {
@@ -118,7 +70,33 @@ export class ProfileEditComponent implements OnInit {
         console.error(error);
       });
   }
+  public addUserCharacter(): void {
+    if (!this.newUserCharacter.characterId) {
+      this.commonUxService.showWarningToast('Please select a character before adding a user character.');
+      return;
+    }
+    if (this.user.userCharacters.find(c => c.characterId === this.newUserCharacter.characterId)) {
+      this.commonUxService.showWarningToast('This user character already exists.');
+      return;
+    }
 
+    console.log('api call to add user character (fake adding for now)');
+    this.user.userCharacters.push(this.newUserCharacter);
+    // Clear "add character" inputs
+    this.newUserCharacter = {
+      characterId: null,
+      characterGsp: null
+    } as IUserCharacterViewModel;
+  }
+  public onSelectNewUserCharacter(event: ICharacterViewModel) {
+    if (event) {
+      this.newUserCharacter.characterId = event.characterId;
+      this.newUserCharacter.characterName = event.characterName;
+    } else {
+      this.newUserCharacter.characterId = null;
+      this.newUserCharacter.characterName = '';
+    }
+  }
   public getChangedStatus(): boolean {
     const keys: string[] = Object.keys(this.editedUser);
     let formChanged: boolean = false;

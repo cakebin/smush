@@ -37,6 +37,7 @@ import { ToNumberPipe } from './components/string-to-number/string-to-number.pip
   exports: [
     FormsModule,
     NgbModule,
+    CommonModule,
     FontAwesomeModule,
     SortableTableHeaderComponent,
     TypeaheadComponent,

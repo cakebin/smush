@@ -1,0 +1,80 @@
+<div *ngIf="user" class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+
+
+        <div class="card border-0">
+            <div class="card-body">
+                <h4 class="mb-4">Account details</h4>
+
+                <div class="form-group">
+                    <label for="email-address">Email address</label>
+                    <input disabled [(ngModel)]="editedUser.emailAddress" type="text" name="email-address" class="form-control" /> 
+                </div>
+              
+                <div class="form-group">
+                    <label for="display-name">Display name</label>
+                    <input [(ngModel)]="editedUser.userName" type="text" name="display-name" class="form-control" /> 
+                </div>
+             
+                <h4 class="mb-4" style="margin-top:50px;">Saved characters</h4>
+                
+                <ng-container *ngIf="user?.userCharacters?.length">
+                    <table class="table table-borderless table-sm table-striped table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="pl-3">Character name</th>
+                                <th class="pl-3">Character GSP</th>
+                                <th style="width:150px;"><!-- Edit actions --></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Display and edit rows -->
+                           <tr user-character-row 
+                           *ngFor="let char of user.userCharacters; index as i"
+                           [characters]="characters"
+                           [userCharacter]="char"
+                           [isDefaultCharacter]="user.defaultCharacterId===char.characterId"
+                           ></tr>
+
+                            <!-- "Add new" row -->
+                            <tr>
+                                <td>
+                                    <common-ux-typeahead
+                                    [items]="characters"
+                                    [textPropertyName]="'characterName'" 
+                                    [valuePropertyName]="'characterId'" 
+                                    [value]="newUserCharacter.characterId"
+                                    (selectItem)="onSelectNewUserCharacter($event)">
+                                    </common-ux-typeahead>
+                                </td>
+                                <td>
+                                    <common-ux-masked-number-input [(numberValue)]="newUserCharacter.characterGsp"></common-ux-masked-number-input>
+                                </td>
+                                <td class="text-right align-middle">
+                                    <button (click)="addUserCharacter()" class="btn btn-block btn-secondary p-1">Add character</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <small class="text-muted font-italic">Changes in table are only committed when you click "Save changes".</small>
+                </ng-container>
+
+                <div *ngIf="!user?.userCharacters?.length" class="text-center no-data-block">
+                    <h3 class="text-black-50">No characters found</h3>
+                </div>
+
+
+                <div class="form-group text-center" style="margin-top:50px;">
+                    <button [disabled]="!formChanged || isSaving" (click)="updateUser()"
+                    type="submit" class="btn btn-primary">
+                        Save changes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-2"></div>
+</div>
