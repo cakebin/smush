@@ -1,5 +1,8 @@
 package db
 
+import (
+  "database/sql"
+)
 
 /*---------------------------------
           Data Structures
@@ -8,8 +11,16 @@ package db
 // UserProfileUpdate describes the data needed 
 // to update a given user's profile information
 type UserProfileUpdate struct {
-  UserID                   int            `json:"userId"`
-  UserName                 string         `json:"userName"`
+  UserID    int     `json:"userId"`
+  UserName  string  `json:"userName"`
+}
+
+
+// UserDefaultUserCharacterUpdate describes the data needed
+// to update a given user's default user character
+type UserDefaultUserCharacterUpdate struct {
+  UserID           int            `json:"userId"`
+  UserCharacterID  sql.NullInt64  `json:"userCharacterId"`
 }
 
 
@@ -44,6 +55,7 @@ type UserManager interface {
 
   UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error)
   UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int, error)
+  UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int, error)
 
   CreateUser(user User) (int, error)
 }
@@ -148,6 +160,34 @@ func (db *DB) UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int, err
     sqlStatement,
     refreshUpdate.RefreshToken,
     refreshUpdate.UserID,
+  )
+  err := row.Scan(&userID)
+
+  if err != nil {
+    return 0, err
+  }
+
+  return userID, nil
+}
+
+
+// UpdateUserDefaultUserCharacter updates a user's default user character
+func (db *DB) UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int, error) {
+  var userID int
+  sqlStatement := `
+    UPDATE
+      users
+    SET
+      default_user_character_id = $1
+    WHERE
+      user_id = $2
+    RETURNING
+      user_id
+  `
+  row := db.QueryRow(
+    sqlStatement,
+    userCharUpdate.UserCharacterID,
+    userCharUpdate.UserID,
   )
   err := row.Scan(&userID)
 

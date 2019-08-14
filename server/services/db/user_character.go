@@ -32,7 +32,7 @@ type UserCharacterCreate struct {
 // to update a given "saved character" in our db
 type UserCharacterUpdate struct {
   UserCharacterID  int            `json:"userCharacterId"`
-  UserID           sql.NullInt64  `json:"userId"`
+  UserID           int             `json:"userId"`
   CharacterID      sql.NullInt64  `json:"characterId"`
   CharacterGsp     sql.NullInt64  `json:"characterGsp"`
 }
