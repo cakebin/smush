@@ -4,6 +4,7 @@ import { UserManagementService } from '../user-management.service';
 import { CharacterManagementService } from 'client/app/modules/character-management/character-management.service';
 import { IUserViewModel, IUserCharacterViewModel, ICharacterViewModel } from '../../../app.view-models';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import { MatchManagementService } from '../../match-management/match-management.service';
 
 @Component({
   selector: 'profile-edit',
@@ -26,6 +27,7 @@ export class ProfileEditComponent implements OnInit {
     private commonUxService: CommonUxService,
     private userService: UserManagementService,
     private characterService: CharacterManagementService,
+    private matchService: MatchManagementService,
     ) {
   }
 
@@ -39,8 +41,8 @@ export class ProfileEditComponent implements OnInit {
     this.userService.cachedUser.subscribe({
       next: res => {
         if (res) {
-          Object.assign(this.user, res);
-          Object.assign(this.editedUser, res);
+          this.user = JSON.parse(JSON.stringify(res));
+          this.editedUser = JSON.parse(JSON.stringify(res));
         }
       },
       error: err => {
@@ -60,9 +62,14 @@ export class ProfileEditComponent implements OnInit {
   public updateUser(): void {
     this.userService.updateUser(this.editedUser).subscribe(
       res => {
+        if (this.user.userName !== this.editedUser.userName) {
+          this.matchService.updateCachedMatchesWithUserName(this.editedUser);
+        }
+
         // Copy changes from edited user to the actual user object
-        Object.assign(this.user, this.editedUser);
-        this.formChanged = this.getChangedStatus();
+        this.user = JSON.parse(JSON.stringify(this.editedUser));
+        this.formChanged = false;
+
         this.commonUxService.showStandardToast('User information updated!');
       },
       error => {
@@ -70,7 +77,7 @@ export class ProfileEditComponent implements OnInit {
         console.error(error);
       });
   }
-  public addUserCharacter(): void {
+  public createUserCharacter(): void {
     if (!this.newUserCharacter.characterId) {
       this.commonUxService.showWarningToast('Please select a character before adding a user character.');
       return;
@@ -79,14 +86,11 @@ export class ProfileEditComponent implements OnInit {
       this.commonUxService.showWarningToast('This user character already exists.');
       return;
     }
-
-    console.log('api call to add user character (fake adding for now)');
-    this.user.userCharacters.push(this.newUserCharacter);
-    // Clear "add character" inputs
-    this.newUserCharacter = {
-      characterId: null,
-      characterGsp: null
-    } as IUserCharacterViewModel;
+    this.userService.createUserCharacter(this.newUserCharacter).subscribe(
+      (res => {
+        this.newUserCharacter = {} as IUserCharacterViewModel;
+      })
+    );
   }
   public onSelectNewUserCharacter(event: ICharacterViewModel) {
     if (event) {
@@ -101,6 +105,10 @@ export class ProfileEditComponent implements OnInit {
     const keys: string[] = Object.keys(this.editedUser);
     let formChanged: boolean = false;
     keys.forEach(k => {
+      // Don't check user characters
+      if (k === 'userCharacters') {
+        return;
+      }
       if (!Object.is(this.user[k], this.editedUser[k])) {
         formChanged = true;
       }

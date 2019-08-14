@@ -121,9 +121,9 @@ func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error) {
     UPDATE
       users
     SET
-      user_name = $1,
+      user_name = $1
     WHERE
-      user_id = $4
+      user_id = $2
     RETURNING
       user_id
   `

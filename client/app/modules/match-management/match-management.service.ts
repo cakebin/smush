@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { publish, refCount, tap, map, finalize, retryWhen, delay, take } from 'rxjs/operators';
-import { IMatchViewModel, IServerResponse } from '../../app.view-models';
+import { IMatchViewModel, IServerResponse, IUserViewModel } from '../../app.view-models';
 
 @Injectable()
 export class MatchManagementService {
@@ -53,7 +53,6 @@ export class MatchManagementService {
                     const serverMatch: IMatchViewModel = res.data.match;
                     const allMatches: IMatchViewModel[] = this.cachedMatches.value;
                     const index = allMatches.findIndex(m => m.matchId === serverMatch.matchId);
-
                     allMatches[index] = serverMatch;
                     this._updateCachedMatches(allMatches);
                     return serverMatch;
@@ -65,6 +64,13 @@ export class MatchManagementService {
     }
     public deleteMatch(matchId: number): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/delete`, matchId);
+    }
+    public updateCachedMatchesWithUserName(updatedUser: IUserViewModel): void {
+        const allMatches: IMatchViewModel[] = this.cachedMatches.value;
+        allMatches.filter(m => m.userId === updatedUser.userId).forEach(m => {
+            m.userName = updatedUser.userName;
+        });
+        this._updateCachedMatches(allMatches);
     }
 
 

@@ -57,24 +57,19 @@ export class UserCharacterRowComponent implements OnInit {
 
   // Api-related methods
   public updateUserCharacter() {
-    console.log('making api call to update user char');
     this.userService.updateUserCharacter(this.editedUserCharacter).subscribe(
       res => {
-        console.log('done updating userChar');
         this.leaveEditMode();
       }
     );
   }
   public deleteUserCharacter() {
-    console.log('making api call to DELETE user char');
     this.userService.deleteUserCharacter(this.userCharacter);
   }
   public setDefaultUserCharacter() {
-    console.log('making api call to set default char');
     this.userService.setDefaultUserCharacter(this.userCharacter);
   }
   public unsetDefaultUserCharacter() {
-    console.log('making api call to UNSET default char');
     this.userService.unsetDefaultUserCharacter(this.userCharacter);
   }
 }

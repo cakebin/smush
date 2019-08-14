@@ -55,7 +55,7 @@ type UserCharacterCreateResponseData struct {
 // UserCharacterUpdateResponseData is the data we send back
 // after a successfully creating a new "saved character" for a given user
 type UserCharacterUpdateResponseData struct {
-  UserCharacters  []*UserCharacterView  `json:"userCharacter"`
+  UserCharacters  []*UserCharacterView  `json:"userCharacters"`
   User            *UserProfileView      `json:"user"`
 }
 
@@ -283,6 +283,15 @@ func (r *UserCharacterRouter) handleDelete(res http.ResponseWriter, req *http.Re
   err := decoder.Decode(deleteRequestData)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
+    return
+  }
+
+  updateRequestData := new(db.UserDefaultUserCharacterUpdate)
+  updateRequestData.UserID = deleteRequestData.UserID
+  updateRequestData.UserCharacterID = ToNullInt64(nil)
+  _, err = r.Services.Database.UpdateUserDefaultUserCharacter(updateRequestData)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error updating user default character in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
 

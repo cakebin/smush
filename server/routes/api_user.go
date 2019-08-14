@@ -67,13 +67,14 @@ type UserUpdateDefaultUserCharacterResponseData struct {
 // which can have things like `sql.NullInt64`, so we 
 // need to translate that to regular JSON objects
 type UserProfileView struct {
-  UserID                int        `json:"userId"`
-  UserName              string     `json:"userName"`
-  EmailAddress          string     `json:"emailAddress"`
-  Created               time.Time  `json:"created"`
-  DefaultCharacterID    *int64     `json:"defaultCharacterId,omitempty"`
-  DefaultCharacterGsp   *int64     `json:"defaultCharacterGsp,omitempty"`
-  DefaultCharacterName  *string    `json:"defaultCharacterName,omitempty"`
+  UserID                        int        `json:"userId"`
+  UserName                      string     `json:"userName"`
+  EmailAddress                  string     `json:"emailAddress"`
+  Created                       time.Time  `json:"created"`
+  DefaultUserCharacterID        *int64     `json:"defaultUserCharacterId,omitempty"`
+  DefaultUserCharacterGsp       *int64     `json:"defaultUserCharacterGsp,omitempty"`
+  DefaultCharacterID            *int64     `json:"defaultCharacterId,omitempty"`
+  DefaultCharacterName          *string    `json:"defaultCharacterName,omitempty"`
 }
 
 
@@ -86,8 +87,9 @@ func ToAPIUserProfileView(dbUserProfileView *db.UserProfileView) *UserProfileVie
   userProfileView.UserName = dbUserProfileView.UserName
   userProfileView.EmailAddress = dbUserProfileView.EmailAddress
   userProfileView.Created = dbUserProfileView.Created
+  userProfileView.DefaultUserCharacterID = FromNullInt64(dbUserProfileView.DefaultUserCharacterID)
+  userProfileView.DefaultUserCharacterGsp = FromNullInt64(dbUserProfileView.DefaultUserCharacterGsp)
   userProfileView.DefaultCharacterID = FromNullInt64(dbUserProfileView.DefaultCharacterID)
-  userProfileView.DefaultCharacterGsp = FromNullInt64(dbUserProfileView.DefaultCharacterGsp)
   userProfileView.DefaultCharacterName = FromNullString(dbUserProfileView.DefaultCharacterName)
 
   return userProfileView

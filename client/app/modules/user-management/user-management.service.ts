@@ -40,7 +40,7 @@ export class UserManagementService {
                     localStorage.setItem('smush_user', JSON.stringify(user));
                     localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
                     localStorage.setItem('smush_refresh_expire', JSON.stringify(new Date(res.data.refreshExpiration)));
-                    this._loadUser(user);
+                    this._updateCachedUser(user);
                 }
             })
         );
@@ -73,7 +73,7 @@ export class UserManagementService {
                 localStorage.setItem('smush_user', JSON.stringify(updatedUser));
             }
         ),
-        finalize(() => this._loadUser(updatedUser))
+        finalize(() => this._updateCachedUser(updatedUser))
         );
     }
     public deleteUser(userId: number): Observable<{}> {
@@ -86,21 +86,63 @@ export class UserManagementService {
     ------------------------*/
 
     public createUserCharacter(userCharacter: IUserCharacterViewModel): Observable<{}> {
-        return this.httpClient.post(`${this.userCharacterApiUrl}/create`, userCharacter);
+        userCharacter.userId = this.cachedUser.value.userId;
+        userCharacter = this._prepareUserCharacterForApi(userCharacter);
+        return this.httpClient.post(`${this.userCharacterApiUrl}/create`, userCharacter).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                }
+            })
+        );
     }
     public updateUserCharacter(userCharacter: IUserCharacterViewModel): Observable<{}> {
-        return this.httpClient.post(`${this.userCharacterApiUrl}/update`, userCharacter);
+        userCharacter.userId = this.cachedUser.value.userId;
+        userCharacter = this._prepareUserCharacterForApi(userCharacter);
+        return this.httpClient.post(`${this.userCharacterApiUrl}/update`, userCharacter).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                }
+            })
+        );
     }
     public setDefaultUserCharacter(userCharacter: IUserCharacterViewModel): void {
-        this.httpClient.post(`${this.apiUrl}/update_default_user_character`, userCharacter);
+        userCharacter.userId = this.cachedUser.value.userId;
+        this.httpClient.post(`${this.apiUrl}/update_default_user_character`, userCharacter).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                }
+            })
+        ).subscribe();
     }
     public unsetDefaultUserCharacter(userCharacter: IUserCharacterViewModel): void {
+        userCharacter.userId = this.cachedUser.value.userId;
         // If userCharacterId is null, the API will set user's defaultUserCharacterId to null
         userCharacter.userCharacterId = null;
-        this.httpClient.post(`${this.apiUrl}/update_default_user_character`, userCharacter);
+        this.httpClient.post(`${this.apiUrl}/update_default_user_character`, userCharacter).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                }
+            })
+        ).subscribe();
     }
     public deleteUserCharacter(userCharacter: IUserCharacterViewModel): void {
-        this.httpClient.post(`${this.userCharacterApiUrl}/delete`, userCharacter);
+        userCharacter = this._prepareUserCharacterForApi(userCharacter);
+        this.httpClient.post(`${this.userCharacterApiUrl}/delete`, userCharacter).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                }
+            })
+        ).subscribe();
     }
 
 
@@ -110,12 +152,20 @@ export class UserManagementService {
 
     private _prepareUserForApi(user: IUserViewModel): IUserViewModel {
         // Do all type conversions & other misc translations here before sending to API
-        if (user.defaultCharacterGsp) {
-            user.defaultCharacterGsp = parseInt(user.defaultCharacterGsp.toString().replace(/\D/g, ''), 10);
+        if (user.defaultUserCharacterGsp) {
+            user.defaultUserCharacterGsp = parseInt(user.defaultUserCharacterGsp.toString().replace(/\D/g, ''), 10);
         }
         return user;
     }
-    private _loadUser(user: IUserViewModel): void {
+    private _prepareUserCharacterForApi(userCharacter: IUserCharacterViewModel): IUserCharacterViewModel {
+        // Do all type conversions & other misc translations here before sending to API
+        if (userCharacter.characterGsp) {
+            userCharacter.characterGsp = parseInt(userCharacter.characterGsp.toString().replace(/\D/g, ''), 10);
+        }
+        return userCharacter;
+    }
+    private _updateCachedUser(user: IUserViewModel): void {
+        localStorage.setItem('smush_user', JSON.stringify(user));
         this.cachedUser.next(user);
         this.cachedUser.pipe(
             publish(),
@@ -177,7 +227,7 @@ export class UserManagementService {
                 const savedUserJson = localStorage.getItem('smush_user');
                 const savedUser = JSON.parse(savedUserJson);
                 if (savedUser) {
-                    this._loadUser(savedUser);
+                    this._updateCachedUser(savedUser);
                 }
             }
 

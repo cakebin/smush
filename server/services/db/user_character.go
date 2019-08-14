@@ -109,7 +109,7 @@ func (db *DB) CreateUserCharacter(userCharacterCreate *UserCharacterCreate) (int
     INSERT INTO user_characters
       (user_id, character_id, character_gsp)
     VALUES
-      ($1, $2, $3, $4)
+      ($1, $2, $3)
     RETURNING
       user_character_id
   `

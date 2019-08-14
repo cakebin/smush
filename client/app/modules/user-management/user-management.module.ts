@@ -37,6 +37,10 @@ export class UserManagementModule {
             provide: 'AuthApiUrl',
             useValue: '/api/auth'
           },
+          {
+            provide: 'UserCharacterApiUrl',
+            useValue: '/api/user/character'
+          },
         ]
     };
   }
