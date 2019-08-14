@@ -35,6 +35,7 @@ export class UserCharacterRowComponent implements OnInit {
   ngOnInit() {
   }
 
+  // Template-related methods
   public enterEditMode() {
     Object.assign(this.editedUserCharacter, this.userCharacter);
     this.isEditMode = true;
@@ -42,26 +43,6 @@ export class UserCharacterRowComponent implements OnInit {
   public leaveEditMode() {
     this.isEditMode = false;
     this.editedUserCharacter = {} as IUserCharacterViewModel;
-  }
-  public saveUserCharacter() {
-    // Make api call
-    console.log('making api call to save default char');
-    Object.assign(this.userCharacter, this.editedUserCharacter);
-    this.isEditMode = false;
-  }
-  public deleteUserCharacter() {
-    // Make api call
-    console.log('making api call to DELETE default char');
-  }
-  public setDefaultUserCharacter() {
-    // Make api call
-    console.log('making api call to set default char');
-    this.isDefaultCharacter = true;
-  }
-  public unsetDefaultUserCharacter() {
-    // Make api call
-    console.log('making api call to UNSET default char');
-    this.isDefaultCharacter = false;
   }
   public onSelectCharacter(event: ICharacterViewModel) {
     if (event) {
@@ -71,5 +52,29 @@ export class UserCharacterRowComponent implements OnInit {
       this.editedUserCharacter.characterId = null;
       this.editedUserCharacter.characterName = '';
     }
+  }
+
+
+  // Api-related methods
+  public updateUserCharacter() {
+    console.log('making api call to update user char');
+    this.userService.updateUserCharacter(this.editedUserCharacter).subscribe(
+      res => {
+        console.log('done updating userChar');
+        this.leaveEditMode();
+      }
+    );
+  }
+  public deleteUserCharacter() {
+    console.log('making api call to DELETE user char');
+    this.userService.deleteUserCharacter(this.userCharacter);
+  }
+  public setDefaultUserCharacter() {
+    console.log('making api call to set default char');
+    this.userService.setDefaultUserCharacter(this.userCharacter);
+  }
+  public unsetDefaultUserCharacter() {
+    console.log('making api call to UNSET default char');
+    this.userService.unsetDefaultUserCharacter(this.userCharacter);
   }
 }
