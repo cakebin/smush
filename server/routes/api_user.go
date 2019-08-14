@@ -24,6 +24,14 @@ type UserUpdateRequestData struct {
 }
 
 
+// UserUpdateDefaultUserCharacterRequestData describes the data we're
+// expecting when a user attempts to update their default user character
+type UserUpdateDefaultUserCharacterRequestData struct {
+  UserID           int     `json:"userId"`
+  UserCharacterID  *int64  `json:"userCharacterId"`
+}
+
+
 /*---------------------------------
           Response Data
 ----------------------------------*/
@@ -31,7 +39,7 @@ type UserUpdateRequestData struct {
 // UserGetResponseData is the data we send back
 // after a successfully getting all user's info
 type UserGetResponseData struct {
-  User            *UserProfileView   `json:"user"`
+  User            *UserProfileView      `json:"user"`
   UserCharacters  []*UserCharacterView  `json:"userCharacters"`
 }
 
@@ -40,6 +48,14 @@ type UserGetResponseData struct {
 // back after a successfully creating a new user
 type UserUpdateResponseData struct {
   User  *UserProfileView  `json:"user"`
+}
+
+
+// UserUpdateDefaultUserCharacterResponseData is the data we send back
+// after successfully updating a user's default user character
+type UserUpdateDefaultUserCharacterResponseData struct {
+  User            *UserProfileView      `json:"user"`
+  UserCharacters  []*UserCharacterView  `json:"userCharacters"`
 }
 
 
@@ -89,6 +105,16 @@ func ToDBUserUpdate(userUpdateRequestData *UserUpdateRequestData) *db.UserProfil
 }
 
 
+// ToDBUserDefaultUserCharacterUpdate maps from an api.UserUpdateDefaultUserCharacterRequestData
+// to a db.UserDefaultUserCharacterUpdate for updating said user's default_user_character_id
+func ToDBUserDefaultUserCharacterUpdate(requestData *UserUpdateDefaultUserCharacterRequestData) *db.UserDefaultUserCharacterUpdate {
+  dbUserUpdateDefaultUserChar := new(db.UserDefaultUserCharacterUpdate)
+  dbUserUpdateDefaultUserChar.UserID = requestData.UserID
+  dbUserUpdateDefaultUserChar.UserCharacterID = ToNullInt64(requestData.UserCharacterID)
+
+  return dbUserUpdateDefaultUserChar
+}
+
 /*---------------------------------
              Router
 ----------------------------------*/
@@ -127,8 +153,10 @@ func (r *UserRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
       // POST Request Handlers
       case http.MethodPost:
         switch head {
-        case "update":
-          r.handleUpdate(res, req)
+        case "update_profile":
+          r.handleUpdateProfile(res, req)
+        case "update_default_user_character":
+          r.handleUpdateDefaultUserCharacter(res, req)
         default:
           http.Error(res, fmt.Sprintf("Unsupport POST path %s", head), http.StatusBadRequest)
           return
@@ -201,7 +229,7 @@ func (r *UserRouter) handleGetByID(res http.ResponseWriter, req *http.Request) {
 }
 
 
-func (r *UserRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
+func (r *UserRouter) handleUpdateProfile(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
   updateRequestData := new(UserUpdateRequestData)
 
@@ -219,13 +247,57 @@ func (r *UserRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
   }
   dbUserProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userID)
   userProfileView := ToAPIUserProfileView(dbUserProfileView)
-  
 
   response := &Response{
     Success:  true,
     Error:    nil,
     Data:     UserUpdateResponseData{
       User:  userProfileView,
+    },
+  }
+
+  res.Header().Set("Content-Type", "application/json")
+  json.NewEncoder(res).Encode(response)
+}
+
+
+func (r *UserRouter) handleUpdateDefaultUserCharacter(res http.ResponseWriter, req *http.Request) {
+  decoder := json.NewDecoder(req.Body)
+  updateRequestData := new(UserUpdateDefaultUserCharacterRequestData)
+
+  err := decoder.Decode(updateRequestData)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
+    return
+  }
+
+  dbUserDefaultUserCharacterUpdate := ToDBUserDefaultUserCharacterUpdate(updateRequestData)
+  userID, err := r.Services.Database.UpdateUserDefaultUserCharacter(dbUserDefaultUserCharacterUpdate)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error updating user default character in database: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error getting user in database after updating default user character: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+  userProfileView := ToAPIUserProfileView(dbUserProfileView)
+
+  dbUserCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(updateRequestData.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user character views in database after updating user_character: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+  userCharViews := ToAPIUserCharacterViews(dbUserCharViews)
+
+  response := &Response{
+    Success:  true,
+    Error:    nil,
+    Data:     UserUpdateDefaultUserCharacterResponseData{
+      User:            userProfileView,
+      UserCharacters:  userCharViews,
     },
   }
 
