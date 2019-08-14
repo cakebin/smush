@@ -47,9 +47,10 @@ export interface IUserViewModel {
     password: string;
     passwordConfirm: string;
     userName: string;
+    defaultUserCharacterId: number;
+    defaultUserCharacterGsp: number;
     defaultCharacterId: number;
     defaultCharacterName: string;
-    defaultCharacterGsp: number;
     userCharacters: IUserCharacterViewModel[];
 }
 export class UserViewModel implements IUserViewModel {
@@ -59,9 +60,10 @@ export class UserViewModel implements IUserViewModel {
         public password: string = '',
         public passwordConfirm: string = '',
         public userName: string = '',
+        public defaultUserCharacterId: number = null,
+        public defaultUserCharacterGsp: number = null,
         public defaultCharacterId: number = null,
         public defaultCharacterName: string = '',
-        public defaultCharacterGsp: number = null,
         public userCharacters: IUserCharacterViewModel[] = [],
     ) {
     }
