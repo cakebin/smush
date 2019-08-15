@@ -15,6 +15,7 @@ type UserCharacterView struct {
   // Data from user_characters
   UserCharacterID  int            `json:"userCharacterID"`
   CharacterGsp     sql.NullInt64  `json:"characterGsp"`
+  AltCostume       sql.NullInt64  `json:"altCostume"`
 
   // Data from characters
   CharacterID      int            `json:"characterId"`
@@ -49,6 +50,7 @@ func (db *DB) GetUserCharacterViewsByUserID(userID int) ([]*UserCharacterView, e
     SELECT
       user_characters.user_character_id  AS  user_character_id,
       user_characters.character_gsp      AS  character_gsp,
+      user_characters.alt_costume        AS  alt_costume,
       characters.character_id            AS  character_id,
       characters.character_name          AS  character_name,
       users.user_id                      AS  user_id
@@ -71,6 +73,7 @@ func (db *DB) GetUserCharacterViewsByUserID(userID int) ([]*UserCharacterView, e
     err := rows.Scan(
       &userCharView.UserCharacterID,
       &userCharView.CharacterGsp,
+      &userCharView.AltCostume,
       &userCharView.CharacterID,
       &userCharView.CharacterName,
       &userCharView.UserID,
@@ -99,6 +102,7 @@ func (db *DB) GetUserCharacterViewByUserCharacterID(userCharID int) (*UserCharac
     SELECT
       user_characters.user_character_id  AS  user_character_id,
       user_characters.character_gsp      AS  character_gsp,
+      user_characters.alt_costume        AS  alt_costume,
       characters.character_id            AS  character_id,
       characters.character_name          AS  character_name,
       users.user_id                      AS  user_id
@@ -115,6 +119,7 @@ func (db *DB) GetUserCharacterViewByUserCharacterID(userCharID int) (*UserCharac
   err := row.Scan(
     &userCharView.UserCharacterID,
     &userCharView.CharacterGsp,
+    &userCharView.AltCostume,
     &userCharView.CharacterID,
     &userCharView.CharacterName,
     &userCharView.UserID,

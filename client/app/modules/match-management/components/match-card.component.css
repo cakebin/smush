@@ -66,9 +66,9 @@ img {
   color: #1976d2;
 }
 .player-name {
-  transform: rotate(-3deg) skew(-20deg);
+  transform: rotate(-2.85deg) skew(-20deg);
   position: absolute;
-  top: 26px;
+  top: 25px;
   left: -5px;
   height: 17px;
 }
@@ -77,7 +77,6 @@ img {
 }
 .player-2 .player-name {
   background-color: #1976d2;
-  transform: rotate(-2.85deg) skew(-20deg);
 }
 .player-2 .player-name div {
   line-height:19px;

@@ -10,11 +10,11 @@ import { CharacterManagementService } from '../character-management/character-ma
 import { UserManagementService } from '../user-management/user-management.service';
 
 @Component({
-  selector: 'match-table-view',
-  templateUrl: './match-table-view.component.html',
-  styleUrls: ['./match-table-view.component.css'],
+  selector: 'match-view',
+  templateUrl: './match-view.component.html',
+  styleUrls: ['./match-view.component.css'],
 })
-export class MatchTableViewComponent implements OnInit {
+export class MatchViewComponent implements OnInit {
   public headerLabels: HeaderViewModel[] = [
     new HeaderViewModel('userName', 'User', '100px'),
     new HeaderViewModel('userCharacterName', 'Char', '150px'),

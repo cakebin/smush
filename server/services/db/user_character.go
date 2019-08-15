@@ -16,6 +16,7 @@ type UserCharacter struct {
   UserID           int            `json:"userId"`
   CharacterID      int            `json:"characterId"`
   CharacterGsp     sql.NullInt64  `json:"characterGsp"`
+  AltCostume       sql.NullInt64  `json:"altCostume"`
 }
 
 
@@ -25,6 +26,7 @@ type UserCharacterCreate struct {
   UserID           int            `json:"userId"`
   CharacterID      int            `json:"characterId"`
   CharacterGsp     sql.NullInt64  `json:"characterGsp"`
+  AltCostume       sql.NullInt64  `json:"altCostume"`
 }
 
 
@@ -35,6 +37,7 @@ type UserCharacterUpdate struct {
   UserID           int             `json:"userId"`
   CharacterID      sql.NullInt64  `json:"characterId"`
   CharacterGsp     sql.NullInt64  `json:"characterGsp"`
+  AltCostume       sql.NullInt64  `json:"altCostume"`
 }
 
 
@@ -64,7 +67,8 @@ func (db *DB) GetUserCharactersByUserID(userID int) ([]*UserCharacter, error) {
       user_character_id,
       user_id,
       character_id,
-      character_gsp
+      character_gsp,
+      alt_costume
     FROM
       user_characters
     WHERE
@@ -84,6 +88,7 @@ func (db *DB) GetUserCharactersByUserID(userID int) ([]*UserCharacter, error) {
       &userCharacter.UserID,
       &userCharacter.CharacterID,
       &userCharacter.CharacterGsp,
+      &userCharacter.AltCostume,
     )
 
     if err != nil {
@@ -107,9 +112,9 @@ func (db *DB) CreateUserCharacter(userCharacterCreate *UserCharacterCreate) (int
   var userCharID int
   sqlStatement := `
     INSERT INTO user_characters
-      (user_id, character_id, character_gsp)
+      (user_id, character_id, character_gsp, alt_costume)
     VALUES
-      ($1, $2, $3)
+      ($1, $2, $3, $4)
     RETURNING
       user_character_id
   `
@@ -118,6 +123,7 @@ func (db *DB) CreateUserCharacter(userCharacterCreate *UserCharacterCreate) (int
     userCharacterCreate.UserID,
     userCharacterCreate.CharacterID,
     userCharacterCreate.CharacterGsp,
+    userCharacterCreate.AltCostume,
   )
 
   err := row.Scan(&userCharID)
@@ -138,9 +144,10 @@ func (db *DB) UpdateUserCharacter(userCharacterUpdate *UserCharacterUpdate) (int
     SET
       user_id = $1,
       character_id = $2,
-      character_gsp = $3
+      character_gsp = $3,
+      alt_costume = $4
     WHERE
-      user_character_id = $4
+      user_character_id = $5
     RETURNING
       user_character_id
   `
@@ -149,6 +156,7 @@ func (db *DB) UpdateUserCharacter(userCharacterUpdate *UserCharacterUpdate) (int
     userCharacterUpdate.UserID,
     userCharacterUpdate.CharacterID,
     userCharacterUpdate.CharacterGsp,
+    userCharacterUpdate.AltCostume,
     userCharacterUpdate.UserCharacterID,
   )
 

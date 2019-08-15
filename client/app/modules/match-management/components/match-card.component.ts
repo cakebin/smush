@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IMatchViewModel, ICharacterViewModel } from '../../../app.view-models';
+import { IMatchViewModel, ICharacterViewModel, IUserViewModel, IUserCharacterViewModel } from '../../../app.view-models';
 import { MatchManagementService } from '../match-management.service';
 import { CommonUxService } from '../../common-ux/common-ux.service';
 
@@ -9,12 +9,37 @@ import { CommonUxService } from '../../common-ux/common-ux.service';
   styleUrls: ['./match-card.component.css']
 })
 export class MatchCardComponent {
-  @Input() match: IMatchViewModel = {} as IMatchViewModel;
-  @Input() isUserOwned: boolean = false;
   @Input() characters: ICharacterViewModel[] = [];
+  @Input() match: IMatchViewModel = {} as IMatchViewModel;
+  @Input() set user(user: IUserViewModel) {
+    // Set user
+    this._user = user;
+    if (!user) {
+      return;
+    }
+    // Calculate ownership of match
+    this.isUserOwned = this.match.userId === this.user.userId;
+    // Calculate image path based on user
+    // If the user has a corresponding UserCharacter with an alt costume, use that image instead
+    const matchingUserCharacter: IUserCharacterViewModel = this.user.userCharacters.find(c => c.characterId === this.match.userCharacterId);
+    if (!matchingUserCharacter || !matchingUserCharacter.altCostume) {
+      this.userCharacterImagePath = '/static/assets/full/' + this.match.userCharacterImage;
+    } else {
+      this.userCharacterImagePath = '/static/assets/alt/' + this.match.userCharacterImage.replace('.png', '') +
+      '_' + matchingUserCharacter.altCostume + '.png';
+    }
+  }
+  get user(): IUserViewModel {
+    return this._user;
+  }
+  private _user: IUserViewModel = {} as IUserViewModel;
 
+  // Calculated display vars
+  public userCharacterImagePath: string = '';
+  public isUserOwned: boolean = false;
+
+  // Form vars
   public editedMatch: IMatchViewModel = {} as IMatchViewModel;
-
   public boolOptions: any[] = [
     { name: 'Yes', value: true },
     { name: 'No', value: false },

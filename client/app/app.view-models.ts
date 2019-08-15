@@ -49,6 +49,7 @@ export interface IUserViewModel {
     userName: string;
     defaultUserCharacterId: number;
     defaultUserCharacterGsp: number;
+    defaultUserCharacterAltCostume: number;
     defaultCharacterId: number;
     defaultCharacterName: string;
     userCharacters: IUserCharacterViewModel[];
@@ -62,6 +63,7 @@ export class UserViewModel implements IUserViewModel {
         public userName: string = '',
         public defaultUserCharacterId: number = null,
         public defaultUserCharacterGsp: number = null,
+        public defaultUserCharacterAltCostume: number = null,
         public defaultCharacterId: number = null,
         public defaultCharacterName: string = '',
         public userCharacters: IUserCharacterViewModel[] = [],
@@ -71,6 +73,7 @@ export class UserViewModel implements IUserViewModel {
 export interface IUserCharacterViewModel {
     userCharacterId: number;
     characterGsp: number|string;
+    altCostume: number;
     characterId: number;
     characterName: string;
     userId: number;

@@ -1,29 +1,36 @@
 import { Component, OnInit, Input, HostBinding } from '@angular/core';
 import { CommonUxService } from '../../common-ux/common-ux.service';
 import { UserManagementService } from '../user-management.service';
-import { ICharacterViewModel, IUserCharacterViewModel } from '../../../app.view-models';
+import { ICharacterViewModel, IUserCharacterViewModel, IUserViewModel } from '../../../app.view-models';
 
 @Component({
   selector: 'tr[user-character-row]',
   templateUrl: './user-character-row.component.html'
 })
 export class UserCharacterRowComponent implements OnInit {
-  @Input() userCharacter: IUserCharacterViewModel = {} as IUserCharacterViewModel;
   @Input() characters: ICharacterViewModel[] = [];
-  @Input() set isDefaultCharacter(value: boolean) {
-    this._isDefaultCharacter = value;
-    if (value) {
+  @Input() userCharacter: IUserCharacterViewModel = {} as IUserCharacterViewModel;
+  @Input() set user(value: IUserViewModel) {
+    this._user = value;
+    if (!value) {
+      return;
+    }
+    if (value.defaultUserCharacterId === this.userCharacter.userCharacterId) {
+      this.isDefaultCharacter = true;
       this.rowClass = 'bg-primary text-white';
     } else {
+      this.isDefaultCharacter = false;
       this.rowClass = '';
     }
   }
-  get isDefaultCharacter(): boolean {
-    return this._isDefaultCharacter;
+  get user(): IUserViewModel {
+    return this._user;
   }
-  private _isDefaultCharacter: boolean = false;
+  private _user: IUserViewModel = {} as IUserViewModel;
+
 
   @HostBinding('class') rowClass: string = '';
+  public isDefaultCharacter: boolean = false;
   public isEditMode: boolean = false;
   public editedUserCharacter: IUserCharacterViewModel = {} as IUserCharacterViewModel;
 
