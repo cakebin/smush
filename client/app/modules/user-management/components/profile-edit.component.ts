@@ -79,11 +79,11 @@ export class ProfileEditComponent implements OnInit {
   }
   public createUserCharacter(): void {
     if (!this.newUserCharacter.characterId) {
-      this.commonUxService.showWarningToast('Please select a character before adding a user character.');
+      this.commonUxService.showWarningToast('Please select a character to save.');
       return;
     }
     if (this.user.userCharacters.find(c => c.characterId === this.newUserCharacter.characterId)) {
-      this.commonUxService.showWarningToast('This user character already exists.');
+      this.commonUxService.showWarningToast('This saved character already exists.');
       return;
     }
     this.userService.createUserCharacter(this.newUserCharacter).subscribe(

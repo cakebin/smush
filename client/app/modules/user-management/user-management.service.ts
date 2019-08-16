@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, tap, finalize } from 'rxjs/operators';
+import { publish, refCount, tap, finalize, map } from 'rxjs/operators';
 import { IUserViewModel, LogInViewModel, IServerResponse, IUserCharacterViewModel } from '../../app.view-models';
 
 @Injectable()
@@ -97,14 +97,15 @@ export class UserManagementService {
             })
         );
     }
-    public updateUserCharacter(userCharacter: IUserCharacterViewModel): Observable<{}> {
+    public updateUserCharacter(userCharacter: IUserCharacterViewModel): Observable<IUserViewModel> {
         userCharacter.userId = this.cachedUser.value.userId;
         userCharacter = this._prepareUserCharacterForApi(userCharacter);
         return this.httpClient.post(`${this.userCharacterApiUrl}/update`, userCharacter).pipe(
-            tap((res: IServerResponse) => {
+            map((res: IServerResponse) => {
                 if (res && res.data && res.data.user) {
                     res.data.user.userCharacters = res.data.userCharacters;
                     this._updateCachedUser(res.data.user);
+                    return res.data.user;
                 }
             })
         );
@@ -172,23 +173,28 @@ export class UserManagementService {
             refCount()
         );
     }
-    private _startIntervalSessionCheck() {
-        if (this._checkSessionInterval) {
-            clearInterval(this._checkSessionInterval);
+    private _loadUserFromStorage() {
+        const savedUserJson = localStorage.getItem('smush_user');
+        const savedUser = JSON.parse(savedUserJson);
+        if (savedUser) {
+            this._updateCachedUser(savedUser);
         }
-
-        // Run this first to make sure the user gets a cookie if they no longer have one
-        this._runSessionCheck(true);
-
-        this._checkSessionInterval = setInterval(() => {
-            // Then check again in a minute
-           this._runSessionCheck();
-        }, 60000);
     }
     private _clearLocalStorage(): void {
         localStorage.removeItem('smush_user');
         localStorage.removeItem('smush_refresh_expire');
         localStorage.removeItem('smush_access_expire');
+    }
+    private _startIntervalSessionCheck() {
+        if (this._checkSessionInterval) {
+            clearInterval(this._checkSessionInterval);
+        }
+        // Run this first to make sure the user gets a cookie if they no longer have one
+        this._runSessionCheck(true);
+        this._checkSessionInterval = setInterval(() => {
+            // Then check again every minute
+           this._runSessionCheck();
+        }, 60000);
     }
     private _runSessionCheck(isInitialCheck: boolean = false) {
         const dateNow = new Date();
@@ -222,27 +228,24 @@ export class UserManagementService {
             const accessExpired = dateNowMs > accessExpireMs;
             const accessAboutToExpire = (dateNowMs < accessExpireMs) && (accessExpireMs - dateNowMs < 120000);
 
-            // If this is on pageload, load the user because they still have a refresh token
-            if (isInitialCheck) {
-                const savedUserJson = localStorage.getItem('smush_user');
-                const savedUser = JSON.parse(savedUserJson);
-                if (savedUser) {
-                    this._updateCachedUser(savedUser);
-                }
-            }
-
             if (accessExpired || accessAboutToExpire) {
-                // I was a bit concerned about creating a subscription every three minutes,
-                // but it turns out HttpClient destroys subscriptions on completion of the request so memory leaks are not an issue.
-                // https://stackoverflow.com/questions/35042929/is-it-necessary-to-unsubscribe-from-observables-created-by-http-methods
                 this.httpClient.post(`${this.authApiUrl}/refresh`, this.cachedUser.value).subscribe(
                     (res: IServerResponse) => {
                         if (res && res.success && res.data) {
                             // Set the new updated access expiration date
                             localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
+                            if (isInitialCheck) {
+                                // If this is on pageload, load the user because they now have a fresh access token
+                                this._loadUserFromStorage();
+                            }
                         }
                     }
                 );
+            } else {
+                if (isInitialCheck) {
+                    // If this is on pageload, load the user because they still have both a refresh and access token token
+                    this._loadUserFromStorage();
+                }
             }
         }
     }

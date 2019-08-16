@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, tap, map, finalize, retryWhen, delay, take } from 'rxjs/operators';
-import { IMatchViewModel, IServerResponse, IUserViewModel } from '../../app.view-models';
+import { publish, refCount, tap, map } from 'rxjs/operators';
+import { IMatchViewModel, IServerResponse, IUserViewModel, IUserCharacterViewModel } from '../../app.view-models';
 
 @Injectable()
 export class MatchManagementService {
@@ -69,6 +69,16 @@ export class MatchManagementService {
         const allMatches: IMatchViewModel[] = this.cachedMatches.value;
         allMatches.filter(m => m.userId === updatedUser.userId).forEach(m => {
             m.userName = updatedUser.userName;
+        });
+        this._updateCachedMatches(allMatches);
+    }
+    public updateCachedMatchesWithAltCostume(updatedUser: IUserViewModel): void {
+        const allMatches: IMatchViewModel[] = this.cachedMatches.value;
+        allMatches.filter(m => m.userId === updatedUser.userId).forEach(m => {
+            const matchingUserChar: IUserCharacterViewModel = updatedUser.userCharacters.find(c => c.characterId === m.userCharacterId);
+            if (matchingUserChar) {
+                m.altCostume = matchingUserChar.altCostume;
+            }
         });
         this._updateCachedMatches(allMatches);
     }

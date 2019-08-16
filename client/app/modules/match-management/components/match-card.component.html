@@ -1,7 +1,10 @@
 <div class="card match-card mb-4">
     <div class="match-card-top">
         <div class="match-player-container player-1" [ngClass]="{'loss':match.userWin===false}">
-            <img *ngIf="match.userCharacterId" [attr.data-character]="match.userCharacterName" [src]="'/static/assets/full/'+match.userCharacterImage" />
+            <img *ngIf="match.userCharacterId" 
+            [attr.data-character]="match.userCharacterName" 
+            [src]="userCharacterImagePath" />
+
             <img *ngIf="!match.userCharacterId" src="/static/assets/smush_logo.png" class="smush-logo" />
 
             <div class="player-header text-white text-uppercase text-center">
@@ -25,8 +28,8 @@
     </div>
     <div *ngIf="match.opponentCamp || match.opponentTeabag || match.opponentAwesome"
         class="card-body pl-2 pr-2 pb-2 pt-1">
-        <span *ngIf="match.opponentCamp" class="badge badge-secondary mr-1">Camper</span>
-        <span *ngIf="match.opponentTeabag" class="badge badge-secondary mr-1">Teabagger</span>
+        <span *ngIf="match.opponentCamp" class="badge badge-secondary mr-1">Campy opponent</span>
+        <span *ngIf="match.opponentTeabag" class="badge badge-secondary mr-1">Teabagging opponent</span>
         <span *ngIf="match.opponentAwesome" class="badge badge-secondary mr-1">Homie</span>
     </div>
     <div class="card-footer p-2">

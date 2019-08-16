@@ -41,8 +41,9 @@
                     >
                     </fa-icon>
                     <ng-template #popContent>
-                        <p>Save frequently-used characters and their GSPs for easy match inputting.</p>   
-                        <p class="mb-0">Set a default to autopopulate the match form with those values!</p>
+                        <p>Save frequently-used characters and their GSPs for easy match inputting.</p>
+                        <p>Choose a costume for any saved character (only a few supported; message us to add more).</p>
+                        <p class="mb-0">Set a default to autopopulate the form with a saved character's values!</p>
                     </ng-template>
                 </div>
                 
@@ -51,6 +52,7 @@
                         <tr>
                             <th class="pl-3">Character name</th>
                             <th class="pl-3">Character GSP</th>
+                            <th class="pl-3">Alt Costume</th>
                             <th style="width:150px;"><!-- Edit actions --></th>
                         </tr>
                     </thead>
@@ -60,7 +62,7 @@
                         *ngFor="let char of user.userCharacters; index as i"
                         [characters]="characters"
                         [userCharacter]="char"
-                        [isDefaultCharacter]="user.defaultUserCharacterId===char.userCharacterId"
+                        [user]="user"
                         ></tr>
 
                         <!-- "Add new" row -->
@@ -76,6 +78,9 @@
                             </td>
                             <td>
                                 <common-ux-masked-number-input [(numberValue)]="newUserCharacter.characterGsp"></common-ux-masked-number-input>
+                            </td>
+                            <td>
+                                <input [(ngModel)]="newUserCharacter.altCostume" type="number" class="form-control" />
                             </td>
                             <td class="text-right align-middle">
                                 <button (click)="createUserCharacter()" class="btn btn-block btn-secondary p-1">Add character</button>

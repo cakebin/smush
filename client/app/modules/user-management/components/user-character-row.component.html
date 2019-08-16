@@ -1,6 +1,7 @@
 <ng-container *ngIf="!isEditMode">
   <td class="align-middle pl-3">{{userCharacter.characterName}}</td>
   <td class="align-middle pl-3">{{userCharacter.characterGsp | stringToNumber | number}}</td>
+  <td class="align-middle pl-3">{{userCharacter.altCostume}}</td>
   <td class="text-right align-middle">
       <div class="btn-group btn-block">
           <button *ngIf="isDefaultCharacter" (click)="unsetDefaultUserCharacter()" type="button" class="btn btn-light border-secondary p-1">
@@ -32,6 +33,9 @@
     </td>
     <td class="align-middle">
         <common-ux-masked-number-input [(numberValue)]="editedUserCharacter.characterGsp"></common-ux-masked-number-input>
+    </td>
+    <td class="align-middle">
+        <input [(ngModel)]="editedUserCharacter.altCostume" type="number" class="form-control" />
     </td>
     <td class="text-right align-middle">
         <div class="btn-group btn-block">

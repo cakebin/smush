@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { IMatchViewModel, ICharacterViewModel } from '../../../app.view-models';
+import { Component, Input, OnInit } from '@angular/core';
+import { IMatchViewModel, ICharacterViewModel, IUserViewModel, IUserCharacterViewModel } from '../../../app.view-models';
 import { MatchManagementService } from '../match-management.service';
 import { CommonUxService } from '../../common-ux/common-ux.service';
 
@@ -8,13 +8,29 @@ import { CommonUxService } from '../../common-ux/common-ux.service';
   templateUrl: './match-card.component.html',
   styleUrls: ['./match-card.component.css']
 })
-export class MatchCardComponent {
-  @Input() match: IMatchViewModel = {} as IMatchViewModel;
-  @Input() isUserOwned: boolean = false;
+export class MatchCardComponent implements OnInit{
   @Input() characters: ICharacterViewModel[] = [];
+  @Input() match: IMatchViewModel = {} as IMatchViewModel;
+  @Input() set user(user: IUserViewModel) {
+    // Set user
+    this._user = user;
+    if (!user) {
+      return;
+    }
+    // Calculate ownership of match
+    this.isUserOwned = this.match.userId === this.user.userId;
+  }
+  get user(): IUserViewModel {
+    return this._user;
+  }
+  private _user: IUserViewModel = {} as IUserViewModel;
 
+  // Calculated display vars
+  public userCharacterImagePath: string = '';
+  public isUserOwned: boolean = false;
+
+  // Form vars
   public editedMatch: IMatchViewModel = {} as IMatchViewModel;
-
   public boolOptions: any[] = [
     { name: 'Yes', value: true },
     { name: 'No', value: false },
@@ -24,6 +40,15 @@ export class MatchCardComponent {
     private matchService: MatchManagementService,
     private commonUxService: CommonUxService,
   ) {
+  }
+
+  ngOnInit() {
+    if (this.match.altCostume) {
+      this.userCharacterImagePath = '/static/assets/alt/' + this.match.userCharacterImage.replace('.png', '') +
+      '_' + this.match.altCostume + '.png';
+    } else {
+      this.userCharacterImagePath = '/static/assets/full/' + this.match.userCharacterImage;
+    }
   }
 
   public editMatch(originalMatch: IMatchViewModel): void {

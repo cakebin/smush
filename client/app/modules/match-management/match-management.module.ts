@@ -7,7 +7,7 @@ import { CommonUXModule } from '../common-ux/common-ux.module';
 import { CommonUxService } from '../common-ux/common-ux.service';
 
 import { MatchInputFormComponent } from './match-input-form.component';
-import { MatchTableViewComponent } from './match-table-view.component';
+import { MatchViewComponent } from './match-view.component';
 import { MatchRowComponent} from './components/match-row.component';
 import { MatchCardComponent } from './components/match-card.component';
 
@@ -20,7 +20,7 @@ import { CharacterManagementService } from '../character-management/character-ma
 @NgModule({
   declarations: [
     MatchInputFormComponent,
-    MatchTableViewComponent,
+    MatchViewComponent,
     MatchRowComponent,
     MatchCardComponent,
   ],
@@ -32,7 +32,7 @@ import { CharacterManagementService } from '../character-management/character-ma
   ],
   exports: [
     MatchInputFormComponent,
-    MatchTableViewComponent,
+    MatchViewComponent,
   ]
 })
 export class MatchManagementModule {

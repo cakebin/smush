@@ -78,7 +78,7 @@ func FromNullBool(nullBool sql.NullBool) *bool {
 
 
 // FromNullInt64 converts a sql.NullBool (usually scanned
-// from a db.Query) and converts it to a pointer to a normal bool
+// from a db.Query) and converts it to a pointer to a normal int
 func FromNullInt64(nullInt sql.NullInt64) *int64 {
   if !nullInt.Valid {
     return nil
