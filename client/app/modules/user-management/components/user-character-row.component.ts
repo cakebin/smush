@@ -2,6 +2,7 @@ import { Component, OnInit, Input, HostBinding } from '@angular/core';
 import { CommonUxService } from '../../common-ux/common-ux.service';
 import { UserManagementService } from '../user-management.service';
 import { ICharacterViewModel, IUserCharacterViewModel, IUserViewModel } from '../../../app.view-models';
+import { MatchManagementService } from '../../match-management/match-management.service';
 
 @Component({
   selector: 'tr[user-character-row]',
@@ -37,6 +38,7 @@ export class UserCharacterRowComponent implements OnInit {
   constructor(
     private commonUxService: CommonUxService,
     private userService: UserManagementService,
+    private matchService: MatchManagementService,
   ) { }
 
   ngOnInit() {
@@ -65,8 +67,9 @@ export class UserCharacterRowComponent implements OnInit {
   // Api-related methods
   public updateUserCharacter() {
     this.userService.updateUserCharacter(this.editedUserCharacter).subscribe(
-      res => {
+      (res: IUserViewModel) => {
         this.leaveEditMode();
+        this.matchService.updateCachedMatchesWithAltCostume(res);
       }
     );
   }

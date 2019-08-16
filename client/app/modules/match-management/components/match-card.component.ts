@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { IMatchViewModel, ICharacterViewModel, IUserViewModel, IUserCharacterViewModel } from '../../../app.view-models';
 import { MatchManagementService } from '../match-management.service';
 import { CommonUxService } from '../../common-ux/common-ux.service';
@@ -8,7 +8,7 @@ import { CommonUxService } from '../../common-ux/common-ux.service';
   templateUrl: './match-card.component.html',
   styleUrls: ['./match-card.component.css']
 })
-export class MatchCardComponent {
+export class MatchCardComponent implements OnInit{
   @Input() characters: ICharacterViewModel[] = [];
   @Input() match: IMatchViewModel = {} as IMatchViewModel;
   @Input() set user(user: IUserViewModel) {
@@ -19,15 +19,6 @@ export class MatchCardComponent {
     }
     // Calculate ownership of match
     this.isUserOwned = this.match.userId === this.user.userId;
-    // Calculate image path based on user
-    // If the user has a corresponding UserCharacter with an alt costume, use that image instead
-    const matchingUserCharacter: IUserCharacterViewModel = this.user.userCharacters.find(c => c.characterId === this.match.userCharacterId);
-    if (!matchingUserCharacter || !matchingUserCharacter.altCostume) {
-      this.userCharacterImagePath = '/static/assets/full/' + this.match.userCharacterImage;
-    } else {
-      this.userCharacterImagePath = '/static/assets/alt/' + this.match.userCharacterImage.replace('.png', '') +
-      '_' + matchingUserCharacter.altCostume + '.png';
-    }
   }
   get user(): IUserViewModel {
     return this._user;
@@ -49,6 +40,15 @@ export class MatchCardComponent {
     private matchService: MatchManagementService,
     private commonUxService: CommonUxService,
   ) {
+  }
+
+  ngOnInit() {
+    if (this.match.altCostume) {
+      this.userCharacterImagePath = '/static/assets/alt/' + this.match.userCharacterImage.replace('.png', '') +
+      '_' + this.match.altCostume + '.png';
+    } else {
+      this.userCharacterImagePath = '/static/assets/full/' + this.match.userCharacterImage;
+    }
   }
 
   public editMatch(originalMatch: IMatchViewModel): void {

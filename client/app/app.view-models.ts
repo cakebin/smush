@@ -14,6 +14,7 @@ export interface IMatchViewModel {
     opponentCamp: boolean;
     opponentAwesome: boolean;
     userWin: boolean;
+    altCostume: number; // Viewmodel only, from UserCharacters join
     created: Date; // Set on the server. Read-only
     editMode: boolean; // Viewmodel only
     isNew: boolean; // Viewmodel only
@@ -35,6 +36,7 @@ export class MatchViewModel implements IMatchViewModel {
         public opponentCamp: boolean = null,
         public opponentAwesome: boolean = null,
         public userWin: boolean = null,
+        public altCostume: number = null,
         public created: Date = null,
         public editMode: boolean = false,
         public isNew: boolean = false,
