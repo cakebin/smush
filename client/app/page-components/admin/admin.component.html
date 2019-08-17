@@ -3,9 +3,37 @@
   <div class="col-8">
     <div class="card border-0">
       <div class="card-body">
+        <!-------------------
+               Add tags
+        --------------------->
+        <h4 class="mb-4">Add Tags</h4>
+        <div class="row">
+            <div class="col">
+                Existing tags:
+                <p>
+                    <span 
+                    *ngFor="let tag of ['test', 'tags', 'that', 'don\'t', 'really', 'exist']"
+                    class="badge badge-secondary mr-1">{{tag}}</span>
+                </p>     
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-6">
+                <label for="add-tag-name">Tag name*</label>
+                <div class="input-group mb-3">
+                    <input [(ngModel)]="newTag.tagName" type="text" class="form-control" name="add-tag-name" autocomplete="off">
+                    <div class="input-group-append">
+                      <button [disabled]="!newTag.tagName" class="btn btn-primary" type="button" id="button-addTag">Create tag</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <!-- Add character -->
-        <h4 class="mb-4">Add character</h4>
+
+        <!-------------------
+            Add character
+        --------------------->
+        <h4 class="mt-4 mb-4">Add character</h4>
         <div class="form-row">
             <div class="form-group col-6">
                 <label for="add-character-name">Character name*</label>
@@ -35,7 +63,9 @@
         </div>
         
         
-        <!-- Edit character -->
+        <!-------------------
+            Edit character
+        --------------------->
         <h4 class="mt-4 mb-4">Edit character</h4>
         <div class="form-row">
             <div class="form-group col">
@@ -77,6 +107,10 @@
             <button [disabled]="!editCharacter.characterName" (click)="updateCharacter()" class="btn btn-primary">Update character</button>
         </div>
 
+
+        <!-------------------
+             End sections
+        --------------------->
       </div>
     </div>
   </div>

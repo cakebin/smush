@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ICharacterViewModel, IServerResponse } from 'client/app/app.view-models';
+import { ICharacterViewModel, IServerResponse, ITagViewModel } from 'client/app/app.view-models';
 import { CharacterManagementService } from 'client/app/modules/character-management/character-management.service';
 import { CommonUxService } from 'client/app/modules/common-ux/common-ux.service';
 
@@ -11,6 +11,7 @@ export class AdminComponent implements OnInit {
   public characters: ICharacterViewModel[] = [];
   public editCharacter: ICharacterViewModel = {} as ICharacterViewModel;
   public newCharacter: ICharacterViewModel = {} as ICharacterViewModel;
+  public newTag: ITagViewModel = {} as ITagViewModel;
 
   constructor(
     private characterService: CharacterManagementService,

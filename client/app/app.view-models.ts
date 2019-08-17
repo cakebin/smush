@@ -108,4 +108,13 @@ export interface IServerResponse {
     error: any;
     data: any;
 }
-
+export interface ITagViewModel {
+    tagId: number;
+    tagName: string;
+}
+export interface IMatchTagViewModel {
+    matchTagId: number;
+    matchId: number;
+    tagId: number;
+    tagName: string;
+}
