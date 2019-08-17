@@ -51,10 +51,10 @@ export interface IUserViewModel {
     userName: string;
     defaultUserCharacterId: number;
     defaultUserCharacterGsp: number;
-    defaultUserCharacterAltCostume: number;
     defaultCharacterId: number;
     defaultCharacterName: string;
     userCharacters: IUserCharacterViewModel[];
+    isAuthenticated: boolean;
 }
 export class UserViewModel implements IUserViewModel {
     constructor(
@@ -65,10 +65,10 @@ export class UserViewModel implements IUserViewModel {
         public userName: string = '',
         public defaultUserCharacterId: number = null,
         public defaultUserCharacterGsp: number = null,
-        public defaultUserCharacterAltCostume: number = null,
         public defaultCharacterId: number = null,
         public defaultCharacterName: string = '',
         public userCharacters: IUserCharacterViewModel[] = [],
+        public isAuthenticated: boolean = false,
     ) {
     }
 }
@@ -111,6 +111,13 @@ export interface IServerResponse {
 export interface ITagViewModel {
     tagId: number;
     tagName: string;
+}
+export class TagViewModel implements ITagViewModel {
+    constructor(
+        public tagId: number = null,
+        public tagName: string = '',
+    ) {
+    }
 }
 export interface IMatchTagViewModel {
     matchTagId: number;

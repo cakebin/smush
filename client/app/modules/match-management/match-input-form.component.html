@@ -9,7 +9,7 @@
                     [textPropertyName]="'characterName'"
                     [valuePropertyName]="'characterId'"
                     [value]="match.opponentCharacterId"
-                    (selectItem)="onSetOpponentCharacter($event)"
+                    (selectItem)="onSelectOpponentCharacter($event)"
                     id="opponent-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">
@@ -28,7 +28,7 @@
                     [textPropertyName]="'characterName'"
                     [valuePropertyName]="'characterId'"
                     [value]="match.userCharacterId"
-                    (selectItem)="onSetUserCharacter($event)"
+                    (selectItem)="onSelectUserCharacter($event)"
                     id="user-character"></common-ux-typeahead>
                 </div>
                 <div class="form-group col-6">
@@ -39,38 +39,49 @@
 
             <div class="row">
                 <div class="col-6">
-                    <div class="form-inline">
-                        <span class="mr-3">Opponent:</span>
-                        <input [(ngModel)]= "match.opponentAwesome" class="form-check-input" name="opponent-awesome" type="checkbox" value="" id="opponent-awesome">
-                        <label class="form-check-label mr-3" for="opponent-awesome">
-                        Real pal
-                        </label>
-
-                        <input [(ngModel)]= "match.opponentCamp" class="form-check-input" name="opponent-teabag" type="checkbox" value="" id="opponent-teabag">
-                        <label class="form-check-label mr-3" for="opponent-teabag">
-                        Camper
-                        </label>
-
-                        <input [(ngModel)]= "match.opponentTeabag" class="form-check-input" name="opponent-campy" type="checkbox" value="" id="opponent-campy">
-                        <label class="form-check-label" for="opponent-campy">
-                        Teabagger
-                        </label>
+                    <label for="match-tags">
+                        Tags
+                        <button class="btn btn-sm btn-outline-secondary p-0 px-1 ml-1" 
+                        style="position:relative; top:-1px;"
+                        placement="right"
+                        [ngbPopover]="popContent"
+                        [popoverTitle]="popTitle">
+                            View all tags
+                        </button>
+                        <ng-template #popTitle>Available tags</ng-template>
+                        <ng-template #popContent>
+                            <ul class="list-unstyled mb-1">
+                                <li *ngFor="let tag of tags">{{tag.tagName}}</li>
+                            </ul>
+                        </ng-template>
+                    </label>
+                    <common-ux-typeahead 
+                    [clearOnSelect]="true"
+                    [items]="tags" 
+                    [textPropertyName]="'tagName'"
+                    [valuePropertyName]="'tagId'"
+                    [value]="newTag"
+                    (selectItem)="onSelectTag($event)"
+                    id="match-tags"></common-ux-typeahead>
+                    <div>
+                        <span *ngFor="let tag of matchTags" class="badge badge-secondary mr-1">
+                            {{tag.tagName}}
+                            <span (click)="removeTag(tag)" class="ml-1 font-normal">x</span>
+                        </span>
                     </div>
                 </div>
-
                 <div class="col-6">
-                    <div class="form-inline">
-                        <span class="mr-3">Match outcome:</span>
-                        <input [(ngModel)]= "match.userWin" [value]="true" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-win">
-                        <label class="form-check-label mr-3" for="match-outcome-win">
-                        Win
+                    <div>Match outcome:</div>
+       
+                    <div class="btn-group btn-group-toggle mt-2" ngbRadioGroup name="match-outcome" [(ngModel)]="match.userWin">
+                        <label ngbButtonLabel class="btn-outline-secondary">
+                            <input ngbButton type="radio" value="true"> Win
                         </label>
-
-                        <input [(ngModel)]= "match.userWin" [value]="false" class="form-check-input" type="radio" name="match-outcome" id="match-outcome-loss">
-                        <label class="form-check-label" for="match-outcome-loss">
-                        Loss
+                        <label ngbButtonLabel class="btn-outline-secondary">
+                            <input ngbButton type="radio" [value]="false"> Loss
                         </label>
                     </div>
+                 
                 </div>
             </div><!-- Close row -->
         </div><!-- Close card-body -->

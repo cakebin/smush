@@ -9,6 +9,7 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
   templateUrl: './typeahead.component.html'
 })
 export class TypeaheadComponent {
+  @Input() clearOnSelect: boolean = false;
   @Input() size: '' | 'sm' | 'lg' = '';
   @Input() textPropertyName: string = '';
   @Input() valuePropertyName: string = '';
@@ -25,12 +26,12 @@ export class TypeaheadComponent {
   @Input() set value(value: any) {
     this._lastValue = value;
 
-    // Either setting it to null, or giving it a valid value
+    // Either setting it to null
     if (this.items == null || value == null) {
       this.selectedItem = null;
       return;
     }
-
+    // Or giving it a valid value
     this.selectedItem = this.items.find(i => {
       return i[this.valuePropertyName] === value;
     });
@@ -70,12 +71,13 @@ export class TypeaheadComponent {
     // because the typeahead does not recognise this as an input "event" per se
     this.selectItem.emit(this.selectedItem);
   }
-  public onSelect(eventObject: NgbTypeaheadSelectItemEvent): void {
+  public onSelect(eventObject: NgbTypeaheadSelectItemEvent, input: any): void {
+    if (this.clearOnSelect) {
+      // https://stackoverflow.com/questions/39783936/how-to-clear-the-typeahead-input-after-a-result-is-selected
+      eventObject.preventDefault();
+      input.value = '';
+      this.selectedItem = null;
+    }
     this.selectItem.emit(eventObject.item);
   }
-  public clear(): void {
-    this.selectedItem = null;
-  }
-
-
 }

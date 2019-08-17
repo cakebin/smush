@@ -1,4 +1,5 @@
 <input 
+    #input
     type="text" 
     class="form-control"
     [ngClass]="{'form-control-sm':size=='sm', 'form-control-lg':size=='lg'}" 
@@ -6,7 +7,6 @@
     [inputFormatter] = "itemFormatter"
     [resultFormatter] = "itemFormatter"
     [ngbTypeahead]="search"
-    [focusFirst] = "true"
-    (selectItem)="onSelect($event)"
+    (selectItem)="onSelect($event, input)"
     (blur)="onBlur()"
     />
