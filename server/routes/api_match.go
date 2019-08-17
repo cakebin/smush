@@ -16,42 +16,40 @@ import (
 // MatchGetAllResponseData is the data we send back
 // after a successfully get info for all matches in our db
 type MatchGetAllResponseData struct {
-  Matches  []*db.MatchMetadata  `json:"matches"`
+  Matches  []*db.MatchView  `json:"matches"`
 }
 
 
 // MatchCreateResponseData is the data we send
 // back after a successfully creating a new match
 type MatchCreateResponseData struct {
-  Match  *db.MatchMetadata  `json:"match"`
+  Match  *db.MatchView  `json:"match"`
 }
 
 
 // MatchUpdateResponseData is the data we send
 // back after successfully updating a match
 type MatchUpdateResponseData struct {
-  Match  *db.MatchMetadata  `json:"match"`
+  Match  *db.MatchView  `json:"match"`
 }
 
 
-// ToAllMatchMetadata prepares all match metadata given a full list of matchViews and matchTagViews
-func ToAllMatchMetadata(allMatchViews []*db.MatchView, allMatchTagViews []*db.MatchTagView) []*db.MatchMetadata {
-  allMatchMetadata := make([]*db.MatchMetadata, 0)
+// AddMatchTagViewsToMatchViews adds the matchTagViews to their corresponding matchViews
+func addMatchTagViewsToMatchViews(allMatchViews []*db.MatchView, allMatchTagViews []*db.MatchTagView) []*db.MatchView {
+  finalizedMatchViews := make([]*db.MatchView, 0)
 
   for _, matchView := range allMatchViews {
-    filteredMatchTagViews := FilterMatchTagViewsByMatchID(allMatchTagViews, matchView.MatchID)
-    matchMetadata := new(db.MatchMetadata)
-    matchMetadata.Match = matchView
-    matchMetadata.MatchTags = filteredMatchTagViews
-    allMatchMetadata = append(allMatchMetadata, matchMetadata)
+    filteredMatchTagViews := filterMatchTagViewsByMatchID(allMatchTagViews, matchView.MatchID)
+    matchView.MatchTags = filteredMatchTagViews
+    finalizedMatchViews = append(finalizedMatchViews, matchView)
   }
 
-  return allMatchMetadata
+  return finalizedMatchViews
 }
 
 
 // FilterMatchTagViewsByMatchID finds the MatchTagViews associated with a given matchID
-func FilterMatchTagViewsByMatchID(matchTagViews []*db.MatchTagView, matchID int64) []*db.MatchTagView {
+func filterMatchTagViewsByMatchID(matchTagViews []*db.MatchTagView, matchID int64) []*db.MatchTagView {
   filteredMatchTagViews := make([]*db.MatchTagView, 0)
 
   for _, matchTagView := range matchTagViews {
@@ -135,13 +133,13 @@ func (r *MatchRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
     return
   }
 
-  matchMetadata := ToAllAPIMatchMetadata(matchViews, matchTagViews)
+  finalizedMatchViews := addMatchTagViewsToMatchViews(matchViews, matchTagViews)
 
   response := &Response{
     Success:  true,
     Error:    nil,
     Data:     MatchGetAllResponseData{
-      Matches:  matchMetadata,
+      Matches:  finalizedMatchViews,
     },
   }
 
@@ -169,7 +167,7 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
 
   // Then make any match tag relationships
   if len(*matchCreate.MatchTags) == 0 {
-    _, err := r.Services.Database.CreateMatchTags(matchCreate.MatchTags)
+    _, err := r.Services.Database.CreateMatchTags(*matchCreate.MatchTags)
     if err != nil {
       http.Error(res, fmt.Sprintf("Error creating new match tags: %s", err.Error()), http.StatusInternalServerError)
       return
@@ -187,12 +185,13 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
     return
   }
 
+  matchView.MatchTags = matchTagViews
+
   response := &Response{
     Success:  true,
     Error:    nil,
     Data:     MatchCreateResponseData{
-      Match:      matchView,
-      MatchTags:  matchTagViews,
+      Match:  matchView,
     },
   }
 
@@ -227,7 +226,7 @@ func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
     }
 
     // Then nake new match tag relatioships
-    _, err = r.Services.Database.CreateMatchTags(matchUpdate.MatchTags)
+    _, err = r.Services.Database.CreateMatchTags(*matchUpdate.MatchTags)
     if err != nil {
       http.Error(res, fmt.Sprintf("Error creating new match tags: %s", err.Error()), http.StatusInternalServerError)
       return
@@ -245,12 +244,13 @@ func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
     return
   }
 
+  matchView.MatchTags = matchTagViews
+
   response := &Response{
     Success:   true,
     Error:     nil,
     Data:      MatchUpdateResponseData{
-      Match:      matchView,
-      MatchTags:  matchTagViews,
+      Match:  matchView,
     },
   }
 

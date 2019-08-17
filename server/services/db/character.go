@@ -22,22 +22,22 @@ type CharacterManager interface {
 // Character describes the required and optional data
 // needed to create a new character in our characters table
 type Character struct {
-  CharacterID         int64             `json:"characterId"`
+  CharacterID         int64           `json:"characterId"`
   CharacterName       string          `json:"characterName"`
-  CharacterStockImg   NullStringJSON  `json:"characterStockImg"`
-  CharacterImg        NullStringJSON  `json:"characterImg"`
-  CharacterArchetype  NullStringJSON  `json:"characterArchetype"`
+  CharacterStockImg   NullStringJSON  `json:"characterStockImg,omitempty"`
+  CharacterImg        NullStringJSON  `json:"characterImg,omitempty"`
+  CharacterArchetype  NullStringJSON  `json:"characterArchetype,omitempty"`
 }
 
 
 // CharacterUpdate describes the data needed 
 // to update a given character in our db
 type CharacterUpdate struct {
-  CharacterID         int64             `json:"characterId"`
-  CharacterName       NullStringJSON  `json:"characterName"`
-  CharacterStockImg   NullStringJSON  `json:"characterStockImg"`
-  CharacterImg        NullStringJSON  `json:"characterImg"`
-  CharacterArchetype  NullStringJSON  `json:"characterArchetype"`
+  CharacterID         int64           `json:"characterId"`
+  CharacterName       NullStringJSON  `json:"characterName,omitempty"`
+  CharacterStockImg   NullStringJSON  `json:"characterStockImg,omitempty"`
+  CharacterImg        NullStringJSON  `json:"characterImg,omitempty"`
+  CharacterArchetype  NullStringJSON  `json:"characterArchetype,omitempty"`
 }
 
 

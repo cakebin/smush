@@ -25,34 +25,30 @@ type MatchViewManager interface {
 // containing all of the data necessary to show a "match" in the front end
 type MatchView struct {
   // Data from matches
-  Created                time.Time       `json:"created"`
-  UserID                 int64           `json:"userId"`
-  MatchID                int64           `json:"matchId"`
-  OpponentCharacterID    int64           `json:"opponentCharacterId"`
+  Created                time.Time        `json:"created"`
+  UserID                 int64            `json:"userId"`
+  MatchID                int64            `json:"matchId"`
+  OpponentCharacterID    int64            `json:"opponentCharacterId"`
 
-  UserCharacterID        NullInt64JSON   `json:"userCharacterId"`
-  OpponentCharacterGsp   NullInt64JSON   `json:"opponentCharacterGsp,omitempty"`
-  UserCharacterGsp       NullInt64JSON   `json:"userCharacterGsp,omitempty"`
-  UserWin                NullBoolJSON    `json:"userWin,omitempty"`
+  UserCharacterID        NullInt64JSON    `json:"userCharacterId"`
+  OpponentCharacterGsp   NullInt64JSON    `json:"opponentCharacterGsp,omitempty"`
+  UserCharacterGsp       NullInt64JSON    `json:"userCharacterGsp,omitempty"`
+  UserWin                NullBoolJSON     `json:"userWin,omitempty"`
 
   // Data from users
-  UserName               string           `json:"userName"`
+  UserName               string            `json:"userName"`
 
   // Data from characters
-  OpponentCharacterName  string          `json:"opponentCharacterName"`
-  UserCharacterName      NullStringJSON  `json:"userCharacterName,omitempty"`
-  OpponentCharacterImg   string          `json:"opponentCharacterImage"`
-  UserCharacterImg       NullStringJSON  `json:"userCharacterImage"`
+  OpponentCharacterName  string           `json:"opponentCharacterName"`
+  UserCharacterName      NullStringJSON   `json:"userCharacterName,omitempty"`
+  OpponentCharacterImg   string           `json:"opponentCharacterImage"`
+  UserCharacterImg       NullStringJSON   `json:"userCharacterImage"`
 
   // Data from user characters
-  AltCostume             NullInt64JSON   `json:"altCostume,omitempty"`
-}
+  AltCostume             NullInt64JSON    `json:"altCostume,omitempty"`
 
-
-// MatchMetadata combines the data from MatchView and MatchTagView
-type MatchMetadata struct {
-  Match      *MatchView        `json:"match"`
-  MatchTags  []*MatchTagView  `json:"matchTags"`
+  // Data from match_tags; added seperately from the SQL Joins
+  MatchTags              []*MatchTagView  `json:"matchTags"`
 }
 
 
