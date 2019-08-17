@@ -54,7 +54,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" [ngClass]="{'disabled': !user}" routerLink="/admin" routerLinkActive="active">
+                <a class="nav-link" *ngIf="user?.userId < 4" [ngClass]="{'disabled': !user}" routerLink="/admin" routerLinkActive="active">
                     Admin
                 </a>
             </li>

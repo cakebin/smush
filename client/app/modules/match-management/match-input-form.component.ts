@@ -43,7 +43,7 @@ export class MatchInputFormComponent implements OnInit {
           }
         }
     });
-    this.characterService.characters.subscribe(
+    this.characterService.cachedCharacters.subscribe(
       res => {
         this.characters = res;
       }

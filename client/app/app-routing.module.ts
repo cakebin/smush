@@ -35,6 +35,8 @@ const routes: Routes = [
   },
   {
     path: 'admin',
+    canActivate: [AuthGuard],
+    data: { expectedRole: 'administrator' },
     component: AdminComponent,
   },
   { path: '',   redirectTo: '/home', pathMatch: 'full' },

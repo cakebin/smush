@@ -72,7 +72,7 @@ export class MatchViewComponent implements OnInit {
         console.error(err);
       }
     });
-    this.characterService.characters.subscribe(
+    this.characterService.cachedCharacters.subscribe(
       (res: ICharacterViewModel[]) => {
         this.characters = res;
       });
