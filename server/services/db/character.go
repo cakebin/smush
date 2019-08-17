@@ -1,45 +1,5 @@
 package db
 
-import (
-  "database/sql"
-)
-
-
-/*---------------------------------
-          Data Structures
-----------------------------------*/
-
-// Character describes the required and optional data
-// needed to create a new character in our characters table
-type Character struct {
-  CharacterID         int             `json:"characterId"`
-  CharacterName       string          `json:"characterName"`
-  CharacterStockImg   sql.NullString  `json:"characterStockImg"`
-  CharacterImg        sql.NullString  `json:"characterImg"`
-  CharacterArchetype  sql.NullString  `json:"characterArchetype"`
-}
-
-
-// CharacterUpdate describes the data needed 
-// to update a given character in our db
-type CharacterUpdate struct {
-  CharacterID         int             `json:"characterId"`
-  CharacterName       sql.NullString  `json:"characterName"`
-  CharacterStockImg   sql.NullString  `json:"characterStockImg"`
-  CharacterImg        sql.NullString  `json:"characterImg"`
-  CharacterArchetype  sql.NullString  `json:"characterArchetype"`
-}
-
-
-// CharacterCreate describes the data needed 
-// to create a given character in our db
-type CharacterCreate struct {
-  CharacterName       string          `json:"characterName"`
-  CharacterStockImg   sql.NullString  `json:"characterStockImg"`
-  CharacterImg        sql.NullString  `json:"characterImg"`
-  CharacterArchetype  sql.NullString  `json:"characterArchetype"`
-}
-
 
 /*---------------------------------
             Interface
@@ -52,6 +12,42 @@ type CharacterManager interface {
 
   CreateCharacter(characterCreate *CharacterCreate) (*Character, error)
   UpdateCharacter(characterUpdate *CharacterUpdate) (*Character, error)
+}
+
+
+/*---------------------------------
+          Data Structures
+----------------------------------*/
+
+// Character describes the required and optional data
+// needed to create a new character in our characters table
+type Character struct {
+  CharacterID         int64             `json:"characterId"`
+  CharacterName       string          `json:"characterName"`
+  CharacterStockImg   NullStringJSON  `json:"characterStockImg"`
+  CharacterImg        NullStringJSON  `json:"characterImg"`
+  CharacterArchetype  NullStringJSON  `json:"characterArchetype"`
+}
+
+
+// CharacterUpdate describes the data needed 
+// to update a given character in our db
+type CharacterUpdate struct {
+  CharacterID         int64             `json:"characterId"`
+  CharacterName       NullStringJSON  `json:"characterName"`
+  CharacterStockImg   NullStringJSON  `json:"characterStockImg"`
+  CharacterImg        NullStringJSON  `json:"characterImg"`
+  CharacterArchetype  NullStringJSON  `json:"characterArchetype"`
+}
+
+
+// CharacterCreate describes the data needed 
+// to create a given character in our db
+type CharacterCreate struct {
+  CharacterName       string          `json:"characterName"`
+  CharacterStockImg   NullStringJSON  `json:"characterStockImg"`
+  CharacterImg        NullStringJSON  `json:"characterImg"`
+  CharacterArchetype  NullStringJSON  `json:"characterArchetype"`
 }
 
 

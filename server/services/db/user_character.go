@@ -1,9 +1,5 @@
 package db
 
-import (
-  "database/sql"
-)
-
 
 /*---------------------------------
           Data Structures
@@ -12,32 +8,40 @@ import (
 // UserCharacter describes the required and optional data
 // needed to create a new "saved character" in our user_characters table
 type UserCharacter struct {
-  UserCharacterID  int            `json:"userCharacterId"`
-  UserID           int            `json:"userId"`
-  CharacterID      int            `json:"characterId"`
-  CharacterGsp     sql.NullInt64  `json:"characterGsp"`
-  AltCostume       sql.NullInt64  `json:"altCostume"`
+  UserCharacterID  int64            `json:"userCharacterId"`
+  UserID           int64            `json:"userId"`
+  CharacterID      int64            `json:"characterId"`
+  CharacterGsp     NullInt64JSON  `json:"characterGsp"`
+  AltCostume       NullInt64JSON  `json:"altCostume"`
 }
 
 
 // UserCharacterCreate describes the data needed 
 // to create a given "saved character" in our db
 type UserCharacterCreate struct {
-  UserID           int            `json:"userId"`
-  CharacterID      int            `json:"characterId"`
-  CharacterGsp     sql.NullInt64  `json:"characterGsp"`
-  AltCostume       sql.NullInt64  `json:"altCostume"`
+  UserID           int64            `json:"userId"`
+  CharacterID      int64            `json:"characterId"`
+  CharacterGsp     NullInt64JSON  `json:"characterGsp"`
+  AltCostume       NullInt64JSON  `json:"altCostume"`
 }
 
 
 // UserCharacterUpdate describes the data needed 
 // to update a given "saved character" in our db
 type UserCharacterUpdate struct {
-  UserCharacterID  int            `json:"userCharacterId"`
-  UserID           int             `json:"userId"`
-  CharacterID      sql.NullInt64  `json:"characterId"`
-  CharacterGsp     sql.NullInt64  `json:"characterGsp"`
-  AltCostume       sql.NullInt64  `json:"altCostume"`
+  UserCharacterID  int64            `json:"userCharacterId"`
+  UserID           int64            `json:"userId"`
+  CharacterID      NullInt64JSON  `json:"characterId"`
+  CharacterGsp     NullInt64JSON  `json:"characterGsp"`
+  AltCostume       NullInt64JSON  `json:"altCostume"`
+}
+
+
+// UserCharacterDelete describes the data needed 
+// to delete a given "saved character" in our db
+type UserCharacterDelete struct {
+  UserID           int64          `json:"userId"`
+  UserCharacterID  NullInt64JSON  `json:"userCharacterId"`
 }
 
 
@@ -46,13 +50,13 @@ type UserCharacterUpdate struct {
 ----------------------------------*/
 
 // UserCharacterManager describes all of the methods used
-// to interact with the user_characters table in our database
+// to int64eract with the user_characters table in our database
 type UserCharacterManager interface {
-  GetUserCharactersByUserID(userID int) ([]*UserCharacter, error)
+  GetUserCharactersByUserID(userID int64) ([]*UserCharacter, error)
 
-  CreateUserCharacter(userCharacterCreate *UserCharacterCreate) (int, error)
-  UpdateUserCharacter(userCharacterUpdate *UserCharacterUpdate) (int, error)
-  DeleteUserCharacterByID(userCharacterID int) (int, error)
+  CreateUserCharacter(userCharacterCreate *UserCharacterCreate) (int64, error)
+  UpdateUserCharacter(userCharacterUpdate *UserCharacterUpdate) (int64, error)
+  DeleteUserCharacterByID(userCharacterID int64) (int64, error)
 }
 
 
@@ -61,7 +65,7 @@ type UserCharacterManager interface {
 ----------------------------------*/
 
 // GetUserCharactersByUserID gets all of the "saved characters" for a given userID
-func (db *DB) GetUserCharactersByUserID(userID int) ([]*UserCharacter, error) {
+func (db *DB) GetUserCharactersByUserID(userID int64) ([]*UserCharacter, error) {
   sqlStatement := `
     SELECT
       user_character_id,
@@ -108,8 +112,8 @@ func (db *DB) GetUserCharactersByUserID(userID int) ([]*UserCharacter, error) {
 
 
 // CreateUserCharacter adds a new entry to the user_characters table
-func (db *DB) CreateUserCharacter(userCharacterCreate *UserCharacterCreate) (int, error) {
-  var userCharID int
+func (db *DB) CreateUserCharacter(userCharacterCreate *UserCharacterCreate) (int64, error) {
+  var userCharID int64
   sqlStatement := `
     INSERT INTO user_characters
       (user_id, character_id, character_gsp, alt_costume)
@@ -136,8 +140,8 @@ func (db *DB) CreateUserCharacter(userCharacterCreate *UserCharacterCreate) (int
 
 
 // UpdateUserCharacter updates an existing entry in the user_characters table
-func (db *DB) UpdateUserCharacter(userCharacterUpdate *UserCharacterUpdate) (int, error) {
-  var userCharID int
+func (db *DB) UpdateUserCharacter(userCharacterUpdate *UserCharacterUpdate) (int64, error) {
+  var userCharID int64
   sqlStatement := `
     UPDATE
       user_characters
@@ -170,8 +174,8 @@ func (db *DB) UpdateUserCharacter(userCharacterUpdate *UserCharacterUpdate) (int
 
 
 // DeleteUserCharacterByID removes an existing entry in the user_characters table
-func (db *DB) DeleteUserCharacterByID(userCharacterID int) (int, error) {
-  var deletedUserCharID int
+func (db *DB) DeleteUserCharacterByID(userCharacterID int64) (int64, error) {
+  var deletedUserCharID int64
   sqlStatement := `
     DELETE FROM
       user_characters

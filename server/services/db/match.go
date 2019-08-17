@@ -1,10 +1,16 @@
 package db
 
-import (
-  "database/sql"
-  
-  "github.com/lib/pq"
-)
+
+/*---------------------------------
+            Interface
+----------------------------------*/
+
+// MatchManager describes all of the methods used
+// to interact with the matches table in our database
+type MatchManager interface {
+  CreateMatch(matchCreate *MatchCreate) (int64, error)
+  UpdateMatch(matchUpdate *MatchUpdate) (int64, error)
+}
 
 
 /*---------------------------------
@@ -14,67 +20,57 @@ import (
 // Match describes the required and optional data
 // needed to create a new match in our matches table
 type Match struct {
-  MatchID               *int           `json:"matchId,omitempty"`
-  OpponentCharacterID   int            `json:"opponentCharacterId"`
-  UserID                int            `json:"userId"`
-  OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp"`
-  OpponentTeabag        sql.NullBool   `json:"opponentTeabag"`
-  OpponentCamp          sql.NullBool   `json:"opponentCamp"`
-  OpponentAwesome       sql.NullBool   `json:"opponentAwesome"`
-  UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
-  UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
-  UserWin               sql.NullBool   `json:"userWin"`
+  MatchID               *int64           `json:"matchId,omitempty"`
+  OpponentCharacterID   int64            `json:"opponentCharacterId"`
+  UserID                int64            `json:"userId"`
+  OpponentCharacterGsp  NullInt64JSON  `json:"opponentCharacterGsp"`
+  OpponentTeabag        NullBoolJSON   `json:"opponentTeabag"`
+  OpponentCamp          NullBoolJSON   `json:"opponentCamp"`
+  OpponentAwesome       NullBoolJSON   `json:"opponentAwesome"`
+  UserCharacterID       NullInt64JSON  `json:"userCharacterId"`
+  UserCharacterGsp      NullInt64JSON  `json:"userCharacterGsp"`
+  UserWin               NullBoolJSON   `json:"userWin"`
 }
 
 
 // MatchUpdate describes the data needed 
 // to update a given user's profile information
 type MatchUpdate struct {
-  MatchID               int            `json:"matchId"`
-  OpponentCharacterID   sql.NullInt64  `json:"opponentCharacterId"`
-  OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp"`
-  OpponentTeabag        sql.NullBool   `json:"opponentTeabag"`
-  OpponentCamp          sql.NullBool   `json:"opponentCamp"`
-  OpponentAwesome       sql.NullBool   `json:"opponentAwesome"`
-  UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
-  UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
-  UserWin               sql.NullBool   `json:"userWin"`
-  Created               pq.NullTime    `json:"created"`
+  MatchID               int64            `json:"matchId"`
+  OpponentCharacterID   NullInt64JSON  `json:"opponentCharacterId"`
+  OpponentCharacterGsp  NullInt64JSON  `json:"opponentCharacterGsp"`
+  OpponentTeabag        NullBoolJSON   `json:"opponentTeabag"`
+  OpponentCamp          NullBoolJSON   `json:"opponentCamp"`
+  OpponentAwesome       NullBoolJSON   `json:"opponentAwesome"`
+  UserCharacterID       NullInt64JSON  `json:"userCharacterId"`
+  UserCharacterGsp      NullInt64JSON  `json:"userCharacterGsp"`
+  UserWin               NullBoolJSON   `json:"userWin"`
+  Created               NullTimeJSON   `json:"created"`
 }
 
 
 // MatchCreate describes the data needed 
 // to create a given match in our db
 type MatchCreate struct {
-  OpponentCharacterID   int            `json:"opponentCharacterId"`
-  UserID                int            `json:"userId"`
-  OpponentCharacterGsp  sql.NullInt64  `json:"opponentCharacterGsp"`
-  OpponentTeabag        sql.NullBool   `json:"opponentTeabag"`
-  OpponentCamp          sql.NullBool   `json:"opponentCamp"`
-  OpponentAwesome       sql.NullBool   `json:"opponentAwesome"`
-  UserCharacterID       sql.NullInt64  `json:"userCharacterId"`
-  UserCharacterGsp      sql.NullInt64  `json:"userCharacterGsp"`
-  UserWin               sql.NullBool   `json:"userWin"`
+  OpponentCharacterID   int64            `json:"opponentCharacterId"`
+  UserID                int64            `json:"userId"`
+  OpponentCharacterGsp  NullInt64JSON  `json:"opponentCharacterGsp"`
+  OpponentTeabag        NullBoolJSON   `json:"opponentTeabag"`
+  OpponentCamp          NullBoolJSON   `json:"opponentCamp"`
+  OpponentAwesome       NullBoolJSON   `json:"opponentAwesome"`
+  UserCharacterID       NullInt64JSON  `json:"userCharacterId"`
+  UserCharacterGsp      NullInt64JSON  `json:"userCharacterGsp"`
+  UserWin               NullBoolJSON   `json:"userWin"`
 }
 
-/*---------------------------------
-            Interface
-----------------------------------*/
-
-// MatchManager describes all of the methods used
-// to interact with the matches table in our database
-type MatchManager interface {
-  CreateMatch(matchCreate *MatchCreate) (int, error)
-  UpdateMatch(matchUpdate *MatchUpdate) (int, error)
-}
 
 /*---------------------------------
        Method Implementations
 ----------------------------------*/
 
 // CreateMatch adds a new entry to the matches table in our database
-func (db *DB) CreateMatch(matchCreate *MatchCreate) (int, error) {
-  var matchID int
+func (db *DB) CreateMatch(matchCreate *MatchCreate) (int64, error) {
+  var matchID int64
   sqlStatement := `
     INSERT INTO matches (
       opponent_character_id,
@@ -115,8 +111,8 @@ func (db *DB) CreateMatch(matchCreate *MatchCreate) (int, error) {
 
 
 // UpdateMatch updates an entry in the matches table with the given data
-func (db *DB) UpdateMatch(matchUpdate *MatchUpdate) (int, error) {
-  var matchID int
+func (db *DB) UpdateMatch(matchUpdate *MatchUpdate) (int64, error) {
+  var matchID int64
   sqlStatement := `
     UPDATE
       matches

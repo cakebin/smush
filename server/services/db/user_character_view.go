@@ -1,8 +1,16 @@
 package db
 
-import (
-  "database/sql"
-)
+
+/*---------------------------------
+            Interface
+----------------------------------*/
+
+// UserCharacterViewManager describes all of the methods used to int64eract with
+// "saved characters" views in our database (data joined between users, characters, and user_characters)
+type UserCharacterViewManager interface {
+  GetUserCharacterViewsByUserID(userID int64) ([]*UserCharacterView, error)
+  GetUserCharacterViewByUserCharacterID(userCharID int64) (*UserCharacterView, error)
+}
 
 
 /*---------------------------------
@@ -13,28 +21,16 @@ import (
 // containing all of the data necessary to show a "saved character" in the front end
 type UserCharacterView struct {
   // Data from user_characters
-  UserCharacterID  int            `json:"userCharacterID"`
-  CharacterGsp     sql.NullInt64  `json:"characterGsp"`
-  AltCostume       sql.NullInt64  `json:"altCostume"`
+  UserCharacterID  int64          `json:"userCharacterId"`
+  CharacterGsp     NullInt64JSON  `json:"characterGsp"`
+  AltCostume       NullInt64JSON  `json:"altCostume"`
 
   // Data from characters
-  CharacterID      int            `json:"characterId"`
+  CharacterID      int64          `json:"characterId"`
   CharacterName    string         `json:"characterName"`
 
   // Data from users
-  UserID           int            `json:"userId"`
-}
-
-
-/*---------------------------------
-            Interface
-----------------------------------*/
-
-// UserCharacterViewManager describes all of the methods used to interact with
-// "saved characters" views in our database (data joined between users, characters, and user_characters)
-type UserCharacterViewManager interface {
-  GetUserCharacterViewsByUserID(userID int) ([]*UserCharacterView, error)
-  GetUserCharacterViewByUserCharacterID(userCharID int) (*UserCharacterView, error)
+  UserID           int64          `json:"userId"`
 }
 
 
@@ -45,7 +41,7 @@ type UserCharacterViewManager interface {
 // GetUserCharacterViewsByUserID gets all of the data needed 
 // to display a given user's "saved characters", whicn includes 
 // joined data fromt the user_characters and characters table
-func (db *DB) GetUserCharacterViewsByUserID(userID int) ([]*UserCharacterView, error) {
+func (db *DB) GetUserCharacterViewsByUserID(userID int64) ([]*UserCharacterView, error) {
   sqlStatement := `
     SELECT
       user_characters.user_character_id  AS  user_character_id,
@@ -97,7 +93,7 @@ func (db *DB) GetUserCharacterViewsByUserID(userID int) ([]*UserCharacterView, e
 // GetUserCharacterViewByUserCharacterID gets all of the data needed 
 // to display a given "saved character", whicn includes 
 // joined data fromt the user_characters and characters table
-func (db *DB) GetUserCharacterViewByUserCharacterID(userCharID int) (*UserCharacterView, error) {
+func (db *DB) GetUserCharacterViewByUserCharacterID(userCharID int64) (*UserCharacterView, error) {
   sqlStatement := `
     SELECT
       user_characters.user_character_id  AS  user_character_id,
