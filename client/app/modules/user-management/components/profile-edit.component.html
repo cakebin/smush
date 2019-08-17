@@ -1,0 +1,97 @@
+<div *ngIf="user" class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+
+
+        <div class="card border-0">
+            <div class="card-body">
+                <!---------------------
+                      USER PROFILE
+                ----------------------->
+                <h4 class="mb-4">Account details</h4>
+
+                <div class="form-group">
+                    <label for="email-address">Email address</label>
+                    <input disabled [(ngModel)]="editedUser.emailAddress" type="text" name="email-address" class="form-control" /> 
+                </div>
+              
+                <div class="form-group">
+                    <label for="display-name">Display name</label>
+                    <input [(ngModel)]="editedUser.userName" type="text" name="display-name" class="form-control" /> 
+                </div>
+
+                <div class="form-group text-center">
+                    <button [disabled]="!formChanged || isSaving" (click)="updateUser()"
+                    type="submit" class="btn btn-primary">
+                        Save changes
+                    </button>
+                </div>
+
+                <!---------------------
+                    USER CHARACTERS
+                ----------------------->
+                <div class="h4 mb-4" style="margin-top:50px;">
+                    Saved characters
+                    <fa-icon 
+                    class="h5"
+                    [icon]="faQuestionCircle" 
+                    placement="right" 
+                    [ngbPopover]="popContent"
+                    triggers="mouseenter:mouseleave"
+                    >
+                    </fa-icon>
+                    <ng-template #popContent>
+                        <p>Save frequently-used characters and their GSPs for easy match inputting.</p>
+                        <p>Choose a costume for any saved character (only a few supported; message us to add more).</p>
+                        <p class="mb-0">Set a default to autopopulate the form with a saved character's values!</p>
+                    </ng-template>
+                </div>
+                
+                <table class="table table-borderless table-sm table-striped mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="pl-3">Character name</th>
+                            <th class="pl-3">Character GSP</th>
+                            <th class="pl-3">Alt Costume</th>
+                            <th style="width:150px;"><!-- Edit actions --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Display and edit rows -->
+                        <tr user-character-row 
+                        *ngFor="let char of user.userCharacters; index as i"
+                        [characters]="characters"
+                        [userCharacter]="char"
+                        [user]="user"
+                        ></tr>
+
+                        <!-- "Add new" row -->
+                        <tr>
+                            <td>
+                                <common-ux-typeahead
+                                [items]="characters"
+                                [textPropertyName]="'characterName'" 
+                                [valuePropertyName]="'characterId'" 
+                                [value]="newUserCharacter.characterId"
+                                (selectItem)="onSelectNewUserCharacter($event)">
+                                </common-ux-typeahead>
+                            </td>
+                            <td>
+                                <common-ux-masked-number-input [(numberValue)]="newUserCharacter.characterGsp"></common-ux-masked-number-input>
+                            </td>
+                            <td>
+                                <input [(ngModel)]="newUserCharacter.altCostume" type="number" class="form-control" />
+                            </td>
+                            <td class="text-right align-middle">
+                                <button (click)="createUserCharacter()" class="btn btn-block btn-secondary p-1">Add character</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-2"></div>
+</div>

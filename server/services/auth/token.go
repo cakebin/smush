@@ -32,7 +32,7 @@ type Claims struct {
 // JWTManager describes all of the methods used
 // for handling the JSON web token side of our auth layer
 type JWTManager interface {
-  GetNewJWTToken(id int, expiration time.Time) (string, error)
+  GetNewJWTToken(id int64, expiration time.Time) (string, error)
   RefreshJWTAccessToken(token string, expiration time.Time) (string, error)
   CheckJWTToken(token string) (bool, error)
 }
@@ -44,9 +44,9 @@ type JWTManager interface {
 
 // GetNewJWTToken generates a new jwt access token
 // for a given user with a given expiration date
-func (a *Auth) GetNewJWTToken(id int, expirationTime time.Time) (string, error) {
+func (a *Auth) GetNewJWTToken(id int64, expirationTime time.Time) (string, error) {
   claims := &Claims{
-    UserID: id,
+    UserID: int(id),
     StandardClaims: jwt.StandardClaims{
       // In JWT, the expiry time is expressed as unix milliseconds
       ExpiresAt: expirationTime.Unix(),

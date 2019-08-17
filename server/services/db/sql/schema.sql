@@ -79,6 +79,7 @@ CREATE TABLE "user_characters" (
   "user_id" INTEGER NOT NULL DEFAULT -1,
   "character_id" INTEGER NOT NULL DEFAULT -1,
   "character_gsp" INTEGER,
+  "alt_costume" INTEGER,
   PRIMARY KEY ("user_character_id")
 );
 

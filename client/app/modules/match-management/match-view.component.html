@@ -1,4 +1,18 @@
-<table *ngIf="!isInitialLoad && sortedMatches?.length" class="table table-borderless table-sm table-striped table-hover">
+<div class="btn-group mb-4">
+    <button (click)="cardMode=true" class="btn btn-sm btn-outline-secondary" [ngClass]="{'active':cardMode}">Card View</button>
+    <button (click)="cardMode=false" class="btn btn-sm btn-outline-secondary" [ngClass]="{'active':!cardMode}">Table View</button>
+</div>
+
+<div *ngIf="cardMode" class="card-deck">
+    <match-card 
+    *ngFor="let match of sortedMatches"
+    [match]="match" 
+    [user]="user"
+    [characters]="characters" 
+    ></match-card>
+</div>
+
+<table *ngIf="!isInitialLoad && sortedMatches?.length && !cardMode" class="table table-borderless table-sm table-striped">
     <thead class="thead-dark">
         <tr>
             <th common-ux-sortable-table-header

@@ -38,8 +38,8 @@ export class MatchInputFormComponent implements OnInit {
           if (res.defaultCharacterId) {
             this.match.userCharacterId = res.defaultCharacterId;
           }
-          if (res.defaultCharacterGsp) {
-            this.match.userCharacterGsp = res.defaultCharacterGsp;
+          if (res.defaultUserCharacterGsp) {
+            this.match.userCharacterGsp = res.defaultUserCharacterGsp;
           }
         }
     });

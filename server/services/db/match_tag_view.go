@@ -7,9 +7,9 @@ package db
 
 // MatchTagView describes a JOIN between match_tags and tags tables
 type MatchTagView struct {
-  MatchTagID  int     `json:"matchTagId"`
-  MatchID     int     `json:"matchId"`
-  TagID       int     `json:"tagId"`
+  MatchTagID  int64   `json:"matchTagId"`
+  MatchID     int64   `json:"matchId"`
+  TagID       int64   `json:"tagId"`
   TagName     string  `json:"tagName"`
 }
 
@@ -22,7 +22,7 @@ type MatchTagView struct {
 // used to interact with "match tag" views in our database
 type MatchTagViewManager interface {
   GetAllMatchTagViews() ([]*MatchTagView, error)
-  GetMatchTagViewsByMatchID(matchID int) ([]*MatchTagView, error)
+  GetMatchTagViewsByMatchID(matchID int64) ([]*MatchTagView, error)
 }
 
 
@@ -75,7 +75,7 @@ func (db *DB) GetAllMatchTagViews() ([]*MatchTagView, error) {
 
 
 // GetMatchTagViewsByMatchID gets all of the match tags for a given matchID
-func (db *DB) GetMatchTagViewsByMatchID(matchID int) ([]*MatchTagView, error) {
+func (db *DB) GetMatchTagViewsByMatchID(matchID int64) ([]*MatchTagView, error) {
   sqlStatement := `
     SELECT
       match_tags.match_tag_id  AS  match_tag_id,

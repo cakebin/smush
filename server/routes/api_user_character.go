@@ -10,113 +10,30 @@ import (
 
 
 /*---------------------------------
-          Request Data
-----------------------------------*/
-
-// UserCharacterCreateRequestData describes the data we're 
-// expecting when a user attempts to create a "saved character"
-type UserCharacterCreateRequestData struct {
-  UserID           int     `json:"userId"`
-  CharacterID      int     `json:"characterId"`
-  CharacterGsp     *int64  `json:"characterGsp"`
-}
-
-
-// UserCharacterUpdateRequestData describes the data we're 
-// expecting when a user attempts to update one of their "saved characters"
-type UserCharacterUpdateRequestData struct {
-  UserCharacterID  int     `json:"userCharacterId"`
-  UserID           *int64  `json:"userId"`
-  CharacterID      *int64  `json:"characterId"`
-  CharacterGsp     *int64  `json:"characterGsp"`
-}
-
-
-// UserCharacterDeleteRequestData describes the data we're 
-// expecting when a user attempts to delete one of their "saved characters"
-type UserCharacterDeleteRequestData struct {
-  UserCharacterID  int  `json:"userCharacterId"`
-}
-
-
-/*---------------------------------
           Response Data
 ----------------------------------*/
 
 // UserCharacterCreateResponseData is the data we send back
 // after a successfully creating a new "saved character" for a given user
 type UserCharacterCreateResponseData struct {
-  UserCharacter *UserCharacterView  `json:"userCharacter"`
+  UserCharacters  []*db.UserCharacterView  `json:"userCharacters"`
+  User            *db.UserProfileView      `json:"user"`
 }
 
 
 // UserCharacterUpdateResponseData is the data we send back
 // after a successfully creating a new "saved character" for a given user
 type UserCharacterUpdateResponseData struct {
-  UserCharacter *UserCharacterView  `json:"userCharacter"`
+  UserCharacters  []*db.UserCharacterView  `json:"userCharacters"`
+  User            *db.UserProfileView      `json:"user"`
 }
 
 
 // UserCharacterDeleteResponseData is the data we send back
 // after a successfully deleting a "saved character" for a given user
 type UserCharacterDeleteResponseData struct {
-  UserCharacterID  int  `json:"userCharacterId"`
-}
-
-
-/*--------------------------------
-          API <--> SQL
-----------------------------------*/
-
-// UserCharacterView is a translation from the SQL result
-// which can have things like `sql.NullInt64`, so we
-// need to translate that to regular JSON objects
-type UserCharacterView struct {
-  UserCharacterID  int     `json:"userCharacterId"`
-  UserID           int     `json:"userId"`
-  CharacterID      int     `json:"characterId"`
-  CharacterName    string  `json:"characterName"`
-  CharacterGsp     *int64  `json:"characterGsp"`
-}
-
-
-// ToAPIUserCharacterView maps from a db.UserCharacterView
-// (which has things like sql.NullInt64) into
-// an api.UserCharacter, which is JSON representable
-func ToAPIUserCharacterView(dbUserCharView *db.UserCharacterView) *UserCharacterView {
-  userCharView := new(UserCharacterView)
-  userCharView.UserCharacterID = dbUserCharView.UserCharacterID
-  userCharView.UserID = dbUserCharView.UserID
-  userCharView.CharacterID = dbUserCharView.CharacterID
-  userCharView.CharacterName = dbUserCharView.CharacterName
-  userCharView.CharacterGsp = FromNullInt64(dbUserCharView.CharacterGsp)
-
-  return userCharView
-}
-
-
-// ToBDUserCharacterCreate maps from an api.UserCharacterCreateRequestData
-// to a db.UserCharacterCreate, which has fields like sql.NullInt64
-func ToBDUserCharacterCreate(userCharCreateRequestData *UserCharacterCreateRequestData) *db.UserCharacterCreate {
-  dbUserCharCreate := new(db.UserCharacterCreate)
-  dbUserCharCreate.UserID = userCharCreateRequestData.UserID
-  dbUserCharCreate.CharacterID = userCharCreateRequestData.CharacterID
-  dbUserCharCreate.CharacterGsp = ToNullInt64(userCharCreateRequestData.CharacterGsp)
-
-  return dbUserCharCreate
-}
-
-
-// ToDBUserCharacterUpdate maps from an api.UserCharacterUpdateRequestData
-// to a db.UserCharacterUpdate, which has fields like sql.NullInt64
-func ToDBUserCharacterUpdate(userCharUpdateRequestData *UserCharacterUpdateRequestData) *db.UserCharacterUpdate {
-  dbUserCharUpdate := new(db.UserCharacterUpdate)
-  dbUserCharUpdate.UserCharacterID = userCharUpdateRequestData.UserCharacterID
-  dbUserCharUpdate.UserID = ToNullInt64(userCharUpdateRequestData.UserID)
-  dbUserCharUpdate.CharacterID = ToNullInt64(userCharUpdateRequestData.CharacterID)
-  dbUserCharUpdate.CharacterGsp = ToNullInt64(userCharUpdateRequestData.CharacterGsp)
-
-  return dbUserCharUpdate
+  UserCharacters  []*db.UserCharacterView  `json:"userCharacters"`
+  User            *db.UserProfileView      `json:"user"`
 }
 
 
@@ -124,6 +41,7 @@ func ToDBUserCharacterUpdate(userCharUpdateRequestData *UserCharacterUpdateReque
              Router
 ----------------------------------*/
 
+// UserCharacterRouter handles all of /api/user/character
 type UserCharacterRouter struct {
   Services  *Services
 }
@@ -170,33 +88,38 @@ func NewUserCharacterRouter(routerServices *Services) *UserCharacterRouter {
 
 func (r *UserCharacterRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  createRequestData := new(UserCharacterCreateRequestData)
+  userCharCreate := new(db.UserCharacterCreate)
 
-  err := decoder.Decode(createRequestData)
+  err := decoder.Decode(userCharCreate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
-  dbUserCharCreate := ToBDUserCharacterCreate(createRequestData)
-  userCharID, err := r.Services.Database.CreateUserCharacter(dbUserCharCreate)
+  _, err = r.Services.Database.CreateUserCharacter(userCharCreate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error creating new user character in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
 
-  dbUserCharView, err := r.Services.Database.GetUserCharacterViewByUserCharacterID(userCharID)
+  userCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(userCharCreate.UserID)
   if err != nil {
-    http.Error(res, fmt.Sprintf("Error fetching new user character view in database: %s", err.Error()), http.StatusInternalServerError)
+    http.Error(res, fmt.Sprintf("Error fetching user character views in database after creating new user_character: %s", err.Error()), http.StatusInternalServerError)
     return
   }
-  userCharView := ToAPIUserCharacterView(dbUserCharView)
+
+  userProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userCharCreate.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user view in database after creating new user_character: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
 
   response := Response{
     Success:  true,
     Error:    nil,
     Data:    UserCharacterCreateResponseData{
-      UserCharacter:  userCharView,
+      UserCharacters:  userCharViews,
+      User:            userProfileView,
     },
   }
 
@@ -207,29 +130,38 @@ func (r *UserCharacterRouter) handleCreate(res http.ResponseWriter, req *http.Re
 
 func (r *UserCharacterRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  updateRequestData := new(UserCharacterUpdateRequestData)
+  userCharUpdate := new(db.UserCharacterUpdate)
 
-  err := decoder.Decode(updateRequestData)
+  err := decoder.Decode(userCharUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
-  dbUserCharUpdate := ToDBUserCharacterUpdate(updateRequestData)
-  userCharID, err := r.Services.Database.UpdateUserCharacter(dbUserCharUpdate)
+  _, err = r.Services.Database.UpdateUserCharacter(userCharUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error updating user character in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
 
-  dbUserCharView, err := r.Services.Database.GetUserCharacterViewByUserCharacterID(userCharID)
-  userCharView := ToAPIUserCharacterView(dbUserCharView)
+  userCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(userCharUpdate.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user character views in database after updating user_character: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  userProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userCharUpdate.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user view in database after updating user_character: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
 
   response := &Response{
     Success:  true,
     Error:    nil,
     Data:     UserCharacterUpdateResponseData{
-      UserCharacter:  userCharView,
+      UserCharacters:  userCharViews,
+      User:            userProfileView,
     },
   }
 
@@ -240,17 +172,48 @@ func (r *UserCharacterRouter) handleUpdate(res http.ResponseWriter, req *http.Re
 
 func (r *UserCharacterRouter) handleDelete(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  deleteRequestData := new(UserCharacterDeleteRequestData)
+  userCharDelete := new(db.UserCharacterDelete)
 
-  err := decoder.Decode(deleteRequestData)
+  err := decoder.Decode(userCharDelete)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
+  
+  userProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userCharDelete.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user view in database before deleting user_character: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+  // If we have a current default user character id, we may have to remove it before deleting the child row
+  // Only remove the current default character if it's the userCharacter we are deleting
+  if (userProfileView.DefaultUserCharacterID.Int64 == userCharDelete.UserCharacterID.Int64) {
+    userDefaultUserCharUpdate := new(db.UserDefaultUserCharacterUpdate)
+    userDefaultUserCharUpdate.UserID = userCharDelete.UserID
+    userDefaultUserCharUpdate.UserCharacterID = userCharDelete.UserCharacterID
 
-  deletedUserCharID, err := r.Services.Database.DeleteUserCharacterByID(deleteRequestData.UserCharacterID)
+    _, err = r.Services.Database.UpdateUserDefaultUserCharacter(userDefaultUserCharUpdate)
+    if err != nil {
+      http.Error(res, fmt.Sprintf("Error updating user default character in database: %s", err.Error()), http.StatusInternalServerError)
+      return
+    }
+  }
+
+  _, err = r.Services.Database.DeleteUserCharacterByID(userCharDelete.UserCharacterID.Int64)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error deleting user character in database: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  userCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(userCharDelete.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user character views in database after deleting user_character: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  updatedUserProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userCharDelete.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user view in database after deleting user_character: %s", err.Error()), http.StatusInternalServerError)
     return
   }
 
@@ -258,7 +221,8 @@ func (r *UserCharacterRouter) handleDelete(res http.ResponseWriter, req *http.Re
     Success:  true,
     Error:    nil,
     Data:     UserCharacterDeleteResponseData{
-      UserCharacterID:  deletedUserCharID,
+      UserCharacters:  userCharViews,
+      User:            updatedUserProfileView,
     },
   }
 

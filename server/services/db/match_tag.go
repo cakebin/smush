@@ -7,16 +7,16 @@ package db
 
 // MatchTag describes a "match tag" relationship
 type MatchTag struct {
-  MatchTagID  int  `json:"matchTagId"`
-  MatchID     int  `json:"matchId"`
-  TagID       int  `json:"tagId"`
+  MatchTagID  int64  `json:"matchTagId"`
+  MatchID     int64  `json:"matchId"`
+  TagID       int64  `json:"tagId"`
 }
 
 // MatchTagCreate describes the data needed
 // to create a "match tag" relationship
 type MatchTagCreate struct {
-  MatchID  int  `json:"matchId"`
-  TagID    int  `json:"tagId"`
+  MatchID  int64  `json:"matchId"`
+  TagID    int64  `json:"tagId"`
 }
 
 /*---------------------------------
@@ -26,8 +26,8 @@ type MatchTagCreate struct {
 // MatchTagManager describes all of the methods used
 // to interact with the match_tags table in our database
 type MatchTagManager interface {
-  CreateMatchTags(matchTagsCreate []*MatchTagCreate) ([]int, error)
-  DeleteMatchTagsByMatchID(matchID int) ([]int, error)
+  CreateMatchTags(matchTagsCreate []*MatchTagCreate) ([]int64, error)
+  DeleteMatchTagsByMatchID(matchID int64) ([]int64, error)
 }
 
 
@@ -36,7 +36,7 @@ type MatchTagManager interface {
 ----------------------------------*/
 
 // CreateMatchTags creates adds multiple "match tag" relationships
-func (db *DB) CreateMatchTags(matchTagsCreate []*MatchTagCreate) ([]int, error) {
+func (db *DB) CreateMatchTags(matchTagsCreate []*MatchTagCreate) ([]int64, error) {
   table := "match_tags"
   columns := []string{"match_id", "tag_id"}
   numInserts := len(matchTagsCreate)
@@ -49,9 +49,9 @@ func (db *DB) CreateMatchTags(matchTagsCreate []*MatchTagCreate) ([]int, error) 
   }
   defer rows.Close()
   
-  matchTagIDs := make([]int, 0)
+  matchTagIDs := make([]int64, 0)
   for rows.Next() {
-    var matchTagID int
+    var matchTagID int64
     err := rows.Scan(&matchTagID)
     if err != nil {
       return nil, err
@@ -71,7 +71,7 @@ func (db *DB) CreateMatchTags(matchTagsCreate []*MatchTagCreate) ([]int, error) 
 
 // DeleteMatchTagsByMatchID deletes a set of existing
 // "match tag" relationships for a given matchID
-func (db *DB) DeleteMatchTagsByMatchID(matchID int) ([]int, error) {
+func (db *DB) DeleteMatchTagsByMatchID(matchID int64) ([]int64, error) {
   sqlStatement := `
     DELETE FROM
       match_tags
@@ -86,9 +86,9 @@ func (db *DB) DeleteMatchTagsByMatchID(matchID int) ([]int, error) {
   }
   defer rows.Close()
 
-  deletedMatchTagIDs := make([]int, 0)
+  deletedMatchTagIDs := make([]int64, 0)
   for rows.Next() {
-    var deletedMatchTagID int
+    var deletedMatchTagID int64
     err := rows.Scan(&deletedMatchTagID)
     if err != nil {
       return nil, err
@@ -107,7 +107,7 @@ func (db *DB) DeleteMatchTagsByMatchID(matchID int) ([]int, error) {
 
 
 /*---------------------------------
-            Helprs
+            Helpers
 ----------------------------------*/
 
 // ExpandMatchTags expands a slice of MatchTagCreate into a slice of

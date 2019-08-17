@@ -10,109 +10,27 @@ import (
 
 
 /*---------------------------------
-          Request Data
-----------------------------------*/
-
-// CharacterCreateRequestData describes the data we're 
-// expecting when a user attempts to create a character
-type CharacterCreateRequestData struct {
-  CharacterName       string   `json:"characterName"`
-  CharacterStockImg   *string  `json:"characterStockImg,omitempty"`
-  CharacterImg        *string  `json:"characterImg,omitmpty"`
-  CharacterArchetype  *string  `json:"characterArchetype,omitempty"`
-}
-
-
-// CharacterUpdateRequestData describes the data we're 
-// expecting when an admin user attempts to update a character
-type CharacterUpdateRequestData struct {
-  CharacterID         int      `json:"characterId"`
-  CharacterName       *string  `json:"characterName,omitempty"`
-  CharacterStockImg   *string  `json:"characterStockImg,omitempty"`
-  CharacterImg        *string  `json:"characterImg,omitempty"`
-  CharacterArchetype  *string  `json:"characterArchetype,omitempty"`
-}
-
-
-/*---------------------------------
           Response Data
 ----------------------------------*/
 
 // CharacterGetAllResponseData is the data we send back
 // after a successfully getting all character data
 type CharacterGetAllResponseData struct {
-  Characters  []*Character  `json:"characters"`
+  Characters  []*db.Character  `json:"characters"`
 }
 
 
 // CharacterCreateResponseData is the data we send
 // back after a successfully creating a new character
 type CharacterCreateResponseData struct {
-  Character  *Character  `json:"character"`
+  Character  *db.Character  `json:"character"`
 }
 
 
 // CharacterUpdateResponseData is the data we send
 // back after a successfully udpating a new character
 type CharacterUpdateResponseData struct {
-  Character  *Character  `json:"character"`
-}
-
-
-/*--------------------------------
-          API <--> SQL
-----------------------------------*/
-
-// Character is a translation from the SQL result
-// which can have things like `sql.NullInt64`, so we
-// need to translate that to regular JSON objects
-type Character struct {
-  CharacterID         int      `json:"characterId"`
-  CharacterName       string   `json:"characterName"`
-  CharacterStockImg   *string  `json:"characterStockImg,omitempty"`
-  CharacterImg        *string  `json:"characterImg,omitempty"`
-  CharacterArchetype  *string  `json:"characterArchetype,omitempty"`
-}
-
-
-// ToAPICharacter maps from a db.Character
-// (which has things like sql.NullString) into
-// an api.Character, which is JSON representable
-func ToAPICharacter(dbChar *db.Character) *Character {
-  character := new(Character)
-  character.CharacterID = dbChar.CharacterID
-  character.CharacterName = dbChar.CharacterName
-  character.CharacterStockImg = FromNullString(dbChar.CharacterStockImg)
-  character.CharacterImg = FromNullString(dbChar.CharacterImg)
-  character.CharacterArchetype = FromNullString(dbChar.CharacterArchetype)
-
-  return character
-}
-
-
-// ToDBCharacterCreate maps from an api.CharacterCreateRequestData
-// to a db.CharacterCreate, which has fields like sql.NullString
-func ToDBCharacterCreate(characterCreateRequestData *CharacterCreateRequestData) *db.CharacterCreate {
-  dbCharacterCreate := new(db.CharacterCreate)
-  dbCharacterCreate.CharacterName = characterCreateRequestData.CharacterName
-  dbCharacterCreate.CharacterStockImg = ToNullString(characterCreateRequestData.CharacterStockImg)
-  dbCharacterCreate.CharacterImg = ToNullString(characterCreateRequestData.CharacterImg)
-  dbCharacterCreate.CharacterArchetype = ToNullString(characterCreateRequestData.CharacterArchetype)
-
-  return dbCharacterCreate
-}
-
-// ToDBCharacterUpdate maps from an api.CharacterUpdateRequestData
-// to a db.CharacterUpdate, which has fields like sql.NullString
-func ToDBCharacterUpdate(characterUpdateRequestData *CharacterUpdateRequestData) *db.CharacterUpdate {
-  dbCharacterUpdate := new(db.CharacterUpdate)
-  dbCharacterUpdate.CharacterID = characterUpdateRequestData.CharacterID
-  dbCharacterUpdate.CharacterName = ToNullString(characterUpdateRequestData.CharacterName)
-  dbCharacterUpdate.CharacterStockImg = ToNullString(characterUpdateRequestData.CharacterStockImg)
-  dbCharacterUpdate.CharacterImg = ToNullString(characterUpdateRequestData.CharacterImg)
-  dbCharacterUpdate.CharacterArchetype = ToNullString(characterUpdateRequestData.CharacterArchetype)
-
-  return dbCharacterUpdate
+  Character  *db.Character  `json:"character"`
 }
 
 
@@ -175,16 +93,10 @@ func NewCharacterRouter(routerServices *Services) *CharacterRouter {
 ----------------------------------*/
 
 func (r *CharacterRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
-  dbCharacters, err := r.Services.Database.GetAllCharacters()
+  characters, err := r.Services.Database.GetAllCharacters()
   if err != nil {
     http.Error(res, fmt.Sprintf("Error getting all characters from DB: %s", err.Error()), http.StatusInternalServerError)
     return
-  }
-
-  characters := make([]*Character, 0)
-  for _, dbCharacter := range dbCharacters {
-    character := ToAPICharacter(dbCharacter)
-    characters = append(characters, character)
   }
 
   response := &Response{
@@ -202,21 +114,19 @@ func (r *CharacterRouter) handleGetAll(res http.ResponseWriter, req *http.Reques
 
 func (r *CharacterRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  createRequestData := new(CharacterCreateRequestData)
+  characterCreate := new(db.CharacterCreate)
 
-  err := decoder.Decode(createRequestData)
+  err := decoder.Decode(characterCreate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
-  dbCharacterCreate := ToDBCharacterCreate(createRequestData)
-  dbCharacter, err := r.Services.Database.CreateCharacter(dbCharacterCreate)
+  character, err := r.Services.Database.CreateCharacter(characterCreate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error creating new character in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
-  character := ToAPICharacter(dbCharacter)
 
   response := &Response{
     Success:  true,
@@ -233,21 +143,19 @@ func (r *CharacterRouter) handleCreate(res http.ResponseWriter, req *http.Reques
 
 func (r *CharacterRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
   decoder := json.NewDecoder(req.Body)
-  updateRequestData := new(CharacterUpdateRequestData)
+  characterUpdate := new(db.CharacterUpdate)
 
-  err := decoder.Decode(updateRequestData)
+  err := decoder.Decode(characterUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
     return
   }
 
-  dbCharacterUpdate := ToDBCharacterUpdate(updateRequestData)
-  dbCharacter, err := r.Services.Database.UpdateCharacter(dbCharacterUpdate)
+  character, err := r.Services.Database.UpdateCharacter(characterUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error updating character in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
-  character := ToAPICharacter(dbCharacter)
 
   response := &Response{
     Success:  true,
