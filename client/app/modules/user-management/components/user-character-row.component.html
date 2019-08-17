@@ -1,0 +1,46 @@
+<ng-container *ngIf="!isEditMode">
+  <td class="align-middle pl-3">{{userCharacter.characterName}}</td>
+  <td class="align-middle pl-3">{{userCharacter.characterGsp | stringToNumber | number}}</td>
+  <td class="align-middle pl-3">{{userCharacter.altCostume}}</td>
+  <td class="text-right align-middle">
+      <div class="btn-group btn-block">
+          <button *ngIf="isDefaultCharacter" (click)="unsetDefaultUserCharacter()" type="button" class="btn btn-light border-secondary p-1">
+              Clear default
+          </button>
+          <button *ngIf="!isDefaultCharacter" (click)="setDefaultUserCharacter()" type="button" class="btn btn-light border-secondary p-1">
+              Set as default
+          </button>
+          <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+              <button class="btn btn-light border-secondary dropdown-toggle-split p-1" ngbDropdownToggle></button>
+              <div class="dropdown-menu" ngbDropdownMenu>
+                  <button (click)="enterEditMode()" ngbDropdownItem>Edit</button>
+                  <button (click)="deleteUserCharacter()" ngbDropdownItem>Delete</button>
+              </div>
+          </div>
+      </div>
+  </td>
+</ng-container>
+
+<ng-container *ngIf="isEditMode">
+    <td class="align-middle">
+      <common-ux-typeahead 
+      [items]="characters"
+      [textPropertyName]="'characterName'" 
+      [valuePropertyName]="'characterId'" 
+      [value]="editedUserCharacter.characterId" 
+      (selectItem)="onSelectCharacter($event)">
+      </common-ux-typeahead>
+    </td>
+    <td class="align-middle">
+        <common-ux-masked-number-input [(numberValue)]="editedUserCharacter.characterGsp"></common-ux-masked-number-input>
+    </td>
+    <td class="align-middle">
+        <input [(ngModel)]="editedUserCharacter.altCostume" type="number" class="form-control" />
+    </td>
+    <td class="text-right align-middle">
+        <div class="btn-group btn-block">
+            <button (click)="updateUserCharacter()" class="btn btn-light border-secondary">Save</button>
+            <button (click)="leaveEditMode()" class="btn btn-light border-secondary">Cancel</button>
+        </div>
+    </td>
+</ng-container>

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MatchesComponent } from './page-components/matches/matches.component';
-import { ProfileEditComponent } from './page-components/profiles/profile-edit.component';
+import { ProfileComponent } from './page-components/profiles/profile.component';
 import { InsightsComponent } from './page-components/insights/insights.component';
 import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 import { HomeComponent } from './page-components/home/home.component';
@@ -29,7 +29,7 @@ const routes: Routes = [
     children: [
       {
         path: 'edit',
-        component: ProfileEditComponent,
+        component: ProfileComponent,
       },
     ]
   },

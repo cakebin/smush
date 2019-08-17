@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { SingleSeries, DataItem } from '@swimlane/ngx-charts';
-import { faCircleNotch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
 import { IMatchViewModel } from 'client/app/app.view-models';
@@ -11,11 +11,7 @@ import { CommonUxService } from 'client/app/modules/common-ux/common-ux.service'
 @Component({
   selector: 'insights',
   templateUrl: './insights.component.html',
-  styles: [`
-    .insights-chart-container {
-      margin-top:50px;
-    }
-  `]
+  styleUrls: ['./insights.component.css']
 })
 export class InsightsComponent implements OnInit {
   public chartData: SingleSeries = [];
@@ -33,9 +29,9 @@ export class InsightsComponent implements OnInit {
   public chartUserId: number;
 
   public noFilteredDataToDisplay: boolean = false;
-  public isLoading: boolean = false;
-  public faCircleNotch = faCircleNotch;
+  public isInitialLoad: boolean = true;
   public faCalendarAlt = faCalendarAlt;
+  public fillerPercents = [65, 100, 26, 70, 30, 27, 22, 15, 30, 60, 95];
 
   constructor(
     private matchService: MatchManagementService,
@@ -45,9 +41,10 @@ export class InsightsComponent implements OnInit {
 
   ngOnInit() {
     this.matchService.cachedMatches.subscribe(res => {
-      if (res) {
+      if (res && res.length) {
         this.matches = res;
         this.publishCharacterUsageChartData();
+        this.isInitialLoad = false;
       }
     },
     err => {
@@ -94,7 +91,7 @@ export class InsightsComponent implements OnInit {
     if (this.chartUserId) {
       filteredData = filteredData.filter(match => match.userId === this.chartUserId);
     }
-    if (!filteredData.length) {
+    if (!filteredData || !filteredData.length) {
       this.noFilteredDataToDisplay = true;
       return;
     } else {

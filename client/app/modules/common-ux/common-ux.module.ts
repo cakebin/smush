@@ -17,7 +17,6 @@ import { ToastService } from './components/toast/toast.service';
 import { ToastComponent } from './components/toast/toast.component';
 
 // Various components
-import { SortableTableHeaderDirective } from './components/sortable-table-header/sortable-table-header.directive';
 import { SortableTableHeaderComponent } from './components/sortable-table-header/sortable-table-header.component';
 import { MaskedNumberInputComponent } from './components/masked-number-input/masked-number-input.component';
 import { SlidePanelComponent } from './components/slide-panel/slide-panel.component';
@@ -29,7 +28,6 @@ import { ToNumberPipe } from './components/string-to-number/string-to-number.pip
 
 @NgModule({
   declarations: [
-    SortableTableHeaderDirective,
     SortableTableHeaderComponent,
     TypeaheadComponent,
     MaskedNumberInputComponent,
@@ -39,8 +37,8 @@ import { ToNumberPipe } from './components/string-to-number/string-to-number.pip
   exports: [
     FormsModule,
     NgbModule,
+    CommonModule,
     FontAwesomeModule,
-    SortableTableHeaderDirective,
     SortableTableHeaderComponent,
     TypeaheadComponent,
     MaskedNumberInputComponent,

@@ -15,11 +15,13 @@ export class SortEvent implements ISortEvent {
 export interface IHeaderViewModel {
     propertyName: string;
     displayName: string;
+    width: string;
 }
 export class HeaderViewModel implements IHeaderViewModel {
     constructor(
         public propertyName: string,
         public displayName: string,
+        public width: string = '',
     ) {
     }
 }

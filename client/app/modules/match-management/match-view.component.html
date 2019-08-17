@@ -1,0 +1,68 @@
+<div class="btn-group mb-4">
+    <button (click)="cardMode=true" class="btn btn-sm btn-outline-secondary" [ngClass]="{'active':cardMode}">Card View</button>
+    <button (click)="cardMode=false" class="btn btn-sm btn-outline-secondary" [ngClass]="{'active':!cardMode}">Table View</button>
+</div>
+
+<div *ngIf="cardMode" class="card-deck">
+    <match-card 
+    *ngFor="let match of sortedMatches"
+    [match]="match" 
+    [user]="user"
+    [characters]="characters" 
+    ></match-card>
+</div>
+
+<table *ngIf="!isInitialLoad && sortedMatches?.length && !cardMode" class="table table-borderless table-sm table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th common-ux-sortable-table-header
+            *ngFor="let header of headerLabels"
+            (sort)="onSort($event)"
+            [propertyName]="header.propertyName" 
+            [displayName]="header.displayName"
+            [width]="header.width"
+            ></th>
+            <th style="width:120px;"><!-- Edit actions --></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let match of sortedMatches"
+            match-row 
+            [match]="match" 
+            [isUserOwned]="match.userId==user?.userId"
+            [characters]="characters" 
+            [ngClass]="{'highlight':match.isNew}">
+        </tr>
+    </tbody>
+</table>
+
+<div *ngIf="!isInitialLoad && !sortedMatches?.length" class="text-center no-data-block">
+    <h3 class="text-black-50">No matches found</h3>
+</div>
+
+<div *ngIf="isInitialLoad" class="skeleton-table">
+    <table class="table table-borderless table-sm table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th *ngFor="let header of headerLabels" class="align-middle" [ngStyle]="{'width':header.width}">
+                    <div class="filler-text bg-transparent"></div>
+                </th>
+                <th style="width:120px;">
+                    <div class="filler-text rounded-pill bg-transparent"></div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let row of [0, 1, 2, 3, 4, 5]">
+                <td *ngFor="let header of headerLabels" class="align-middle">
+                    <div class="filler-text rounded-pill bg-dark"></div>
+                </td>
+                <td class="text-center">
+                    <div class="filler-action rounded-pill bg-dark"></div>
+                    <div class="filler-action ml-1 rounded-pill bg-dark"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="skeleton-gradient-overlay"></div>
+</div>

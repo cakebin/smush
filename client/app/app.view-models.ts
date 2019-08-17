@@ -1,20 +1,23 @@
-import { NgStyle } from '@angular/common';
-
 export interface IMatchViewModel {
     matchId: number;
     userId: number;
     userName: string; // Viewmodel only, intended to be read-only for match display
     opponentCharacterId: number;
     opponentCharacterName: string;
-    opponentCharacterGsp: number;
+    opponentCharacterGsp: number | string;
+    opponentCharacterImage: string;
     userCharacterId: number;
     userCharacterName: string;
-    userCharacterGsp: number;
+    userCharacterGsp: number | string;
+    userCharacterImage: string;
     opponentTeabag: boolean;
     opponentCamp: boolean;
     opponentAwesome: boolean;
     userWin: boolean;
+    altCostume: number; // Viewmodel only, from UserCharacters join
     created: Date; // Set on the server. Read-only
+    editMode: boolean; // Viewmodel only
+    isNew: boolean; // Viewmodel only
 }
 export class MatchViewModel implements IMatchViewModel {
     constructor(
@@ -24,14 +27,19 @@ export class MatchViewModel implements IMatchViewModel {
         public opponentCharacterId: number = null,
         public opponentCharacterName: string = '',
         public opponentCharacterGsp: number = null,
+        public opponentCharacterImage: string = '',
         public userCharacterId: number = null,
         public userCharacterName: string = '',
         public userCharacterGsp: number = null,
+        public userCharacterImage: string = '',
         public opponentTeabag: boolean = null,
         public opponentCamp: boolean = null,
         public opponentAwesome: boolean = null,
         public userWin: boolean = null,
+        public altCostume: number = null,
         public created: Date = null,
+        public editMode: boolean = false,
+        public isNew: boolean = false,
     ) {
     }
 }
@@ -41,10 +49,12 @@ export interface IUserViewModel {
     password: string;
     passwordConfirm: string;
     userName: string;
+    defaultUserCharacterId: number;
+    defaultUserCharacterGsp: number;
+    defaultUserCharacterAltCostume: number;
     defaultCharacterId: number;
     defaultCharacterName: string;
-    defaultCharacterGsp: number;
-    defaultCharacterImageUrl: string; // Join on characters table for this
+    userCharacters: IUserCharacterViewModel[];
 }
 export class UserViewModel implements IUserViewModel {
     constructor(
@@ -53,12 +63,23 @@ export class UserViewModel implements IUserViewModel {
         public password: string = '',
         public passwordConfirm: string = '',
         public userName: string = '',
+        public defaultUserCharacterId: number = null,
+        public defaultUserCharacterGsp: number = null,
+        public defaultUserCharacterAltCostume: number = null,
         public defaultCharacterId: number = null,
         public defaultCharacterName: string = '',
-        public defaultCharacterGsp: number = null,
-        public defaultCharacterImageUrl: string = '',
+        public userCharacters: IUserCharacterViewModel[] = [],
     ) {
     }
+}
+export interface IUserCharacterViewModel {
+    userCharacterId: number;
+    characterGsp: number|string;
+    altCostume: number;
+    characterId: number;
+    characterName: string;
+    userId: number;
+    editMode: boolean;
 }
 export interface ICharacterViewModel {
     characterId: number;

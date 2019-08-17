@@ -15,9 +15,7 @@ export class CharacterManagementService {
     ) {
     }
     public loadAllCharacters(): void {
-        this.httpClient.get<IServerResponse>(`${this.apiUrl}/getall`).pipe(
-            retryWhen(errors => errors.pipe(delay(1000), take(3)))
-        ).subscribe(
+        this.httpClient.get<IServerResponse>(`${this.apiUrl}/getall`).subscribe(
             (res: IServerResponse) => {
                 if (res && res.data && res.data.characters) {
                     this.cachedCharacters.next(res.data.characters);

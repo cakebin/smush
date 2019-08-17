@@ -1,0 +1,39 @@
+<div class="card match-card mb-4">
+    <div class="match-card-top">
+        <div class="match-player-container player-1" [ngClass]="{'loss':match.userWin===false}">
+            <img *ngIf="match.userCharacterId" 
+            [attr.data-character]="match.userCharacterName" 
+            [src]="userCharacterImagePath" />
+
+            <img *ngIf="!match.userCharacterId" src="/static/assets/smush_logo.png" class="smush-logo" />
+
+            <div class="player-header text-white text-uppercase text-center">
+                <div class="character-name">{{match.userCharacterName ? match.userCharacterName : "???"}}</div>
+            </div>
+            <div class="player-name text-white">
+                <div>{{match.userName}}<span *ngIf="match.userCharacterGsp">: {{match.userCharacterGsp | number}}</span></div>
+            </div>
+        </div>
+        <div class="match-player-container player-2" [ngClass]="{'loss':match.userWin}">
+            <img [attr.data-character]="match.opponentCharacterName" [src]="'/static/assets/full/'+match.opponentCharacterImage" />
+            <div class="player-header text-white text-uppercase text-center">
+                <div class="character-name">{{match.opponentCharacterName}}</div>
+            </div>
+            <div *ngIf="match.opponentCharacterGsp" class="player-name text-white">
+                <div>{{match.opponentCharacterGsp | number}}</div>
+            </div>
+        </div>
+        <div class="vs text-white">Vs.</div>
+        <div class="match-card-top-overlay"></div>
+    </div>
+    <div *ngIf="match.opponentCamp || match.opponentTeabag || match.opponentAwesome"
+        class="card-body pl-2 pr-2 pb-2 pt-1">
+        <span *ngIf="match.opponentCamp" class="badge badge-secondary mr-1">Campy opponent</span>
+        <span *ngIf="match.opponentTeabag" class="badge badge-secondary mr-1">Teabagging opponent</span>
+        <span *ngIf="match.opponentAwesome" class="badge badge-secondary mr-1">Homie</span>
+    </div>
+    <div class="card-footer p-2">
+        <span class="small text-muted">{{match.created | date:"MM/dd/yy h:mm a"}}</span>
+        <button *ngIf="isUserOwned" class="btn btn-sm btn-outline-primary float-right py-0 px-1">Edit</button>
+    </div>
+</div>

@@ -4,7 +4,6 @@ import (
   "database/sql"
 )
 
-
 /*---------------------------------
           Data Structures
 ----------------------------------*/
@@ -12,10 +11,16 @@ import (
 // UserProfileUpdate describes the data needed 
 // to update a given user's profile information
 type UserProfileUpdate struct {
-  UserID               int            `json:"userId"`
-  UserName             string         `json:"userName"`
-  DefaultCharacterID   sql.NullInt64  `json:"defaultCharacterId"`
-  DefaultCharacterGsp  sql.NullInt64  `json:"defaultCharacterGsp"`
+  UserID    int     `json:"userId"`
+  UserName  string  `json:"userName"`
+}
+
+
+// UserDefaultUserCharacterUpdate describes the data needed
+// to update a given user's default user character
+type UserDefaultUserCharacterUpdate struct {
+  UserID           int            `json:"userId"`
+  UserCharacterID  sql.NullInt64  `json:"userCharacterId"`
 }
 
 
@@ -48,8 +53,9 @@ type User struct {
 type UserManager interface {
   GetUserIDByEmail(email string) (int, error)
 
-  UpdateUserProfile(profileUpdate UserProfileUpdate) (int, error)
-  UpdateUserRefreshToken(refreshUpdate UserRefreshUpdate) (int, error)
+  UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error)
+  UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int, error)
+  UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int, error)
 
   CreateUser(user User) (int, error)
 }
@@ -109,25 +115,21 @@ func (db *DB) CreateUser(user User) (int, error) {
 
 
 // UpdateUserProfile updates an entry in the users table with the given data
-func (db *DB) UpdateUserProfile(profileUpdate UserProfileUpdate) (int, error) {
+func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error) {
   var userID int
   sqlStatement := `
     UPDATE
       users
     SET
-      user_name = $1,
-      default_character_id = $2,
-      default_character_gsp = $3
+      user_name = $1
     WHERE
-      user_id = $4
+      user_id = $2
     RETURNING
       user_id
   `
   row := db.QueryRow(
     sqlStatement,
     profileUpdate.UserName,
-    profileUpdate.DefaultCharacterID,
-    profileUpdate.DefaultCharacterGsp,
     profileUpdate.UserID,
   )
   err := row.Scan(&userID)
@@ -142,7 +144,7 @@ func (db *DB) UpdateUserProfile(profileUpdate UserProfileUpdate) (int, error) {
 
 
 // UpdateUserRefreshToken updates an a user's refresh token; used for auth
-func (db *DB) UpdateUserRefreshToken(refreshUpdate UserRefreshUpdate) (int, error) {
+func (db *DB) UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int, error) {
   var userID int
   sqlStatement := `
     UPDATE
@@ -158,6 +160,34 @@ func (db *DB) UpdateUserRefreshToken(refreshUpdate UserRefreshUpdate) (int, erro
     sqlStatement,
     refreshUpdate.RefreshToken,
     refreshUpdate.UserID,
+  )
+  err := row.Scan(&userID)
+
+  if err != nil {
+    return 0, err
+  }
+
+  return userID, nil
+}
+
+
+// UpdateUserDefaultUserCharacter updates a user's default user character
+func (db *DB) UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int, error) {
+  var userID int
+  sqlStatement := `
+    UPDATE
+      users
+    SET
+      default_user_character_id = $1
+    WHERE
+      user_id = $2
+    RETURNING
+      user_id
+  `
+  row := db.QueryRow(
+    sqlStatement,
+    userCharUpdate.UserCharacterID,
+    userCharUpdate.UserID,
   )
   err := row.Scan(&userID)
 

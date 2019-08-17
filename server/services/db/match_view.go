@@ -33,6 +33,11 @@ type MatchView struct {
   // Data from characters
   OpponentCharacterName  string          `json:"opponentCharacterName"`
   UserCharacterName      sql.NullString  `json:"userCharacterName,omitempty"`
+  OpponentCharacterImg   string          `json:"opponentCharacterImage"`
+  UserCharacterImg       sql.NullString  `json:"userCharacterImage"`
+
+  // Data from user characters
+  AltCostume             sql.NullInt64   `json:"altCostume,omitempty"`
 }
 
 
@@ -57,25 +62,29 @@ type MatchViewManager interface {
 func (db *DB) GetMatchViewByMatchID(matchID int) (*MatchView, error) {
   sqlStatement := `
     SELECT
-      matches.created                     AS created,
-      matches.match_id                    AS match_id,
-      users.user_id                       AS user_id,
-      user_character.character_id         AS user_character_id,
-      opponent_character.character_id     AS opponent_character_id,
-      matches.opponent_character_gsp      AS opponent_character_gsp,
-      matches.opponent_teabag             AS opponent_teabag,
-      matches.opponent_camp               AS opponent_camp,
-      matches.opponent_awesome            AS opponent_awesome,
-      matches.user_character_gsp          AS user_character_gsp,
-      matches.user_win                    AS user_win,
-      users.user_name                     AS user_name,
-      opponent_character.character_name   AS opponent_character_name,
-      user_character.character_name       AS user_character_name
+      matches.created                         AS created,
+      matches.match_id                        AS match_id,
+      users.user_id                           AS user_id,
+      player_character.character_id           AS player_character_id,
+      opponent_character.character_id         AS opponent_character_id,
+      matches.opponent_character_gsp          AS opponent_character_gsp,
+      matches.opponent_teabag                 AS opponent_teabag,
+      matches.opponent_camp                   AS opponent_camp,
+      matches.opponent_awesome                AS opponent_awesome,
+      matches.user_character_gsp              AS player_character_gsp,
+      matches.user_win                        AS user_win,
+      users.user_name                         AS user_name,
+      opponent_character.character_name       AS opponent_character_name,
+      player_character.character_name         AS player_character_name,
+      opponent_character.character_stock_img  AS opponent_character_img,
+      player_character.character_stock_img    AS player_character_img,
+      user_characters.alt_costume             AS alt_costume
     FROM
       matches
     LEFT JOIN users ON users.user_id = matches.user_id
     LEFT JOIN characters opponent_character ON opponent_character.character_id = matches.opponent_character_id
-    LEFT JOIN characters user_character ON user_character.character_id = matches.user_character_id
+    LEFT JOIN characters player_character ON player_character.character_id = matches.user_character_id
+    LEFT JOIN user_characters ON user_characters.character_id = matches.user_character_id
     WHERE
      match_id = $1
   `
@@ -96,6 +105,9 @@ func (db *DB) GetMatchViewByMatchID(matchID int) (*MatchView, error) {
     &matchView.UserName,
     &matchView.OpponentCharacterName,
     &matchView.UserCharacterName,
+    &matchView.OpponentCharacterImg,
+    &matchView.UserCharacterImg,
+    &matchView.AltCostume,
   )
 
   if err != nil {
@@ -110,25 +122,29 @@ func (db *DB) GetMatchViewByMatchID(matchID int) (*MatchView, error) {
 func (db *DB) GetAllMatchViews() ([]*MatchView, error) {
   sqlStatement := `
     SELECT
-      matches.created                     AS created,
-      matches.match_id                    AS match_id,
-      users.user_id                       AS user_id,
-      user_character.character_id         AS user_character_id,
-      opponent_character.character_id     AS opponent_character_id,
-      matches.opponent_character_gsp      AS opponent_character_gsp,
-      matches.opponent_teabag             AS opponent_teabag,
-      matches.opponent_camp               AS opponent_camp,
-      matches.opponent_awesome            AS opponent_awesome,
-      matches.user_character_gsp          AS user_character_gsp,
-      matches.user_win                    AS user_win,
-      users.user_name                     AS user_name,
-      opponent_character.character_name   AS opponent_character_name,
-      user_character.character_name       AS user_character_name
+      matches.created                         AS created,
+      matches.match_id                        AS match_id,
+      users.user_id                           AS user_id,
+      player_character.character_id           AS player_character_id,
+      opponent_character.character_id         AS opponent_character_id,
+      matches.opponent_character_gsp          AS opponent_character_gsp,
+      matches.opponent_teabag                 AS opponent_teabag,
+      matches.opponent_camp                   AS opponent_camp,
+      matches.opponent_awesome                AS opponent_awesome,
+      matches.user_character_gsp              AS player_character_gsp,
+      matches.user_win                        AS user_win,
+      users.user_name                         AS user_name,
+      opponent_character.character_name       AS opponent_character_name,
+      player_character.character_name         AS player_character_name,
+      opponent_character.character_stock_img  AS opponent_character_img,
+      player_character.character_stock_img    AS player_character_img,
+      user_characters.alt_costume             AS alt_costume
     FROM
       matches
     LEFT JOIN users ON users.user_id = matches.user_id
     LEFT JOIN characters opponent_character ON opponent_character.character_id = matches.opponent_character_id
-    LEFT JOIN characters user_character ON user_character.character_id = matches.user_character_id
+    LEFT JOIN characters player_character ON player_character.character_id = matches.user_character_id
+    LEFT JOIN user_characters ON user_characters.character_id = matches.user_character_id
   `
 
   rows, err := db.Query(sqlStatement)
@@ -155,6 +171,9 @@ func (db *DB) GetAllMatchViews() ([]*MatchView, error) {
       &matchView.UserName,
       &matchView.OpponentCharacterName,
       &matchView.UserCharacterName,
+      &matchView.OpponentCharacterImg,
+      &matchView.UserCharacterImg,
+      &matchView.AltCostume,
     )
 
     if err != nil {

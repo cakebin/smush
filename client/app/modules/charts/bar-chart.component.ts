@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { SingleSeries } from '@swimlane/ngx-charts';
 
 const oceanScheme =  {
@@ -15,7 +15,7 @@ const oceanScheme =  {
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.css']
 })
-export class BarChartComponent {
+export class BarChartComponent implements OnInit {
   @Input() data: SingleSeries = [];
   @Input() xAxisLabel: string = '';
   @Input() yAxisLabel: string = '';
@@ -25,6 +25,12 @@ export class BarChartComponent {
   @Input() dataUnit: string = '';
 
   public colorScheme = oceanScheme;
+  public calcHeight: number = 400;
 
   constructor() {}
+
+  ngOnInit() {
+    const charHeight: number = 14;
+    this.calcHeight = charHeight * this.data.length;
+  }
 }

@@ -50,8 +50,8 @@ type CharacterCreate struct {
 type CharacterManager interface {
   GetAllCharacters() ([]*Character, error)
 
-  CreateCharacter(character CharacterCreate) (*Character, error)
-  UpdateCharacter(update CharacterUpdate) (*Character, error)
+  CreateCharacter(characterCreate *CharacterCreate) (*Character, error)
+  UpdateCharacter(characterUpdate *CharacterUpdate) (*Character, error)
 }
 
 
@@ -105,7 +105,7 @@ func (db *DB) GetAllCharacters() ([]*Character, error) {
 
 
 // CreateCharacter adds a new entry to the characters table in our database
-func (db *DB) CreateCharacter(characterCreate CharacterCreate) (*Character, error) {
+func (db *DB) CreateCharacter(characterCreate *CharacterCreate) (*Character, error) {
   sqlStatement := `
     INSERT INTO characters
       (character_name, character_stock_img, character_img, character_archetype)
@@ -121,10 +121,11 @@ func (db *DB) CreateCharacter(characterCreate CharacterCreate) (*Character, erro
   row := db.QueryRow(
     sqlStatement,
     characterCreate.CharacterName,
-    characterCreate.CharacterStockImg.String,
-    characterCreate.CharacterImg.String,
-    characterCreate.CharacterArchetype.String,
+    characterCreate.CharacterStockImg,
+    characterCreate.CharacterImg,
+    characterCreate.CharacterArchetype,
   )
+
   character := new(Character)
   err := row.Scan(
     &character.CharacterID,
@@ -133,9 +134,8 @@ func (db *DB) CreateCharacter(characterCreate CharacterCreate) (*Character, erro
     &character.CharacterImg,
     &character.CharacterArchetype,
   )
-
   if err != nil {
-    return nil, nil
+    return nil, err
   }
 
   return character, nil
@@ -143,7 +143,7 @@ func (db *DB) CreateCharacter(characterCreate CharacterCreate) (*Character, erro
 
 
 // UpdateCharacter updates an existing entry in the characters table in our database
-func (db *DB) UpdateCharacter(characterUpdate CharacterUpdate) (*Character, error) {
+func (db *DB) UpdateCharacter(characterUpdate *CharacterUpdate) (*Character, error) {
   sqlStatement := `
     UPDATE
       characters
@@ -163,12 +163,13 @@ func (db *DB) UpdateCharacter(characterUpdate CharacterUpdate) (*Character, erro
   `
   row := db.QueryRow(
     sqlStatement,
-    characterUpdate.CharacterName.String,
-    characterUpdate.CharacterStockImg.String,
-    characterUpdate.CharacterImg.String,
-    characterUpdate.CharacterArchetype.String,
+    characterUpdate.CharacterName,
+    characterUpdate.CharacterStockImg,
+    characterUpdate.CharacterImg,
+    characterUpdate.CharacterArchetype,
     characterUpdate.CharacterID,
   )
+
   character := new(Character)
   err := row.Scan(
     &character.CharacterID,
@@ -177,7 +178,6 @@ func (db *DB) UpdateCharacter(characterUpdate CharacterUpdate) (*Character, erro
     &character.CharacterImg,
     &character.CharacterArchetype,
   )
-
   if err != nil {
     return nil, err
   }

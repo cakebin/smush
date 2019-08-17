@@ -3,14 +3,14 @@ import { Router } from '@angular/router';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, tap, finalize } from 'rxjs/operators';
-import { IUserViewModel, LogInViewModel, IServerResponse } from '../../app.view-models';
+import { publish, refCount, tap, finalize, map } from 'rxjs/operators';
+import { IUserViewModel, LogInViewModel, IServerResponse, IUserCharacterViewModel } from '../../app.view-models';
 
 @Injectable()
 export class UserManagementService {
     // This is a Timer but we can't easily import that type
     private _checkSessionInterval: any;
-
+    // The main cachedUser object that all pages are subscribed to
     public cachedUser: BehaviorSubject<IUserViewModel> = new BehaviorSubject<IUserViewModel>(null);
 
     constructor(
@@ -19,26 +19,34 @@ export class UserManagementService {
         private commonUxService: CommonUxService,
         @Inject('UserApiUrl') private apiUrl: string,
         @Inject('AuthApiUrl') private authApiUrl: string,
+        @Inject('UserCharacterApiUrl') private userCharacterApiUrl: string,
     ) {
         // Start interval for login check (runs once a minute)
         this._startIntervalSessionCheck();
     }
+
+
+    /*-----------------------
+               Auth
+    ------------------------*/
 
     public logIn(logInModel: LogInViewModel): Observable<IServerResponse> {
         return this.httpClient.post(`${this.authApiUrl}/login`, logInModel)
         .pipe(
             tap((res: IServerResponse) => {
                 if (res.success && res.data) {
-                    localStorage.setItem('smush_user', JSON.stringify(res.data.user));
+                    const user: IUserViewModel = res.data.user;
+                    user.userCharacters = res.data.userCharacters;
+                    localStorage.setItem('smush_user', JSON.stringify(user));
                     localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
                     localStorage.setItem('smush_refresh_expire', JSON.stringify(new Date(res.data.refreshExpiration)));
-                    this._loadUser(res.data.user);
+                    this._updateCachedUser(user);
                 }
             })
         );
     }
     public logOut(): void {
-        this._clearStorage();
+        this._clearLocalStorage();
         this.router.navigate(['/home']);
 
         if (this.cachedUser.value) {
@@ -49,16 +57,23 @@ export class UserManagementService {
             });
         }
     }
+
+
+    /*-----------------------
+               User
+    ------------------------*/
+
     public createUser(user: IUserViewModel): Observable<{}> {
         return this.httpClient.post(`${this.authApiUrl}/register`, user);
     }
     public updateUser(updatedUser: IUserViewModel): Observable<{}> {
-        return this.httpClient.post(`${this.apiUrl}/update`, updatedUser).pipe(
+        updatedUser = this._prepareUserForApi(updatedUser);
+        return this.httpClient.post(`${this.apiUrl}/update_profile`, updatedUser).pipe(
             tap(res => {
                 localStorage.setItem('smush_user', JSON.stringify(updatedUser));
             }
         ),
-        finalize(() => this._loadUser(updatedUser))
+        finalize(() => this._updateCachedUser(updatedUser))
         );
     }
     public deleteUser(userId: number): Observable<{}> {
@@ -66,27 +81,118 @@ export class UserManagementService {
     }
 
 
+    /*-----------------------
+         User characters
+    ------------------------*/
+
+    public createUserCharacter(userCharacter: IUserCharacterViewModel): Observable<{}> {
+        userCharacter.userId = this.cachedUser.value.userId;
+        userCharacter = this._prepareUserCharacterForApi(userCharacter);
+        return this.httpClient.post(`${this.userCharacterApiUrl}/create`, userCharacter).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                }
+            })
+        );
+    }
+    public updateUserCharacter(userCharacter: IUserCharacterViewModel): Observable<IUserViewModel> {
+        userCharacter.userId = this.cachedUser.value.userId;
+        userCharacter = this._prepareUserCharacterForApi(userCharacter);
+        return this.httpClient.post(`${this.userCharacterApiUrl}/update`, userCharacter).pipe(
+            map((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                    return res.data.user;
+                }
+            })
+        );
+    }
+    public setDefaultUserCharacter(userCharacter: IUserCharacterViewModel): void {
+        userCharacter.userId = this.cachedUser.value.userId;
+        this.httpClient.post(`${this.apiUrl}/update_default_user_character`, userCharacter).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                }
+            })
+        ).subscribe();
+    }
+    public unsetDefaultUserCharacter(userCharacter: IUserCharacterViewModel): void {
+        userCharacter.userId = this.cachedUser.value.userId;
+        // If userCharacterId is null, the API will set user's defaultUserCharacterId to null
+        userCharacter.userCharacterId = null;
+        this.httpClient.post(`${this.apiUrl}/update_default_user_character`, userCharacter).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                }
+            })
+        ).subscribe();
+    }
+    public deleteUserCharacter(userCharacter: IUserCharacterViewModel): void {
+        userCharacter = this._prepareUserCharacterForApi(userCharacter);
+        this.httpClient.post(`${this.userCharacterApiUrl}/delete`, userCharacter).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user);
+                }
+            })
+        ).subscribe();
+    }
 
 
+    /*-----------------------
+         Private helpers
+    ------------------------*/
 
-    // Private auth handlers
-    private _loadUser(user: IUserViewModel): void {
+    private _prepareUserForApi(user: IUserViewModel): IUserViewModel {
+        // Do all type conversions & other misc translations here before sending to API
+        if (user.defaultUserCharacterGsp) {
+            user.defaultUserCharacterGsp = parseInt(user.defaultUserCharacterGsp.toString().replace(/\D/g, ''), 10);
+        }
+        return user;
+    }
+    private _prepareUserCharacterForApi(userCharacter: IUserCharacterViewModel): IUserCharacterViewModel {
+        // Do all type conversions & other misc translations here before sending to API
+        if (userCharacter.characterGsp) {
+            userCharacter.characterGsp = parseInt(userCharacter.characterGsp.toString().replace(/\D/g, ''), 10);
+        }
+        return userCharacter;
+    }
+    private _updateCachedUser(user: IUserViewModel): void {
+        localStorage.setItem('smush_user', JSON.stringify(user));
         this.cachedUser.next(user);
         this.cachedUser.pipe(
             publish(),
             refCount()
         );
     }
+    private _loadUserFromStorage() {
+        const savedUserJson = localStorage.getItem('smush_user');
+        const savedUser = JSON.parse(savedUserJson);
+        if (savedUser) {
+            this._updateCachedUser(savedUser);
+        }
+    }
+    private _clearLocalStorage(): void {
+        localStorage.removeItem('smush_user');
+        localStorage.removeItem('smush_refresh_expire');
+        localStorage.removeItem('smush_access_expire');
+    }
     private _startIntervalSessionCheck() {
         if (this._checkSessionInterval) {
             clearInterval(this._checkSessionInterval);
         }
-
         // Run this first to make sure the user gets a cookie if they no longer have one
         this._runSessionCheck(true);
-
         this._checkSessionInterval = setInterval(() => {
-            // Then check again in a minute
+            // Then check again every minute
            this._runSessionCheck();
         }, 60000);
     }
@@ -97,7 +203,7 @@ export class UserManagementService {
 
         if (!refreshExpiration || !accessExpiration) {
             // This user never got and saved a token. Don't try to refresh
-            this._clearStorage();
+            this._clearLocalStorage();
             return;
         }
 
@@ -122,32 +228,25 @@ export class UserManagementService {
             const accessExpired = dateNowMs > accessExpireMs;
             const accessAboutToExpire = (dateNowMs < accessExpireMs) && (accessExpireMs - dateNowMs < 120000);
 
-            // If this is on pageload, load the user because they still have a refresh token
-            if (isInitialCheck) {
-                const savedUserJson = localStorage.getItem('smush_user');
-                const savedUser = JSON.parse(savedUserJson);
-                if (savedUser) {
-                    this._loadUser(savedUser);
-                }
-            }
-
             if (accessExpired || accessAboutToExpire) {
-                // I was a bit concerned about creating a subscription every three minutes,
-                // but it turns out HttpClient destroys subscriptions on completion of the request so memory leaks are not an issue.
-                // https://stackoverflow.com/questions/35042929/is-it-necessary-to-unsubscribe-from-observables-created-by-http-methods
                 this.httpClient.post(`${this.authApiUrl}/refresh`, this.cachedUser.value).subscribe(
                     (res: IServerResponse) => {
-                        if (res && res.data) {
+                        if (res && res.success && res.data) {
                             // Set the new updated access expiration date
                             localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
+                            if (isInitialCheck) {
+                                // If this is on pageload, load the user because they now have a fresh access token
+                                this._loadUserFromStorage();
+                            }
                         }
-                    });
+                    }
+                );
+            } else {
+                if (isInitialCheck) {
+                    // If this is on pageload, load the user because they still have both a refresh and access token token
+                    this._loadUserFromStorage();
                 }
+            }
         }
-    }
-    private _clearStorage(): void {
-        localStorage.removeItem('smush_user');
-        localStorage.removeItem('smush_refresh_expire');
-        localStorage.removeItem('smush_access_expire');
     }
 }
