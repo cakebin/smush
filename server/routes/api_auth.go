@@ -26,7 +26,7 @@ type LoginRequestData struct {
 // LogoutRequestData describes the data we're 
 // expecting when a user attempts to log out
 type LogoutRequestData struct {
-  UserID  int  `json:"userId"`
+  UserID  int64  `json:"userId"`
 }
 
 
@@ -42,7 +42,7 @@ type RegisterRequestData struct {
 // RefreshRequestData describes the data we're expecting
 // when a user attempts refresh their access token
 type RefreshRequestData struct {
-  UserID  int  `json:"userId"`
+  UserID  int64  `json:"userId"`
 }
 
 
@@ -53,8 +53,8 @@ type RefreshRequestData struct {
 // LoginResponseData is the data we
 // send back after a successful log in
 type LoginResponseData struct {
-  User               *UserProfileView      `json:"user"`
-  UserCharacters     []*UserCharacterView  `json:"userCharacters"`
+  User               *db.UserProfileView      `json:"user"`
+  UserCharacters     []*db.UserCharacterView  `json:"userCharacters"`
   AccessExpiration   time.Time             `json:"accessExpiration"`
   RefreshExpiration  time.Time             `json:"refreshExpiration"`
 }
@@ -63,21 +63,21 @@ type LoginResponseData struct {
 // LogoutResponseData is the data we
 // send back after a successful log out
 type LogoutResponseData struct {
-  UserID  int  `json:"userId"`
+  UserID  int64  `json:"userId"`
 }
 
 
 // RegisterResponseData is the data we
 // send back after a successful register
 type RegisterResponseData struct {
-  UserID  int  `json:"userId"`
+  UserID  int64  `json:"userId"`
 }
 
 
 // RefreshResponseData is the data we
 // send back after a successful refresh
 type RefreshResponseData struct {
-  AccessExpiration   time.Time  `json:"accessExpiration"`
+  AccessExpiration  time.Time  `json:"accessExpiration"`
 }
 
 
@@ -274,23 +274,17 @@ func (r *AuthRouter) handleLogin(res http.ResponseWriter, req *http.Request) {
   )
 
   // Get the basic user profile information
-  dbUserProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userCredentialsView.UserID)
+  userProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userCredentialsView.UserID)
   if err != nil {
     http.Error(res, fmt.Sprintf("Could not get user data for id %d: %s", userCredentialsView.UserID, err.Error()), http.StatusBadRequest)
     return
   }
-  userProfileView := ToAPIUserProfileView(dbUserProfileView)
 
   // Also get the user's saved characters
-  dbUserCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(userCredentialsView.UserID)
+  userCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(userCredentialsView.UserID)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error getting user's saved characters with userID %d: %s", userCredentialsView.UserID, err.Error()), http.StatusInternalServerError)
     return
-  }
-  userCharViews := make([]*UserCharacterView, 0)
-  for _, dbUserCharView := range dbUserCharViews {
-    userCharView := ToAPIUserCharacterView(dbUserCharView)
-    userCharViews = append(userCharViews, userCharView)
   }
 
   response := &Response{
@@ -330,11 +324,12 @@ func (r *AuthRouter) handleRegister(res http.ResponseWriter, req *http.Request) 
     return
   }
 
-  var newUser db.User
-  newUser.UserName = registerRequestData.UserName
-  newUser.EmailAddress = registerRequestData.EmailAddress
-  newUser.HashedPassword = hashedPassword
-  userID, err := r.Services.Database.CreateUser(newUser)
+
+  userCreate := new(db.UserCreate)
+  userCreate.UserName = registerRequestData.UserName
+  userCreate.EmailAddress = registerRequestData.EmailAddress
+  userCreate.HashedPassword = hashedPassword
+  userID, err := r.Services.Database.CreateUser(userCreate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error creating new user in database: %s", err.Error()), http.StatusInternalServerError)
     return

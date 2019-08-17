@@ -1,9 +1,20 @@
 package db
 
 import (
-  "database/sql"
   "time"
 )
+
+
+/*---------------------------------
+            Interface
+----------------------------------*/
+
+// MatchViewManager describes all of the methods used to interact with
+// match views in our database (data joined between match, character, user, etc)
+type MatchViewManager interface {
+  GetMatchViewByMatchID(matchID int64) (*MatchView, error)
+  GetAllMatchViews() ([]*MatchView, error)
+}
 
 
 /*---------------------------------
@@ -15,41 +26,29 @@ import (
 type MatchView struct {
   // Data from matches
   Created                time.Time       `json:"created"`
-  UserID                 int             `json:"userId"`
-  MatchID                int             `json:"matchId"`
-  OpponentCharacterID    int             `json:"opponentCharacterId"`
+  UserID                 int64             `json:"userId"`
+  MatchID                int64             `json:"matchId"`
+  OpponentCharacterID    int64             `json:"opponentCharacterId"`
 
-  UserCharacterID        sql.NullInt64   `json:"userCharacterId"`
-  OpponentCharacterGsp   sql.NullInt64   `json:"opponentCharacterGsp,omitempty"`
-  OpponentTeabag         sql.NullBool    `json:"opponentTeabag,omitempty"`
-  OpponentCamp           sql.NullBool    `json:"opponentCamp,omitempty"`
-  OpponentAwesome        sql.NullBool    `json:"opponentAwesome,omitempty"`
-  UserCharacterGsp       sql.NullInt64   `json:"userCharacterGsp,omitempty"`
-  UserWin                sql.NullBool    `json:"userWin,omitempty"`
+  UserCharacterID        NullInt64JSON   `json:"userCharacterId"`
+  OpponentCharacterGsp   NullInt64JSON   `json:"opponentCharacterGsp,omitempty"`
+  OpponentTeabag         NullBoolJSON    `json:"opponentTeabag,omitempty"`
+  OpponentCamp           NullBoolJSON    `json:"opponentCamp,omitempty"`
+  OpponentAwesome        NullBoolJSON    `json:"opponentAwesome,omitempty"`
+  UserCharacterGsp       NullInt64JSON   `json:"userCharacterGsp,omitempty"`
+  UserWin                NullBoolJSON    `json:"userWin,omitempty"`
 
   // Data from users
   UserName               string          `json:"userName"`
 
   // Data from characters
   OpponentCharacterName  string          `json:"opponentCharacterName"`
-  UserCharacterName      sql.NullString  `json:"userCharacterName,omitempty"`
+  UserCharacterName      NullStringJSON  `json:"userCharacterName,omitempty"`
   OpponentCharacterImg   string          `json:"opponentCharacterImage"`
-  UserCharacterImg       sql.NullString  `json:"userCharacterImage"`
+  UserCharacterImg       NullStringJSON  `json:"userCharacterImage"`
 
   // Data from user characters
-  AltCostume             sql.NullInt64   `json:"altCostume,omitempty"`
-}
-
-
-/*---------------------------------
-            Interface
-----------------------------------*/
-
-// MatchViewManager describes all of the methods used to interact with
-// match views in our database (data joined between match, character, user, etc)
-type MatchViewManager interface {
-  GetMatchViewByMatchID(matchID int) (*MatchView, error)
-  GetAllMatchViews() ([]*MatchView, error)
+  AltCostume             NullInt64JSON   `json:"altCostume,omitempty"`
 }
 
 
@@ -59,7 +58,7 @@ type MatchViewManager interface {
 
 // GetMatchViewByMatchID gets all of the data needed to display
 // an individual match, which includes joined data from the users and characters table
-func (db *DB) GetMatchViewByMatchID(matchID int) (*MatchView, error) {
+func (db *DB) GetMatchViewByMatchID(matchID int64) (*MatchView, error) {
   sqlStatement := `
     SELECT
       matches.created                         AS created,

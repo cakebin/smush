@@ -1,48 +1,5 @@
 package db
 
-import (
-  "database/sql"
-)
-
-/*---------------------------------
-          Data Structures
-----------------------------------*/
-
-// UserProfileUpdate describes the data needed 
-// to update a given user's profile information
-type UserProfileUpdate struct {
-  UserID    int     `json:"userId"`
-  UserName  string  `json:"userName"`
-}
-
-
-// UserDefaultUserCharacterUpdate describes the data needed
-// to update a given user's default user character
-type UserDefaultUserCharacterUpdate struct {
-  UserID           int            `json:"userId"`
-  UserCharacterID  sql.NullInt64  `json:"userCharacterId"`
-}
-
-
-// UserRefreshUpdate describes the data
-// needed to update a given users refresh token
-type UserRefreshUpdate struct {
-  UserID        int     `json:"userId"`
-  RefreshToken  string  `json:"refreshToken"`
-}
-
-
-// User describes the required and optional data
-// needed to create a new user in our users table
-type User struct {
-  UserID          *int    `json:"userId,omitempty"`
-  UserName        string  `json:"userName"`
-  EmailAddress    string  `json:"emailAddress"`
-  Password        string  `json:"password"`
-  HashedPassword  string  `json:"hashedPassword"`
-  RefreshToken    string  `json:"refreshToken"`
-}
-
 
 /*---------------------------------
             Interface
@@ -51,13 +8,50 @@ type User struct {
 // UserManager describes all of the methods used
 // to interact with the users table in our database
 type UserManager interface {
-  GetUserIDByEmail(email string) (int, error)
+  GetUserIDByEmail(email string) (int64, error)
 
-  UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error)
-  UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int, error)
-  UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int, error)
+  UpdateUserProfile(profileUpdate *UserProfileUpdate) (int64, error)
+  UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int64, error)
+  UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int64, error)
 
-  CreateUser(user User) (int, error)
+  CreateUser(userCreate *UserCreate) (int64, error)
+}
+
+
+/*---------------------------------
+          Data Structures
+----------------------------------*/
+
+// UserProfileUpdate describes the data needed 
+// to update a given user's profile information
+type UserProfileUpdate struct {
+  UserID    int64   `json:"userId"`
+  UserName  string  `json:"userName"`
+}
+
+
+// UserDefaultUserCharacterUpdate describes the data needed
+// to update a given user's default user character
+type UserDefaultUserCharacterUpdate struct {
+  UserID           int64          `json:"userId"`
+  UserCharacterID  NullInt64JSON  `json:"userCharacterId"`
+}
+
+
+// UserRefreshUpdate describes the data
+// needed to update a given users refresh token
+type UserRefreshUpdate struct {
+  UserID        int64   `json:"userId"`
+  RefreshToken  string  `json:"refreshToken"`
+}
+
+
+// UserCreate describes the data needed 
+// to create a new user in our db
+type UserCreate struct {
+  UserName        string  `json:"userName"`
+  EmailAddress    string  `json:"emailAddress"`
+  HashedPassword  string  `json:"hashedPassword"`
 }
 
 
@@ -66,8 +60,8 @@ type UserManager interface {
 ----------------------------------*/
 
 // GetUserIDByEmail gets a specific user's id from the users table by email
-func (db *DB) GetUserIDByEmail(email string) (int, error) {
-  var userID int
+func (db *DB) GetUserIDByEmail(email string) (int64, error) {
+  var userID int64
   sqlStatement := `
     SELECT
       user_id
@@ -88,8 +82,8 @@ func (db *DB) GetUserIDByEmail(email string) (int, error) {
 
 
 // CreateUser adds a new entry to the users table in our database
-func (db *DB) CreateUser(user User) (int, error) {
-  var userID int
+func (db *DB) CreateUser(userCreate *UserCreate) (int64, error) {
+  var userID int64
   sqlStatement := `
     INSERT INTO users
       (user_name, email_address, hashed_password)
@@ -100,9 +94,9 @@ func (db *DB) CreateUser(user User) (int, error) {
   `
   row := db.QueryRow(
     sqlStatement,
-    user.UserName,
-    user.EmailAddress,
-    user.HashedPassword,
+    userCreate.UserName,
+    userCreate.EmailAddress,
+    userCreate.HashedPassword,
   )
   err := row.Scan(&userID)
 
@@ -115,8 +109,8 @@ func (db *DB) CreateUser(user User) (int, error) {
 
 
 // UpdateUserProfile updates an entry in the users table with the given data
-func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error) {
-  var userID int
+func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int64, error) {
+  var userID int64
   sqlStatement := `
     UPDATE
       users
@@ -144,8 +138,8 @@ func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int, error) {
 
 
 // UpdateUserRefreshToken updates an a user's refresh token; used for auth
-func (db *DB) UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int, error) {
-  var userID int
+func (db *DB) UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int64, error) {
+  var userID int64
   sqlStatement := `
     UPDATE
       users
@@ -172,8 +166,8 @@ func (db *DB) UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int, err
 
 
 // UpdateUserDefaultUserCharacter updates a user's default user character
-func (db *DB) UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int, error) {
-  var userID int
+func (db *DB) UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int64, error) {
+  var userID int64
   sqlStatement := `
     UPDATE
       users
