@@ -40,7 +40,7 @@ func (db *DB) GetAllMatchTagViews() ([]*MatchTagView, error) {
       tags.tag_name            AS  tag_name
     FROM
       match_tags
-    LEFT JOIN tags ON tags.tag_id = match_tags.tag_ig
+    LEFT JOIN tags ON tags.tag_id = match_tags.tag_id
   `
   rows, err := db.Query(sqlStatement)
   if err != nil {
@@ -84,7 +84,7 @@ func (db *DB) GetMatchTagViewsByMatchID(matchID int64) ([]*MatchTagView, error) 
       tags.tag_name            AS  tag_name
     FROM
       match_tags
-    LEFT JOIN tags ON tags.tag_id = match_tags.tag_ig
+    LEFT JOIN tags ON tags.tag_id = match_tags.tag_id
     WHERE
       match_tags.match_id = $1
   `
