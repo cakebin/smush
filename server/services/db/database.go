@@ -25,6 +25,9 @@ type DatabaseManager interface {
   CharacterManager
   UserCharacterManager
   UserCharacterViewManager
+  MatchTagManager
+  MatchTagViewManager
+  TagManager
 }
 
 
