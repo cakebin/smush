@@ -11,9 +11,7 @@
             <div class="col">
                 Existing tags:
                 <p>
-                    <span 
-                    *ngFor="let tag of ['test', 'tags', 'that', 'don\'t', 'really', 'exist']"
-                    class="badge badge-secondary mr-1">{{tag}}</span>
+                    <span *ngFor="let tag of tags" class="badge badge-secondary mr-1">{{tag.tagName}}</span>
                 </p>     
             </div>
         </div>
@@ -23,7 +21,7 @@
                 <div class="input-group mb-3">
                     <input [(ngModel)]="newTag.tagName" type="text" class="form-control" name="add-tag-name" autocomplete="off">
                     <div class="input-group-append">
-                      <button [disabled]="!newTag.tagName" class="btn btn-primary" type="button" id="button-addTag">Create tag</button>
+                      <button [disabled]="!newTag.tagName" (click)="createTag()" class="btn btn-primary" type="button" id="button-addTag">Create tag</button>
                     </div>
                 </div>
             </div>

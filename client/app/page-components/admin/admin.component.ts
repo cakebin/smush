@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ICharacterViewModel, IServerResponse, ITagViewModel } from 'client/app/app.view-models';
 import { CharacterManagementService } from 'client/app/modules/character-management/character-management.service';
 import { CommonUxService } from 'client/app/modules/common-ux/common-ux.service';
+import { TagManagementService } from 'client/app/modules/tag-management/tag-management.service';
 
 @Component({
   selector: 'admin',
@@ -11,23 +12,51 @@ export class AdminComponent implements OnInit {
   public characters: ICharacterViewModel[] = [];
   public editCharacter: ICharacterViewModel = {} as ICharacterViewModel;
   public newCharacter: ICharacterViewModel = {} as ICharacterViewModel;
+  public tags: ITagViewModel[] = [];
   public newTag: ITagViewModel = {} as ITagViewModel;
 
   constructor(
     private characterService: CharacterManagementService,
+    private tagService: TagManagementService,
     private commonUxService: CommonUxService,
   ) {
   }
 
   ngOnInit() {
     this.characterService.cachedCharacters.subscribe(
-      res => {
-        if (res) {
-          this.characters = res;
-        }
-      });
+    (res: ICharacterViewModel[]) => {
+      if (res && res.length) {
+        this.characters = res;
+      }
+    });
+    this.tagService.cachedTags.subscribe(
+      (res: ITagViewModel[]) => {
+      if (res && res.length) {
+        this.tags = res;
+      }
+    });
   }
-
+  public createTag(): void {
+    if (!this.newTag.tagName) {
+      // This shouldn't happen unless someone manually re-enables the create button
+      this.commonUxService.showWarningToast('Please specify text for your new tag.');
+      return;
+    }
+    this.tagService.createTag(this.newTag).subscribe(
+      (res: IServerResponse) => {
+        if (res.success) {
+          this.newTag = {} as ITagViewModel;
+          this.commonUxService.showSuccessToast('Tag created!');
+        } else {
+          this.commonUxService.showDangerToast('Unable to create tag.');
+        }
+      },
+      error => {
+        this.commonUxService.showDangerToast('Unable to create tag.');
+        console.error(error);
+      }
+    );
+  }
   public onSelectEditCharacter(event: ICharacterViewModel): void {
     if (event) {
       this.editCharacter.characterId = event.characterId;
