@@ -160,13 +160,14 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
 
   // Make the new match and fetch relevant match view data for it
   matchID, err := r.Services.Database.CreateMatch(matchCreate)
+
   if err != nil {
     http.Error(res, fmt.Sprintf("Error creating new match: %s", err.Error()), http.StatusInternalServerError)
     return
   }
 
   // Then make any match tag relationships
-  if len(*matchCreate.MatchTags) == 0 {
+  if matchCreate.MatchTags != nil {
     _, err := r.Services.Database.CreateMatchTags(*matchCreate.MatchTags)
     if err != nil {
       http.Error(res, fmt.Sprintf("Error creating new match tags: %s", err.Error()), http.StatusInternalServerError)
