@@ -34,6 +34,34 @@ type MatchUpdateResponseData struct {
 }
 
 
+// AddMatchTagViewsToMatchViews adds the matchTagViews to their corresponding matchViews
+func addMatchTagViewsToMatchViews(allMatchViews []*db.MatchView, allMatchTagViews []*db.MatchTagView) []*db.MatchView {
+  finalizedMatchViews := make([]*db.MatchView, 0)
+
+  for _, matchView := range allMatchViews {
+    filteredMatchTagViews := filterMatchTagViewsByMatchID(allMatchTagViews, matchView.MatchID)
+    matchView.MatchTags = filteredMatchTagViews
+    finalizedMatchViews = append(finalizedMatchViews, matchView)
+  }
+
+  return finalizedMatchViews
+}
+
+
+// FilterMatchTagViewsByMatchID finds the MatchTagViews associated with a given matchID
+func filterMatchTagViewsByMatchID(matchTagViews []*db.MatchTagView, matchID int64) []*db.MatchTagView {
+  filteredMatchTagViews := make([]*db.MatchTagView, 0)
+
+  for _, matchTagView := range matchTagViews {
+    if matchTagView.MatchID == matchID {
+      filteredMatchTagViews = append(filteredMatchTagViews, matchTagView)
+    }
+  }
+
+  return filteredMatchTagViews
+}
+
+
 /*---------------------------------
              Router
 ----------------------------------*/
@@ -99,11 +127,19 @@ func (r *MatchRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
     return
   }
 
+  matchTagViews, err := r.Services.Database.GetAllMatchTagViews()
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error getting all matches tags from DB: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  finalizedMatchViews := addMatchTagViewsToMatchViews(matchViews, matchTagViews)
+
   response := &Response{
     Success:  true,
     Error:    nil,
     Data:     MatchGetAllResponseData{
-      Matches:  matchViews,
+      Matches:  finalizedMatchViews,
     },
   }
 
@@ -124,19 +160,37 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
 
   // Make the new match and fetch relevant match view data for it
   matchID, err := r.Services.Database.CreateMatch(matchCreate)
+
   if err != nil {
     http.Error(res, fmt.Sprintf("Error creating new match: %s", err.Error()), http.StatusInternalServerError)
     return
   }
+
+  // Then make any match tag relationships
+  if matchCreate.MatchTags != nil {
+    _, err := r.Services.Database.CreateMatchTags(*matchCreate.MatchTags)
+    if err != nil {
+      http.Error(res, fmt.Sprintf("Error creating new match tags: %s", err.Error()), http.StatusInternalServerError)
+      return
+    }
+  }
+
   matchView, err := r.Services.Database.GetMatchViewByMatchID(matchID)
   if err != nil {
-    http.Error(res, fmt.Sprintf("Error getting new match view: %s", err.Error()), http.StatusInternalServerError)
+    http.Error(res, fmt.Sprintf("Error getting match view: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+  matchTagViews, err := r.Services.Database.GetMatchTagViewsByMatchID(matchID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error getting match tag view: %s", err.Error()), http.StatusInternalServerError)
     return
   }
 
+  matchView.MatchTags = matchTagViews
+
   response := &Response{
     Success:  true,
-    Error:    err,
+    Error:    nil,
     Data:     MatchCreateResponseData{
       Match:  matchView,
     },
@@ -162,11 +216,36 @@ func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
     http.Error(res, fmt.Sprintf("Error updating match in database: %s", err.Error()), http.StatusInternalServerError)
     return
   }
+
+  // Then make update match tag relationships
+  if matchUpdate.MatchTags != nil {
+    // Delete older match tag relationships 
+    _, err := r.Services.Database.DeleteMatchTagsByMatchID(matchID)
+    if err != nil {
+      http.Error(res, fmt.Sprintf("Error deleting match tags in database: %s", err.Error()), http.StatusInternalServerError)
+      return
+    }
+
+    // Then nake new match tag relatioships
+    _, err = r.Services.Database.CreateMatchTags(*matchUpdate.MatchTags)
+    if err != nil {
+      http.Error(res, fmt.Sprintf("Error creating new match tags: %s", err.Error()), http.StatusInternalServerError)
+      return
+    }
+  }
+
   matchView, err := r.Services.Database.GetMatchViewByMatchID(matchID)
   if err != nil {
-    http.Error(res, fmt.Sprintf("Error getting updated match view: %s", err.Error()), http.StatusInternalServerError)
+    http.Error(res, fmt.Sprintf("Error getting match view: %s", err.Error()), http.StatusInternalServerError)
     return
   }
+  matchTagViews, err := r.Services.Database.GetMatchTagViewsByMatchID(matchID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error getting match tag view: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  matchView.MatchTags = matchTagViews
 
   response := &Response{
     Success:   true,

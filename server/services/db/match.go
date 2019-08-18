@@ -20,13 +20,10 @@ type MatchManager interface {
 // Match describes the required and optional data
 // needed to create a new match in our matches table
 type Match struct {
-  MatchID               *int64           `json:"matchId,omitempty"`
-  OpponentCharacterID   int64            `json:"opponentCharacterId"`
-  UserID                int64            `json:"userId"`
+  MatchID               *int64         `json:"matchId,omitempty"`
+  OpponentCharacterID   int64          `json:"opponentCharacterId"`
+  UserID                int64          `json:"userId"`
   OpponentCharacterGsp  NullInt64JSON  `json:"opponentCharacterGsp"`
-  OpponentTeabag        NullBoolJSON   `json:"opponentTeabag"`
-  OpponentCamp          NullBoolJSON   `json:"opponentCamp"`
-  OpponentAwesome       NullBoolJSON   `json:"opponentAwesome"`
   UserCharacterID       NullInt64JSON  `json:"userCharacterId"`
   UserCharacterGsp      NullInt64JSON  `json:"userCharacterGsp"`
   UserWin               NullBoolJSON   `json:"userWin"`
@@ -36,31 +33,27 @@ type Match struct {
 // MatchUpdate describes the data needed 
 // to update a given user's profile information
 type MatchUpdate struct {
-  MatchID               int64            `json:"matchId"`
-  OpponentCharacterID   NullInt64JSON  `json:"opponentCharacterId"`
-  OpponentCharacterGsp  NullInt64JSON  `json:"opponentCharacterGsp"`
-  OpponentTeabag        NullBoolJSON   `json:"opponentTeabag"`
-  OpponentCamp          NullBoolJSON   `json:"opponentCamp"`
-  OpponentAwesome       NullBoolJSON   `json:"opponentAwesome"`
-  UserCharacterID       NullInt64JSON  `json:"userCharacterId"`
-  UserCharacterGsp      NullInt64JSON  `json:"userCharacterGsp"`
-  UserWin               NullBoolJSON   `json:"userWin"`
-  Created               NullTimeJSON   `json:"created"`
+  MatchID               int64               `json:"matchId"`
+  OpponentCharacterID   NullInt64JSON       `json:"opponentCharacterId"`
+  OpponentCharacterGsp  NullInt64JSON       `json:"opponentCharacterGsp"`
+  UserCharacterID       NullInt64JSON       `json:"userCharacterId"`
+  UserCharacterGsp      NullInt64JSON       `json:"userCharacterGsp"`
+  UserWin               NullBoolJSON        `json:"userWin"`
+  Created               NullTimeJSON        `json:"created"`
+  MatchTags             *[]*MatchTagCreate  `json:"matchTags"`
 }
 
 
 // MatchCreate describes the data needed 
 // to create a given match in our db
 type MatchCreate struct {
-  OpponentCharacterID   int64            `json:"opponentCharacterId"`
-  UserID                int64            `json:"userId"`
-  OpponentCharacterGsp  NullInt64JSON  `json:"opponentCharacterGsp"`
-  OpponentTeabag        NullBoolJSON   `json:"opponentTeabag"`
-  OpponentCamp          NullBoolJSON   `json:"opponentCamp"`
-  OpponentAwesome       NullBoolJSON   `json:"opponentAwesome"`
-  UserCharacterID       NullInt64JSON  `json:"userCharacterId"`
-  UserCharacterGsp      NullInt64JSON  `json:"userCharacterGsp"`
-  UserWin               NullBoolJSON   `json:"userWin"`
+  OpponentCharacterID   int64               `json:"opponentCharacterId"`
+  UserID                int64               `json:"userId"`
+  OpponentCharacterGsp  NullInt64JSON       `json:"opponentCharacterGsp"`
+  UserCharacterID       NullInt64JSON       `json:"userCharacterId"`
+  UserCharacterGsp      NullInt64JSON       `json:"userCharacterGsp"`
+  UserWin               NullBoolJSON        `json:"userWin"`
+  MatchTags             *[]*MatchTagCreate  `json:"matchTags"`
 }
 
 
@@ -76,14 +69,11 @@ func (db *DB) CreateMatch(matchCreate *MatchCreate) (int64, error) {
       opponent_character_id,
       user_id,
       opponent_character_gsp,
-      opponent_teabag,
-      opponent_camp,
-      opponent_awesome,
       user_character_id,
       user_character_gsp,
       user_win
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING
       match_id
   `
@@ -92,9 +82,6 @@ func (db *DB) CreateMatch(matchCreate *MatchCreate) (int64, error) {
     matchCreate.OpponentCharacterID,
     matchCreate.UserID,
     matchCreate.OpponentCharacterGsp,
-    matchCreate.OpponentTeabag,
-    matchCreate.OpponentCamp,
-    matchCreate.OpponentAwesome,
     matchCreate.UserCharacterID,
     matchCreate.UserCharacterGsp,
     matchCreate.UserWin,
@@ -119,15 +106,12 @@ func (db *DB) UpdateMatch(matchUpdate *MatchUpdate) (int64, error) {
     SET
       opponent_character_id = $1,
       opponent_character_gsp = $2,
-      opponent_teabag = $3,
-      opponent_camp = $4,
-      opponent_awesome = $5,
-      user_character_id = $6,
-      user_character_gsp = $7,
-      user_win = $8,
-      created = $9
+      user_character_id = $3,
+      user_character_gsp = $4,
+      user_win = $5,
+      created = $6
     WHERE
-      match_id = $10
+      match_id = $7
     RETURNING
       match_id
   `
@@ -135,9 +119,6 @@ func (db *DB) UpdateMatch(matchUpdate *MatchUpdate) (int64, error) {
     sqlStatement,
     matchUpdate.OpponentCharacterID,
     matchUpdate.OpponentCharacterGsp,
-    matchUpdate.OpponentTeabag,
-    matchUpdate.OpponentCamp,
-    matchUpdate.OpponentAwesome,
     matchUpdate.UserCharacterID,
     matchUpdate.UserCharacterGsp,
     matchUpdate.UserWin,

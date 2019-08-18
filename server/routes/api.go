@@ -29,6 +29,7 @@ type APIRouter struct {
   MatchRouter      *MatchRouter
   UserRouter       *UserRouter
   CharacterRouter  *CharacterRouter
+  TagRouter        *TagRouter
 }
 
 
@@ -70,6 +71,8 @@ func (r *APIRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
     r.UserRouter.ServeHTTP(res, req)
   case "character":
     r.CharacterRouter.ServeHTTP(res, req)
+  case "tag":
+    r.TagRouter.ServeHTTP(res, req)
   default:
     http.Error(res, "404 Not Found", http.StatusNotFound)
   }
@@ -86,6 +89,7 @@ func NewAPIRouter(routerServices *Services) *APIRouter {
   router.MatchRouter = NewMatchRouter(routerServices)
   router.UserRouter = NewUserRouter(routerServices)
   router.CharacterRouter = NewCharacterRouter(routerServices)
+  router.TagRouter = NewTagRouter(routerServices)
 
   return router
 }

@@ -25,30 +25,30 @@ type MatchViewManager interface {
 // containing all of the data necessary to show a "match" in the front end
 type MatchView struct {
   // Data from matches
-  Created                time.Time       `json:"created"`
-  UserID                 int64             `json:"userId"`
-  MatchID                int64             `json:"matchId"`
-  OpponentCharacterID    int64             `json:"opponentCharacterId"`
+  Created                time.Time        `json:"created"`
+  UserID                 int64            `json:"userId"`
+  MatchID                int64            `json:"matchId"`
+  OpponentCharacterID    int64            `json:"opponentCharacterId"`
 
-  UserCharacterID        NullInt64JSON   `json:"userCharacterId"`
-  OpponentCharacterGsp   NullInt64JSON   `json:"opponentCharacterGsp,omitempty"`
-  OpponentTeabag         NullBoolJSON    `json:"opponentTeabag,omitempty"`
-  OpponentCamp           NullBoolJSON    `json:"opponentCamp,omitempty"`
-  OpponentAwesome        NullBoolJSON    `json:"opponentAwesome,omitempty"`
-  UserCharacterGsp       NullInt64JSON   `json:"userCharacterGsp,omitempty"`
-  UserWin                NullBoolJSON    `json:"userWin,omitempty"`
+  UserCharacterID        NullInt64JSON    `json:"userCharacterId"`
+  OpponentCharacterGsp   NullInt64JSON    `json:"opponentCharacterGsp,omitempty"`
+  UserCharacterGsp       NullInt64JSON    `json:"userCharacterGsp,omitempty"`
+  UserWin                NullBoolJSON     `json:"userWin,omitempty"`
 
   // Data from users
-  UserName               string          `json:"userName"`
+  UserName               string            `json:"userName"`
 
   // Data from characters
-  OpponentCharacterName  string          `json:"opponentCharacterName"`
-  UserCharacterName      NullStringJSON  `json:"userCharacterName,omitempty"`
-  OpponentCharacterImg   string          `json:"opponentCharacterImage"`
-  UserCharacterImg       NullStringJSON  `json:"userCharacterImage"`
+  OpponentCharacterName  string           `json:"opponentCharacterName"`
+  UserCharacterName      NullStringJSON   `json:"userCharacterName,omitempty"`
+  OpponentCharacterImg   string           `json:"opponentCharacterImage"`
+  UserCharacterImg       NullStringJSON   `json:"userCharacterImage"`
 
   // Data from user characters
-  AltCostume             NullInt64JSON   `json:"altCostume,omitempty"`
+  AltCostume             NullInt64JSON    `json:"altCostume,omitempty"`
+
+  // Data from match_tags; added seperately from the SQL Joins
+  MatchTags              []*MatchTagView  `json:"matchTags"`
 }
 
 
@@ -67,9 +67,6 @@ func (db *DB) GetMatchViewByMatchID(matchID int64) (*MatchView, error) {
       player_character.character_id           AS player_character_id,
       opponent_character.character_id         AS opponent_character_id,
       matches.opponent_character_gsp          AS opponent_character_gsp,
-      matches.opponent_teabag                 AS opponent_teabag,
-      matches.opponent_camp                   AS opponent_camp,
-      matches.opponent_awesome                AS opponent_awesome,
       matches.user_character_gsp              AS player_character_gsp,
       matches.user_win                        AS user_win,
       users.user_name                         AS user_name,
@@ -96,9 +93,6 @@ func (db *DB) GetMatchViewByMatchID(matchID int64) (*MatchView, error) {
     &matchView.UserCharacterID,
     &matchView.OpponentCharacterID,
     &matchView.OpponentCharacterGsp,
-    &matchView.OpponentTeabag,
-    &matchView.OpponentCamp,
-    &matchView.OpponentAwesome,
     &matchView.UserCharacterGsp,
     &matchView.UserWin,
     &matchView.UserName,
@@ -127,9 +121,6 @@ func (db *DB) GetAllMatchViews() ([]*MatchView, error) {
       player_character.character_id           AS player_character_id,
       opponent_character.character_id         AS opponent_character_id,
       matches.opponent_character_gsp          AS opponent_character_gsp,
-      matches.opponent_teabag                 AS opponent_teabag,
-      matches.opponent_camp                   AS opponent_camp,
-      matches.opponent_awesome                AS opponent_awesome,
       matches.user_character_gsp              AS player_character_gsp,
       matches.user_win                        AS user_win,
       users.user_name                         AS user_name,
@@ -162,9 +153,6 @@ func (db *DB) GetAllMatchViews() ([]*MatchView, error) {
       &matchView.UserCharacterID,
       &matchView.OpponentCharacterID,
       &matchView.OpponentCharacterGsp,
-      &matchView.OpponentTeabag,
-      &matchView.OpponentCamp,
-      &matchView.OpponentAwesome,
       &matchView.UserCharacterGsp,
       &matchView.UserWin,
       &matchView.UserName,
