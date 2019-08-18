@@ -64,9 +64,7 @@ export class MatchCardComponent implements OnInit{
       userCharacterGsp: originalMatch.userCharacterGsp,
       opponentCharacterId: originalMatch.opponentCharacterId,
       opponentCharacterGsp: originalMatch.opponentCharacterGsp,
-      opponentAwesome: originalMatch.opponentAwesome === undefined ? null : originalMatch.opponentAwesome,
-      opponentTeabag: originalMatch.opponentTeabag === undefined ? null : originalMatch.opponentTeabag,
-      opponentCamp: originalMatch.opponentCamp === undefined ? null : originalMatch.opponentCamp,
+      matchTags: originalMatch.matchTags,
       userWin: originalMatch.userWin === undefined ? null : originalMatch.userWin,
       created: originalMatch.created
     } as IMatchViewModel;

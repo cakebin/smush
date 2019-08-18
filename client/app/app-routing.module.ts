@@ -5,6 +5,7 @@ import { ProfileComponent } from './page-components/profiles/profile.component';
 import { InsightsComponent } from './page-components/insights/insights.component';
 import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 import { HomeComponent } from './page-components/home/home.component';
+import { AdminComponent } from './page-components/admin/admin.component';
 import { AuthGuardService as AuthGuard } from './app-auth-guard.service';
 
 const routes: Routes = [
@@ -31,6 +32,12 @@ const routes: Routes = [
         component: ProfileComponent,
       },
     ]
+  },
+  {
+    path: 'admin',
+    canActivate: [AuthGuard],
+    data: { expectedRole: 'administrator' },
+    component: AdminComponent,
   },
   { path: '',   redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }

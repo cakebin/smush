@@ -16,16 +16,19 @@ import { ChartsModule } from './modules/charts/charts.module';
 import { UserManagementModule } from './modules/user-management/user-management.module';
 import { MatchManagementModule } from './modules/match-management/match-management.module';
 import { CharacterManagementModule } from './modules/character-management/character-management.module';
+import { TagManagementModule } from './modules/tag-management/tag-management.module';
 
 // Pages
 import { TopNavBarComponent } from './page-components/top-nav-bar/top-nav-bar.component';
 import { HomeComponent } from './page-components/home/home.component';
 import { MatchesComponent } from './page-components/matches/matches.component';
 import { InsightsComponent } from './page-components/insights/insights.component';
+import { AdminComponent } from './page-components/admin/admin.component';
 import { ProfileComponent } from './page-components/profiles/profile.component';
 import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 
 // Services
+import { TagManagementService } from 'client/app/modules/tag-management/tag-management.service';
 import { CharacterManagementService } from 'client/app/modules/character-management/character-management.service';
 import { MatchManagementService } from './modules/match-management/match-management.service';
 import { UserManagementService } from './modules/user-management/user-management.service';
@@ -40,6 +43,7 @@ import { CommonUxService } from './modules/common-ux/common-ux.service';
     HomeComponent,
     MatchesComponent,
     InsightsComponent,
+    AdminComponent,
     ProfileComponent,
   ],
   imports: [
@@ -50,6 +54,7 @@ import { CommonUxService } from './modules/common-ux/common-ux.service';
     UserManagementModule.forRoot(),
     MatchManagementModule.forRoot(),
     CharacterManagementModule.forRoot(),
+    TagManagementModule.forRoot(),
   ],
   bootstrap: [
     AppComponent,
@@ -58,6 +63,7 @@ import { CommonUxService } from './modules/common-ux/common-ux.service';
     AuthGuardService,
     CommonUxService,
     CharacterManagementService,
+    TagManagementService,
     MatchManagementService,
     UserManagementService,
     {

@@ -68,7 +68,7 @@ func addMatchIDtoMatchTagCreate(matchTagCreates []*db.MatchTagCreate, matchID in
   for _, matchTagCreate := range matchTagCreates {
     finishedMatchTagCreate := new(db.MatchTagCreate)
     finishedMatchTagCreate.MatchID = matchID
-    finishedMatchTagCreate.TagID = matchTagCreate.MatchID
+    finishedMatchTagCreate.TagID = matchTagCreate.TagID
     finishedMatchTagCreates = append(finishedMatchTagCreates, finishedMatchTagCreate)
   }
 

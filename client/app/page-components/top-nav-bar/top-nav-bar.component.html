@@ -53,6 +53,11 @@
                     Insights
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" *ngIf="user?.userId < 4" [ngClass]="{'disabled': !user}" routerLink="/admin" routerLinkActive="active">
+                    Admin
+                </a>
+            </li>
         </ul>
         
 
@@ -73,44 +78,50 @@
 
 
 <ng-template #loginForm>
-    <div class="p-4">
+    <form class="p-4">
         <div class="form-group mb-1">
             <label for="loginFormEmail" class="mb-0">Email address</label>
-            <input [(ngModel)]="logInModel.emailAddress" (focus)="invalidEmailPassword=false" type="email" class="form-control" id="loginFormEmail">
+            <input [(ngModel)]="logInModel.emailAddress" (focus)="invalidEmailPassword=false" 
+            type="email" class="form-control" id="loginFormEmail" name="loginFormEmail">
         </div>
         <div class="form-group mb-1">
             <label for="loginFormPassword" class="mb-0">Password</label>
-            <input [(ngModel)]="logInModel.password" (focus)="invalidEmailPassword=false" (keyup.enter)="logIn()" type="password" class="form-control" id="loginFormPassword">
+            <input [(ngModel)]="logInModel.password" (focus)="invalidEmailPassword=false" (keyup.enter)="logIn()"
+            type="password" class="form-control" id="loginFormPassword" name="loginFormPassword">
         </div>
         <button (click)="logIn()" class="btn btn-primary mt-2 mb-2">Sign in</button>
 
         <div class="text-danger" [ngStyle]="{'opacity': (invalidEmailPassword ? 1 : 0)}">Invalid email/password.</div>
-    </div>
+    </form>
 </ng-template>
 
 <ng-template #registerForm>
-    <div class="p-4">
+    <form class="p-4">
         <div class="form-group mb-1">
             <label for="dropdownFormEmail" class="mb-0">Email address</label>
-            <input [(ngModel)]="newUser.emailAddress" (focus)="showRegistrationFormWarnings=false" type="email" class="form-control"
-            [ngClass]="{ 'border-danger': (!newUser.emailAddress && showRegistrationFormWarnings) }" id="dropdownFormEmail">
+            <input [(ngModel)]="newUser.emailAddress" (focus)="showRegistrationFormWarnings=false"
+            class="form-control" [ngClass]="{ 'border-danger': (!newUser.emailAddress && showRegistrationFormWarnings) }"
+            type="email"  id="dropdownFormEmail" name="dropdownFormEmail">
         </div>
         <div class="form-group mb-1">
             <label for="dropdownFormUserName" class="mb-0">Username</label>
-            <input [(ngModel)]="newUser.userName" (focus)="showRegistrationFormWarnings=false" type="text" class="form-control" 
-            [ngClass]="{ 'border-danger': (!newUser.userName && showRegistrationFormWarnings) }" id="dropdownFormUserName">
+            <input [(ngModel)]="newUser.userName" (focus)="showRegistrationFormWarnings=false"  
+            class="form-control" [ngClass]="{ 'border-danger': (!newUser.userName && showRegistrationFormWarnings) }" 
+            type="text" id="dropdownFormUserName" name="dropdownFormUserName">
         </div>
         <div class="form-group mb-1">
             <label for="dropdownFormPassword1" class="mb-0">Password</label>
-            <input [(ngModel)]="newUser.password" (focus)="showRegistrationFormWarnings=false" type="password" class="form-control" 
-            [ngClass]="{ 'border-danger': (!newUser.password && showRegistrationFormWarnings) }" id="dropdownFormPassword1">
+            <input [(ngModel)]="newUser.password" (focus)="showRegistrationFormWarnings=false"  
+            class="form-control" [ngClass]="{ 'border-danger': (!newUser.password && showRegistrationFormWarnings) }" 
+            type="password" id="dropdownFormPassword1" name="dropdownFormPassword1">
         </div>
         <div class="form-group mb-2">
             <label for="dropdownFormPassword2" class="mb-0">Confirm Password</label>
-            <input [(ngModel)]="newUser.passwordConfirm" (focus)="showRegistrationFormWarnings=false" (keyup.enter)="createUser()" type="password" class="form-control" 
-            [ngClass]="{ 'border-danger': ((newUser.passwordConfirm && newUser.passwordConfirm!==newUser.password) 
-            || (!newUser.passwordConfirm && showRegistrationFormWarnings)) }" id="dropdownFormPassword2">
+            <input [(ngModel)]="newUser.passwordConfirm" (focus)="showRegistrationFormWarnings=false" (keyup.enter)="createUser()"  
+            class="form-control" [ngClass]="{ 'border-danger': ((newUser.passwordConfirm && newUser.passwordConfirm!==newUser.password) 
+            || (!newUser.passwordConfirm && showRegistrationFormWarnings)) }"
+            type="password" id="dropdownFormPassword2" name="dropdownFormPassword2">
         </div>
         <button (click)="createUser()" class="btn btn-primary mt-1">Register</button>
-    </div>
+    </form>
 </ng-template>

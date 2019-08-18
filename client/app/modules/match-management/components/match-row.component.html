@@ -14,21 +14,10 @@
         </span>
     </td>
 
-    <td class="text-center align-middle">
-        <span *ngIf="match.opponentAwesome" class="text-success font-weight-bold">
-            <fa-icon [icon]="faCheck"></fa-icon>
-        </span>
+    <td class="align-middle">
+        <span *ngFor="let tag of match.matchTags" class="badge badge-secondary mr-1">{{tag.tagName}}</span>
     </td>
-    <td class="text-center align-middle">
-        <span *ngIf="match.opponentCamp" class="text-success font-weight-bold">
-            <fa-icon [icon]="faCheck"></fa-icon>
-        </span>
-    </td>
-    <td class="text-center align-middle">
-        <span *ngIf="match.opponentTeabag" class="text-success font-weight-bold">
-            <fa-icon [icon]="faCheck"></fa-icon>
-        </span>
-    </td>
+
     <td class="align-middle">{{match.created | date:"MM/dd/yy h:mm a"}}</td>
     <td class="text-center align-middle">
         <ng-container *ngIf="isUserOwned">
@@ -81,23 +70,22 @@
         </select>
     </td>
 
-    <td class="text-center align-middle">
-        <select [(ngModel)]="editedMatch.opponentAwesome" name="opponentAwesome" class="form-control-sm">
-            <option [ngValue]="null">N/A</option>
-            <option *ngFor="let option of boolOptions" [ngValue]="option.value">{{option.name}}</option>  
-        </select>
-    </td>
-    <td class="text-center align-middle">
-        <select [(ngModel)]="editedMatch.opponentCamp" name="opponentCamp" class="form-control-sm">
-            <option [ngValue]="null">N/A</option>
-            <option *ngFor="let option of boolOptions" [ngValue]="option.value">{{option.name}}</option>  
-        </select>
-    </td>
-    <td class="text-center align-middle">
-        <select [(ngModel)]="editedMatch.opponentTeabag" name="opponentTeabag" class="form-control-sm">
-            <option [ngValue]="null">N/A</option>
-            <option *ngFor="let option of boolOptions" [ngValue]="option.value">{{option.name}}</option>  
-        </select>
+    <td class="align-middle">
+        <common-ux-typeahead 
+        [clearOnSelect]="true"
+        [items]="tags" 
+        [textPropertyName]="'tagName'"
+        [valuePropertyName]="'tagId'"
+        [value]="newTag"
+        [size]="'sm'"
+        (selectItem)="onSelectTag($event)"
+        id="match-tags"></common-ux-typeahead>
+        <div>
+            <span *ngFor="let tag of editedMatchTags" class="badge badge-secondary mr-1">
+                {{tag.tagName}}
+                <span (click)="removeTag(tag)" class="ml-1 cursor-pointer">x</span>
+            </span>
+        </div>
     </td>
     <td class="align-middle">{{editedMatch.created | date:"MM/dd/yy h:mm a"}}</td>
     <td class="text-center align-middle">

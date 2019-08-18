@@ -50,7 +50,7 @@ export class ProfileEditComponent implements OnInit {
         console.error(err);
       }
     });
-    this.characterService.characters.subscribe(
+    this.characterService.cachedCharacters.subscribe(
       res => {
         if (res) {
           this.characters = res;

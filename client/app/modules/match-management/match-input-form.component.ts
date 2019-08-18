@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
-import { MatchViewModel, IMatchViewModel, IUserViewModel, ICharacterViewModel } from '../../app.view-models';
+import { MatchViewModel, IMatchViewModel, IUserViewModel, ICharacterViewModel, ITagViewModel, IMatchTagViewModel } from '../../app.view-models';
 import { CommonUxService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
 import { UserManagementService } from '../user-management/user-management.service';
 import { CharacterManagementService } from '../character-management/character-management.service';
+import { TagManagementService } from '../tag-management/tag-management.service';
+import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.component';
 
 
 @Component({
@@ -12,8 +14,14 @@ import { CharacterManagementService } from '../character-management/character-ma
   templateUrl: './match-input-form.component.html',
 })
 export class MatchInputFormComponent implements OnInit {
+  @ViewChild('tagInput', { static: false }) tagInputComponent: TypeaheadComponent;
+
   public match: IMatchViewModel = new MatchViewModel();
   public characters: ICharacterViewModel[] = [];
+  public tags: ITagViewModel[] = [];
+
+  public matchTags: ITagViewModel[] = []; // Will add to match on save
+  public newTag: ITagViewModel = null;
 
   public showFooterWarnings: boolean = false;
   public warnings: string[] = [];
@@ -26,6 +34,7 @@ export class MatchInputFormComponent implements OnInit {
     private userService: UserManagementService,
     private matchService: MatchManagementService,
     private characterService: CharacterManagementService,
+    private tagService: TagManagementService,
     ) {
   }
 
@@ -43,9 +52,14 @@ export class MatchInputFormComponent implements OnInit {
           }
         }
     });
-    this.characterService.characters.subscribe(
+    this.characterService.cachedCharacters.subscribe(
       res => {
         this.characters = res;
+      }
+    );
+    this.tagService.cachedTags.subscribe(
+      res => {
+        this.tags = res;
       }
     );
   }
@@ -57,7 +71,19 @@ export class MatchInputFormComponent implements OnInit {
       });
       return;
     }
+
     this.isSaving = true;
+
+    // Format match tags
+    this.match.matchTags = this.matchTags.map(t => {
+      return {
+        matchTagId: null,
+        matchId: null,
+        tagId: t.tagId,
+        tagName: t.tagName
+      } as IMatchTagViewModel;
+    });
+
     this.matchService.createMatch(this.match).subscribe((res: number) => {
       // On success, do nothing
     }, error => {
@@ -70,7 +96,18 @@ export class MatchInputFormComponent implements OnInit {
       this.isSaving = false;
     });
   }
-  public onSetOpponentCharacter(event: ICharacterViewModel): void {
+  public removeTag(tag: ITagViewModel): void {
+    const tagIndex: number = this.matchTags.findIndex(t => t.tagId === tag.tagId);
+    this.matchTags.splice(tagIndex, 1);
+  }
+  public onSelectTag(event: ITagViewModel): void {
+    if (event != null) {
+      if (!this.matchTags.find(t => t.tagId === event.tagId)) {
+        this.matchTags.push(event);
+      }
+    }
+  }
+  public onSelectOpponentCharacter(event: ICharacterViewModel): void {
     // Event properties aren't accessible in the template
     if (event == null) {
       this.match.opponentCharacterId = null;
@@ -78,7 +115,7 @@ export class MatchInputFormComponent implements OnInit {
       this.match.opponentCharacterId = event.characterId;
     }
   }
-  public onSetUserCharacter(event: ICharacterViewModel): void {
+  public onSelectUserCharacter(event: ICharacterViewModel): void {
     // Event properties aren't accessible in the template
     if (event == null) {
       this.match.userCharacterId = null;
@@ -105,6 +142,7 @@ export class MatchInputFormComponent implements OnInit {
        Private helpers
   ------------------------*/
   private _resetMatch(): void {
+    this.matchTags = [];
     this.match = {
       matchId: null,
       userId: this.user.userId,
@@ -115,9 +153,7 @@ export class MatchInputFormComponent implements OnInit {
       opponentCharacterId: null,
       opponentCharacterName: null,
       opponentCharacterGsp: null,
-      opponentAwesome: null,
-      opponentTeabag: null,
-      opponentCamp: null,
+      matchTags: [],
       userWin: null
     } as IMatchViewModel;
   }

@@ -212,6 +212,11 @@ export class UserManagementService {
         const refreshExpireMs: number = new Date(JSON.parse(refreshExpiration)).getTime();
         const accessExpireMs: number = new Date(JSON.parse(accessExpiration)).getTime();
 
+        if (isInitialCheck) {
+            // If this is on pageload, load the user because they still have both a refresh and access token token
+            this._loadUserFromStorage();
+        }
+
         if (dateNowMs >= refreshExpireMs) {
             this.logOut();
             // It is after the refresh expiry date. Log user out and don't refresh their token.
@@ -235,16 +240,21 @@ export class UserManagementService {
                             // Set the new updated access expiration date
                             localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
                             if (isInitialCheck) {
-                                // If this is on pageload, load the user because they now have a fresh access token
-                                this._loadUserFromStorage();
+                                // If this is on pageload, change isAuthenticated to true so we know to load the static data etc
+                                const authedUser: IUserViewModel = this.cachedUser.value;
+                                authedUser.isAuthenticated = true;
+                                this._updateCachedUser(authedUser);
                             }
                         }
                     }
                 );
             } else {
                 if (isInitialCheck) {
-                    // If this is on pageload, load the user because they still have both a refresh and access token token
-                    this._loadUserFromStorage();
+                    // We didn't need to re-authenticate. The user still has a good access token.
+                    // If this is on pageload, change isAuthenticated to true so we know to load the static data etc
+                    const authedUser: IUserViewModel = this.cachedUser.value;
+                    authedUser.isAuthenticated = true;
+                    this._updateCachedUser(authedUser);
                 }
             }
         }
