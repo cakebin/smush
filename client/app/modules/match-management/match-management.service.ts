@@ -62,8 +62,17 @@ export class MatchManagementService {
             })
         );
     }
-    public deleteMatch(matchId: number): Observable<{}> {
-        return this.httpClient.post(`${this.apiUrl}/delete`, matchId);
+    public deleteMatch(match: IMatchViewModel): void {
+        this.httpClient.post(`${this.apiUrl}/delete`, match).pipe(
+            tap((res: IServerResponse) => {
+                if (res && res.success) {
+                    const allMatches: IMatchViewModel[] = this.cachedMatches.value;
+                    const index = allMatches.findIndex(m => m.matchId === match.matchId);
+                    allMatches.splice(index, 1);
+                    this._updateCachedMatches(allMatches);
+                }
+            })
+        ).subscribe();
     }
     public updateCachedMatchesWithUserName(updatedUser: IUserViewModel): void {
         const allMatches: IMatchViewModel[] = this.cachedMatches.value;

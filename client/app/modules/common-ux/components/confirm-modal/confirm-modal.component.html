@@ -7,7 +7,8 @@
     </div>
     <div class="row">
         <div class="col text-right">
-            <button type="button" class="btn btn-primary" (click)="yes()">{{options.confirmLabel}}</button>
+            <button *ngIf="!options.hideReject" type="button" class="btn btn-outline-secondary mr-2" (click)="no()">{{options.rejectLabel || "Cancel"}}</button>
+            <button type="button" class="btn btn-primary" (click)="yes()">{{options.confirmLabel || "Okay"}}</button>
         </div>
     </div>   
 </div>

@@ -6,6 +6,8 @@ export interface ConfirmOptions {
   title: string;
   message: string;
   confirmLabel: string;
+  rejectLabel: string;
+  hideReject: boolean;
   modalOptions: NgbModalOptions;
 }
 

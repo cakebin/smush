@@ -59,6 +59,20 @@ export class MatchRowComponent implements OnInit {
 
     Object.assign(this.editedMatchTags, originalMatch.matchTags);
   }
+  public deleteMatch(match: IMatchViewModel): void {
+    this.commonUxService.openConfirmModal(
+      'Removing match against ' + match.opponentCharacterName + '.',
+      'Delete match',
+      false,
+      'Nuke it').then(
+      confirm => {
+        this.matchService.deleteMatch(match);
+      },
+      reject => {
+        // Do nothing
+      }
+    );
+  }
   public saveChanges(): void {
     if (!this.editedMatch.opponentCharacterId) {
       this.commonUxService.showWarningToast('Opponent character required.');

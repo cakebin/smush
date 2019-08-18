@@ -224,6 +224,7 @@ export class UserManagementService {
                 this.commonUxService.openConfirmModal(
                     'You\'ve been logged out because your session has expired. Log in again to continue tracking matches :)',
                     'Session Expired',
+                    true,
                     'Okey'
                 );
             }
