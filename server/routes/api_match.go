@@ -62,6 +62,19 @@ func filterMatchTagViewsByMatchID(matchTagViews []*db.MatchTagView, matchID int6
 }
 
 
+func addMatchIDtoMatchTagCreate(matchTagCreates []*db.MatchTagCreate, matchID int64) []*db.MatchTagCreate {
+  finishedMatchTagCreates := make([]*db.MatchTagCreate, 0)
+
+  for _, matchTagCreate := range matchTagCreates {
+    finishedMatchTagCreate := new(db.MatchTagCreate)
+    finishedMatchTagCreate.MatchID = matchID
+    finishedMatchTagCreate.TagID = matchTagCreate.MatchID
+    finishedMatchTagCreates = append(finishedMatchTagCreates, finishedMatchTagCreate)
+  }
+
+  return finishedMatchTagCreates
+}
+
 /*---------------------------------
              Router
 ----------------------------------*/
@@ -168,7 +181,8 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
 
   // Then make any match tag relationships
   if matchCreate.MatchTags != nil {
-    _, err := r.Services.Database.CreateMatchTags(*matchCreate.MatchTags)
+    matchTagCreates := addMatchIDtoMatchTagCreate(*matchCreate.MatchTags, matchID)
+    _, err := r.Services.Database.CreateMatchTags(matchTagCreates)
     if err != nil {
       http.Error(res, fmt.Sprintf("Error creating new match tags: %s", err.Error()), http.StatusInternalServerError)
       return
