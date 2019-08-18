@@ -447,7 +447,7 @@ img[data-character="Jigglypuff"] {
 img[data-character="Captain Falcon"] {
   width: 420px;
   top: 25px;
-  left: -137px;
+  left: -155px;
 }
 img[data-character="Ness"] {
   width: 130px;
@@ -460,9 +460,9 @@ img[data-character="Luigi"] {
   left: -30px;
 }
 img[data-character="Pikachu"] {
-  width: 140px;
-  top: 20px;
-  left: 3px;
+  width: 160px;
+  top: 5px;
+  left: 5px;
 }
 img[data-character="Fox"] {
   width: 240px;
