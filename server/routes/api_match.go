@@ -108,6 +108,8 @@ func (r *MatchRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
       r.handleCreate(res, req)
     case "update":
       r.handleUpdate(res, req)
+    case "delete":
+      r.handleDelete(res, req)
     default:
       http.Error(res, fmt.Sprintf("Unsupport POST path %s", head), http.StatusBadRequest)
       return
@@ -267,6 +269,32 @@ func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
     Data:      MatchUpdateResponseData{
       Match:  matchView,
     },
+  }
+
+  res.Header().Set("Content-Type", "application/json")
+  json.NewEncoder(res).Encode(response)
+}
+
+
+func (r *MatchRouter) handleDelete(res http.ResponseWriter, req *http.Request) {
+  decoder := json.NewDecoder(req.Body)
+  matchDelete := new(db.MatchDelete)
+
+  err := decoder.Decode(matchDelete)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
+    return
+  }
+
+  _, err = r.Services.Database.DeleteMatchByMatchID(matchDelete.MatchID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error deleting user match in database: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  response := &Response{
+    Success:  true,
+    Error:    nil,
   }
 
   res.Header().Set("Content-Type", "application/json")
