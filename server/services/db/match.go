@@ -10,6 +10,7 @@ package db
 type MatchManager interface {
   CreateMatch(matchCreate *MatchCreate) (int64, error)
   UpdateMatch(matchUpdate *MatchUpdate) (int64, error)
+  DeleteMatchByMatchID(matchID int64) (int64, error)
 }
 
 
@@ -54,6 +55,13 @@ type MatchCreate struct {
   UserCharacterGsp      NullInt64JSON       `json:"userCharacterGsp"`
   UserWin               NullBoolJSON        `json:"userWin"`
   MatchTags             *[]*MatchTagCreate  `json:"matchTags"`
+}
+
+
+// MatchDelete describes the data needed 
+// to delete a given match in our db
+type MatchDelete struct {
+  MatchID  int64  `json:"matchId"`
 }
 
 
@@ -132,4 +140,26 @@ func (db *DB) UpdateMatch(matchUpdate *MatchUpdate) (int64, error) {
   }
 
   return matchID, nil
+}
+
+
+// DeleteMatchByMatchID removes an existing entry in the matches table
+func (db *DB) DeleteMatchByMatchID(matchID int64) (int64, error) {
+  var deletedMatchID int64
+  sqlStatement := `
+    DELETE FROM
+      matches
+    WHERE
+      match_id = $1
+    RETURNING
+      match_id
+  `
+  row := db.QueryRow(sqlStatement, matchID)
+
+  err := row.Scan(&deletedMatchID)
+  if err != nil {
+    return 0, nil
+  }
+
+  return deletedMatchID, nil
 }
