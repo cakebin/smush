@@ -69,7 +69,9 @@ export class TypeaheadComponent {
   public onBlur() {
     // If the user has cleared the input and blurred out, we need to output a blank value manually
     // because the typeahead does not recognise this as an input "event" per se
-    this.selectItem.emit(this.selectedItem);
+    if (this.selectedItem == null) {
+      this.selectItem.emit(null);
+    }
   }
   public onSelect(eventObject: NgbTypeaheadSelectItemEvent, input: any): void {
     if (this.clearOnSelect) {

@@ -75,7 +75,7 @@
        
                     <div class="btn-group btn-group-toggle mt-2" ngbRadioGroup name="match-outcome" [(ngModel)]="match.userWin">
                         <label ngbButtonLabel class="btn-outline-secondary">
-                            <input ngbButton type="radio" value="true"> Win
+                            <input ngbButton type="radio" [value]="true"> Win
                         </label>
                         <label ngbButtonLabel class="btn-outline-secondary">
                             <input ngbButton type="radio" [value]="false"> Loss

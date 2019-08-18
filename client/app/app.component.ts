@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     const userSubscription: Subscription = this.userService.cachedUser.subscribe(
       res => {
-        if (res.isAuthenticated) {
+        if (res && res.isAuthenticated) {
           // We haven't loaded the data yet, so get it once
           if (!this.matchesLoaded && !this.charactersLoaded) {
             this.matchService.loadAllMatches();

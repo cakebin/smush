@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
-import { MatchViewModel, IMatchViewModel, IUserViewModel, ICharacterViewModel, ITagViewModel } from '../../app.view-models';
+import { MatchViewModel, IMatchViewModel, IUserViewModel, ICharacterViewModel, ITagViewModel, IMatchTagViewModel } from '../../app.view-models';
 import { CommonUxService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
 import { UserManagementService } from '../user-management/user-management.service';
@@ -20,8 +20,7 @@ export class MatchInputFormComponent implements OnInit {
   public characters: ICharacterViewModel[] = [];
   public tags: ITagViewModel[] = [];
 
-  // Fake array, will add to actual match later
-  public matchTags: ITagViewModel[] = [];
+  public matchTags: ITagViewModel[] = []; // Will add to match on save
   public newTag: ITagViewModel = null;
 
   public showFooterWarnings: boolean = false;
@@ -72,7 +71,23 @@ export class MatchInputFormComponent implements OnInit {
       });
       return;
     }
+
     this.isSaving = true;
+
+    // Format match tags
+    this.match.matchTags = this.matchTags.map(t => {
+      return {
+        matchTagId: null,
+        matchId: null,
+        tagId: t.tagId,
+        tagName: t.tagName
+      } as IMatchTagViewModel;
+    });
+
+    console.log(this.match);
+    return;
+
+
     this.matchService.createMatch(this.match).subscribe((res: number) => {
       // On success, do nothing
     }, error => {
@@ -131,6 +146,7 @@ export class MatchInputFormComponent implements OnInit {
        Private helpers
   ------------------------*/
   private _resetMatch(): void {
+    this.matchTags = [];
     this.match = {
       matchId: null,
       userId: this.user.userId,
@@ -141,9 +157,7 @@ export class MatchInputFormComponent implements OnInit {
       opponentCharacterId: null,
       opponentCharacterName: null,
       opponentCharacterGsp: null,
-      opponentAwesome: null,
-      opponentTeabag: null,
-      opponentCamp: null,
+      matchTags: [],
       userWin: null
     } as IMatchViewModel;
   }

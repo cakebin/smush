@@ -15,22 +15,6 @@ export class TagManagementService {
     ) {
     }
     public loadAllTags(): void {
-        const fakeTags: ITagViewModel[] = [
-            new TagViewModel(1, 'Laggy match'),
-            new TagViewModel(2, 'Teabagging opponent'),
-            new TagViewModel(3, 'Camping opponent'),
-            new TagViewModel(4, 'Spamming opponent'),
-            new TagViewModel(5, 'Got homie stock'),
-            new TagViewModel(6, 'Gave homie stock'),
-            new TagViewModel(7, 'Rematched'),
-        ];
-        this.cachedTags.next(fakeTags);
-        this.cachedTags.pipe(
-            publish(),
-            refCount()
-        );
-
-        /*
         this.httpClient.get<IServerResponse>(`${this.apiUrl}/getall`).subscribe(
             (res: IServerResponse) => {
                 if (res && res.data && res.data.tags) {
@@ -42,7 +26,6 @@ export class TagManagementService {
                 }
             }
         );
-        */
     }
     public createTag(tag: ITagViewModel): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/create`, tag).pipe(

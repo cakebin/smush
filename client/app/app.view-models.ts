@@ -10,9 +10,7 @@ export interface IMatchViewModel {
     userCharacterName: string;
     userCharacterGsp: number | string;
     userCharacterImage: string;
-    opponentTeabag: boolean;
-    opponentCamp: boolean;
-    opponentAwesome: boolean;
+    matchTags: IMatchTagViewModel[]; // Viewmodel only, from MatchTags join
     userWin: boolean;
     altCostume: number; // Viewmodel only, from UserCharacters join
     created: Date; // Set on the server. Read-only
@@ -32,9 +30,7 @@ export class MatchViewModel implements IMatchViewModel {
         public userCharacterName: string = '',
         public userCharacterGsp: number = null,
         public userCharacterImage: string = '',
-        public opponentTeabag: boolean = null,
-        public opponentCamp: boolean = null,
-        public opponentAwesome: boolean = null,
+        public matchTags: IMatchTagViewModel[] = [],
         public userWin: boolean = null,
         public altCostume: number = null,
         public created: Date = null,
