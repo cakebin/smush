@@ -84,10 +84,6 @@ export class MatchInputFormComponent implements OnInit {
       } as IMatchTagViewModel;
     });
 
-    console.log(this.match);
-    return;
-
-
     this.matchService.createMatch(this.match).subscribe((res: number) => {
       // On success, do nothing
     }, error => {

@@ -66,7 +66,7 @@
                     <div>
                         <span *ngFor="let tag of matchTags" class="badge badge-secondary mr-1">
                             {{tag.tagName}}
-                            <span (click)="removeTag(tag)" class="ml-1 font-normal">x</span>
+                            <span (click)="removeTag(tag)" class="ml-1 cursor-pointer">x</span>
                         </span>
                     </div>
                 </div>
