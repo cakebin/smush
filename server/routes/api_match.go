@@ -218,7 +218,7 @@ func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
   }
 
   // Then make update match tag relationships
-  if len(*matchUpdate.MatchTags) == 0 {
+  if matchUpdate.MatchTags != nil {
     // Delete older match tag relationships 
     _, err := r.Services.Database.DeleteMatchTagsByMatchID(matchID)
     if err != nil {
