@@ -1,6 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
-import { MatchViewModel, IMatchViewModel, IUserViewModel, ICharacterViewModel, ITagViewModel, IMatchTagViewModel } from '../../app.view-models';
+import { MatchViewModel,
+  IMatchViewModel,
+  IUserViewModel,
+  ICharacterViewModel,
+  ITagViewModel,
+  IMatchTagViewModel } from '../../app.view-models';
 import { CommonUxService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
 import { UserManagementService } from '../user-management/user-management.service';
@@ -12,6 +17,11 @@ import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.
 @Component({
   selector: 'match-input-form',
   templateUrl: './match-input-form.component.html',
+  styles: [`
+  ::ng-deep .tag-popover {
+    left: 15px !important;
+  }
+  `]
 })
 export class MatchInputFormComponent implements OnInit {
   @ViewChild('tagInput', { static: false }) tagInputComponent: TypeaheadComponent;
