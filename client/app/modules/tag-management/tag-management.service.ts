@@ -18,11 +18,7 @@ export class TagManagementService {
         this.httpClient.get<IServerResponse>(`${this.apiUrl}/getall`).subscribe(
             (res: IServerResponse) => {
                 if (res && res.data && res.data.tags) {
-                    this.cachedTags.next(res.data.tags);
-                    this.cachedTags.pipe(
-                        publish(),
-                        refCount()
-                    );
+                    this._updateCachedTags(res.data.tags);
                 }
             }
         );
@@ -33,11 +29,7 @@ export class TagManagementService {
                 if (res && res.data && res.data.tag) {
                     const allTags: ITagViewModel[] = this.cachedTags.value;
                     allTags.push(res.data.tag);
-                    this.cachedTags.next(allTags);
-                    this.cachedTags.pipe(
-                        publish(),
-                        refCount()
-                    );
+                    this._updateCachedTags(allTags);
                 }
             })
         );
@@ -54,13 +46,29 @@ export class TagManagementService {
                     Object.assign(allTags[tagIndex], updatedTagFromServer);
 
                     // Overwrite cache with updated copy
-                    this.cachedTags.next(allTags);
-                    this.cachedTags.pipe(
-                        publish(),
-                        refCount()
-                    );
+                    this._updateCachedTags(allTags);
                 }
             })
+        );
+    }
+
+    private _updateCachedTags(tags: ITagViewModel[]): void {
+        tags.sort((a, b) => {
+            if (a.tagName < b.tagName) {
+                return -1;
+            }
+            if (a.tagName > b.tagName) {
+                return 1;
+            }
+            if (a.tagName === b.tagName) {
+                return 0;
+            }
+        });
+
+        this.cachedTags.next(tags);
+        this.cachedTags.pipe(
+            publish(),
+            refCount()
         );
     }
 }
