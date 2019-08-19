@@ -1,8 +1,9 @@
-import { Component, Input, HostBinding, OnInit } from '@angular/core';
+import { Component, Input, HostBinding, OnInit, TemplateRef } from '@angular/core';
 import { IMatchViewModel, ICharacterViewModel, ITagViewModel, IMatchTagViewModel } from '../../../app.view-models';
 import { faCheck, faTimes, faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { MatchManagementService } from '../match-management.service';
 import { CommonUxService } from '../../common-ux/common-ux.service';
+import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: '[match-row]',
@@ -15,15 +16,16 @@ export class MatchRowComponent implements OnInit {
   @Input() tags: ITagViewModel[] = [];
   @HostBinding('style.height') trHeight: string = '40px';
 
+  public editedMatch: IMatchViewModel = {} as IMatchViewModel;
   public editedMatchTags: ITagViewModel[] = []; // Will add to match on save
   public newTag: ITagViewModel = null;
-
-  public editedMatch: IMatchViewModel = {} as IMatchViewModel;
+  public warnings: string[] = [];
 
   public faCheck = faCheck;
   public faTimes = faTimes;
   public faTrash = faTrash;
   public faPencilAlt = faPencilAlt;
+
   public boolOptions: any[] = [
     { name: 'Yes', value: true },
     { name: 'No', value: false },
@@ -125,6 +127,27 @@ export class MatchRowComponent implements OnInit {
       this.editedMatch.userCharacterId = event.characterId;
     } else {
       this.editedMatch.userCharacterId = null;
+    }
+  }
+  public validateMatch(): boolean {
+    this.warnings = [];
+    if (!this.editedMatch.opponentCharacterId) {
+      this.warnings.push('Opponent character required.');
+    }
+    if (!this.editedMatch.userCharacterId && this.editedMatch.userCharacterGsp) {
+      this.warnings.push('User GSP must be associated with a user character.');
+    }
+    if (this.warnings.length) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  public openWarningPopover(popover: NgbPopover) {
+    if (!this.validateMatch()) {
+      popover.popoverTitle = 'Invalid match';
+      popover.ngbPopover = this.warnings.join(' ');
+      popover.open();
     }
   }
 }

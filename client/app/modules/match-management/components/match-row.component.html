@@ -88,9 +88,19 @@
         </div>
     </td>
     <td class="align-middle">{{editedMatch.created | date:"MM/dd/yy h:mm a"}}</td>
-    <td class="text-center align-middle">
+    <td class="text-center align-middle"
+    #warningPop="ngbPopover"
+    [ngbPopover]=""
+    placement="left"
+    triggers="manual"
+    (mouseenter)="openWarningPopover(warningPop)"
+    (mouseleave)="warningPop.close()">
         <div class="btn-group btn-block">
-            <button [disabled]="!this.editedMatch.opponentCharacterId" (click)="saveChanges()" class="btn btn-sm btn-light border-secondary">Save</button>
+            <button 
+            [disabled]="!this.editedMatch.opponentCharacterId" 
+            (click)="saveChanges()" 
+            class="btn btn-sm btn-light border-secondary">Save</button>
+            
             <button (click)="resetState()" class="btn btn-sm btn-light border-secondary">Cancel</button>
         </div>
     </td>
