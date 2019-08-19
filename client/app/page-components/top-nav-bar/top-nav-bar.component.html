@@ -53,8 +53,8 @@
                     Insights
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" *ngIf="user?.userId < 4" [ngClass]="{'disabled': !user}" routerLink="/admin" routerLinkActive="active">
+            <li *ngIf="user && user.userId < 4" class="nav-item">
+                <a class="nav-link" [ngClass]="{'disabled': !user}" routerLink="/admin" routerLinkActive="active">
                     Admin
                 </a>
             </li>
