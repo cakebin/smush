@@ -1,14 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IMatchViewModel, ICharacterViewModel, IUserViewModel, IUserCharacterViewModel } from '../../../app.view-models';
+import { IMatchViewModel, ICharacterViewModel, IUserViewModel, ITagViewModel } from '../../../app.view-models';
+import { MatchCardEditComponent } from './match-card-edit.component';
 import { MatchManagementService } from '../match-management.service';
 import { CommonUxService } from '../../common-ux/common-ux.service';
+import { reject } from 'q';
 
 @Component({
   selector: 'match-card',
   templateUrl: './match-card.component.html',
   styleUrls: ['./match-card.component.css']
 })
-export class MatchCardComponent implements OnInit{
+export class MatchCardComponent implements OnInit {
+  @Input() tags: ITagViewModel[] = [];
   @Input() characters: ICharacterViewModel[] = [];
   @Input() match: IMatchViewModel = {} as IMatchViewModel;
   @Input() set user(user: IUserViewModel) {
@@ -52,8 +55,6 @@ export class MatchCardComponent implements OnInit{
   }
 
   public editMatch(originalMatch: IMatchViewModel): void {
-    originalMatch.editMode = true;
-
     // Properties don't exist on editedMatch if they aren't filled in,
     // so we need to make sure we have all relevant fields, null or not
     this.editedMatch = {
@@ -64,41 +65,37 @@ export class MatchCardComponent implements OnInit{
       userCharacterGsp: originalMatch.userCharacterGsp,
       opponentCharacterId: originalMatch.opponentCharacterId,
       opponentCharacterGsp: originalMatch.opponentCharacterGsp,
-      matchTags: originalMatch.matchTags,
+      matchTags: [],
       userWin: originalMatch.userWin === undefined ? null : originalMatch.userWin,
-      created: originalMatch.created
+      created: originalMatch.created,
     } as IMatchViewModel;
-  }
-  public saveChanges(): void {
-    if (!this.editedMatch.opponentCharacterId) {
-      this.commonUxService.showWarningToast('Opponent character required.');
-      return;
-    }
-    this.matchService.updateMatch(this.editedMatch).subscribe(
-      (res: IMatchViewModel) => {
-        if (res) {
-          this.match = res;
-          this.editedMatch = res;
-          this.resetState();
+
+    // Tags need to be copied over so we don't send a reference to the original tags
+    Object.assign(this.editedMatch.matchTags, originalMatch.matchTags);
+
+    const modalRef = this.commonUxService.openModal(MatchCardEditComponent);
+    modalRef.componentInstance.editedMatch = this.editedMatch;
+    modalRef.componentInstance.tags = this.tags;
+    modalRef.componentInstance.characters = this.characters;
+
+    modalRef.result.then(
+      result => {
+        // User saved changes
+        if (result) {
+          this.match = result;
         }
       });
   }
-  public resetState(): void {
-    this.editedMatch = {} as IMatchViewModel;
-    this.match.editMode = false;
-  }
-  public onSelectEditOpponentCharacter(event: ICharacterViewModel): void {
-    if (event) {
-      this.editedMatch.opponentCharacterId = event.characterId;
-    } else {
-      this.editedMatch.opponentCharacterId = null;
-    }
-  }
-  public onSelectEditUserCharacter(event: ICharacterViewModel): void {
-    if (event) {
-      this.editedMatch.userCharacterId = event.characterId;
-    } else {
-      this.editedMatch.userCharacterId = null;
-    }
+  public deleteMatch(match: IMatchViewModel): void {
+    this.commonUxService.openConfirmModal(
+      'Removing match against ' + match.opponentCharacterName + '.',
+      'Delete match',
+      false,
+      'Nuke it').then(
+      confirm => {
+        this.matchService.deleteMatch(match);
+      }, dismiss => {
+        // Cancelled. Do nothing
+      });
   }
 }

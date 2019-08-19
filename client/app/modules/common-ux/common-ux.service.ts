@@ -1,6 +1,7 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { ToastService } from './components/toast/toast.service';
 import { ConfirmModalService, ConfirmOptions } from './components/confirm-modal/confirm-modal.service';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 @Injectable()
 export class CommonUxService {
@@ -8,6 +9,7 @@ export class CommonUxService {
     constructor(
         private toastService: ToastService,
         private confirmModalService: ConfirmModalService,
+        private modalService: NgbModal,
     ) {
     }
 
@@ -35,6 +37,16 @@ export class CommonUxService {
             hideReject: hideRejectBool,
             confirmLabel: confirmLabelText,
             rejectLabel: rejectLabelText } as ConfirmOptions);
+    }
+    public openModal(
+        component: any,
+        modalSize: 'sm' | 'lg' | 'xl' = 'lg'
+    ): NgbModalRef {
+        return this.modalService.open(component, {
+            size: modalSize,
+            backdrop: 'static',
+            keyboard: false,
+        });
     }
 
     // Utility methods

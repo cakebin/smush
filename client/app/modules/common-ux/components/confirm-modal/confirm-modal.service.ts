@@ -5,6 +5,7 @@ import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstr
 export interface ConfirmOptions {
   title: string;
   message: string;
+  template: TemplateRef<any>;
   confirmLabel: string;
   rejectLabel: string;
   hideReject: boolean;

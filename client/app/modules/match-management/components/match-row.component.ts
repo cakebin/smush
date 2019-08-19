@@ -52,11 +52,12 @@ export class MatchRowComponent implements OnInit {
       userCharacterGsp: originalMatch.userCharacterGsp,
       opponentCharacterId: originalMatch.opponentCharacterId,
       opponentCharacterGsp: originalMatch.opponentCharacterGsp,
-      matchTags: null,
+      matchTags: [],
       userWin: originalMatch.userWin === undefined ? null : originalMatch.userWin,
       created: originalMatch.created
     } as IMatchViewModel;
 
+    // Tags need to be copied over so we don't send a reference to the original tags
     Object.assign(this.editedMatchTags, originalMatch.matchTags);
   }
   public deleteMatch(match: IMatchViewModel): void {

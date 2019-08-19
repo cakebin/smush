@@ -1,32 +1,32 @@
-:host /deep/ .cursor-pointer {
-    cursor: pointer;
-}
-:host /deep/ .no-data-block {
+:host ::ng-deep.no-data-block {
     margin-top:100px;
 }
-:host /deep/ common-ux-toasts.ngb-toasts {
+:host ::ng-deep .cursor-pointer {
+    cursor: pointer;
+}
+:host ::ng-deep common-ux-toasts.ngb-toasts {
     top: initial;
     bottom: 0;
 }
-:host /deep/ .slide-panel-hide {
+:host ::ng-deep .slide-panel-hide {
     display:none;
 }
-:host /deep/ .slide-panel-high-z-index {
+:host ::ng-deep .slide-panel-high-z-index {
     z-index:20;
 }
-:host /deep/ .slide-panel-low-z-index {
+:host ::ng-deep .slide-panel-low-z-index {
     z-index:-1;
 }
-:host /deep/ th[common-ux-sortable-table-header] {
+:host ::ng-deep th[common-ux-sortable-table-header] {
     white-space: nowrap;
 }
-:host /deep/ [common-ux-sortable-table-header] span {
+:host ::ng-deep [common-ux-sortable-table-header] span {
     cursor:pointer;
 }
-:host /deep/ [common-ux-sortable-table-header] .ng-fa-icon {
+:host ::ng-deep [common-ux-sortable-table-header] .ng-fa-icon {
     opacity:0.3;
 }
-:host /deep/ th.asc[common-ux-sortable-table-header] span .ng-fa-icon[sortUp],
-:host /deep/ th.desc[common-ux-sortable-table-header] span .ng-fa-icon[sortDown] {
+:host ::ng-deep th.asc[common-ux-sortable-table-header] span .ng-fa-icon[sortUp],
+:host ::ng-deep th.desc[common-ux-sortable-table-header] span .ng-fa-icon[sortDown] {
     opacity: 1;
 }

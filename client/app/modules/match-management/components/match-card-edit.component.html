@@ -1,0 +1,128 @@
+<div class="modal-header">
+    <div class="modal-title h5">Edit match</div>
+</div>
+<div class="modal-body">
+    <div class="row mt-3 mb-3">
+        <div class="col">
+            <div class="row">
+                <div class="form-group col-6">
+                    <label for="opponent-character">Opponent character*</label>
+                    <common-ux-typeahead 
+                    [items]="characters"
+                    [textPropertyName]="'characterName'"
+                    [valuePropertyName]="'characterId'"
+                    [value]="editedMatch.opponentCharacterId"
+                    (selectItem)="onSelectOpponentCharacter($event)"
+                    id="opponent-character"></common-ux-typeahead>
+                </div>
+                <div class="form-group col-6">
+                    <label for="opponent-gsp">Opponent character's GSP</label>
+                    <common-ux-masked-number-input [(numberValue)]="editedMatch.opponentCharacterGsp"></common-ux-masked-number-input>      
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-6">
+                    <label for="user-character">
+                        Your character<span *ngIf="editedMatch.userCharacterGsp">*</span>
+                    </label>
+                    <common-ux-typeahead 
+                    [items]="characters" 
+                    [textPropertyName]="'characterName'"
+                    [valuePropertyName]="'characterId'"
+                    [value]="editedMatch.userCharacterId"
+                    (selectItem)="onSelectUserCharacter($event)"
+                    id="user-character"></common-ux-typeahead>
+                </div>
+                <div class="form-group col-6">
+                    <label for="user-gsp">Your character's GSP</label>
+                    <common-ux-masked-number-input [(numberValue)]="editedMatch.userCharacterGsp"></common-ux-masked-number-input>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <label for="match-tags">
+                        Tags
+                        <button class="btn btn-sm btn-outline-secondary p-0 px-1 ml-1" 
+                        style="position:relative; top:-1px;"
+                        placement="top"
+                        triggers="manual"
+                        popoverClass="tag-popover"
+                        [autoClose]="false"
+                        [ngbPopover]="popContent"
+                        [popoverTitle]="popTitle"
+                        #pop="ngbPopover"
+                        (click)="pop.open()">
+                            View all tags
+                        </button>
+                        <ng-template #popTitle>
+                            Match quality tags
+                            <span (click)="pop.close()" class="cursor-pointer float-right">&times;</span>
+                        </ng-template>
+                        <ng-template #popContent>
+                            Click to add a tag, or type into the input below.
+                            <ul class="list-unstyled mb-1 mt-2">
+                                <li *ngFor="let tag of tags">
+                                    <button (click)="onSelectTag(tag)" class="btn btn-sm btn-link p-0">{{tag.tagName}}</button>
+                                </li>
+                            </ul>
+                        </ng-template>
+                    </label>
+                    <common-ux-typeahead 
+                    [clearOnSelect]="true"
+                    [items]="tags" 
+                    [textPropertyName]="'tagName'"
+                    [valuePropertyName]="'tagId'"
+                    [value]="newTag"
+                    (selectItem)="onSelectTag($event)"
+                    id="match-tags"></common-ux-typeahead>
+                    <div>
+                        <span *ngFor="let tag of matchTags" class="badge badge-secondary mr-1">
+                            {{tag.tagName}}
+                            <span (click)="removeTag(tag)" class="ml-1 cursor-pointer">x</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div>Match outcome:</div>
+       
+                    <div [(ngModel)]="editedMatch.userWin" class="btn-group btn-group-toggle mt-2" ngbRadioGroup name="match-outcome">
+                        <label ngbButtonLabel class="btn-outline-secondary">
+                            <input ngbButton type="radio" [value]="true"> Win
+                        </label>
+                        <label ngbButtonLabel class="btn-outline-secondary">
+                            <input ngbButton type="radio" [value]="false"> Loss
+                        </label>
+                    </div>
+                 
+                </div>
+            </div><!-- Close row -->
+        </div>
+    </div>
+    <span 
+    *ngIf="showFooterWarnings && !validateMatch()"
+    class="text-danger">
+        {{warnings.join(" ")}}
+    </span>
+</div>
+<div class="modal-footer">
+  <span *ngIf="!validateMatch()" 
+  class="text-danger mr-3" 
+  placement="top" 
+  [ngbPopover]="popContent"
+  triggers="mouseenter:mouseleave">
+      Invalid match
+      <fa-icon [icon]="faQuestionCircle"></fa-icon>
+      <ng-template #popContent>{{warnings.join(' ')}}</ng-template>
+  </span>
+
+  <button type="button" class="btn btn-outline-secondary mr-2" (click)="close()">Cancel</button>
+  <button 
+  [disabled]="!validateMatch() || isSaving"
+  (click)="saveChanges()"
+  type="button" 
+  class="btn btn-primary">
+    Save changes
+  </button>
+</div>  

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import { MatchViewModel,
   IMatchViewModel,
@@ -11,7 +11,6 @@ import { MatchManagementService } from './match-management.service';
 import { UserManagementService } from '../user-management/user-management.service';
 import { CharacterManagementService } from '../character-management/character-management.service';
 import { TagManagementService } from '../tag-management/tag-management.service';
-import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.component';
 
 
 @Component({
@@ -24,8 +23,6 @@ import { TypeaheadComponent } from '../common-ux/components/typeahead/typeahead.
   `]
 })
 export class MatchInputFormComponent implements OnInit {
-  @ViewChild('tagInput', { static: false }) tagInputComponent: TypeaheadComponent;
-
   public match: IMatchViewModel = new MatchViewModel();
   public characters: ICharacterViewModel[] = [];
   public tags: ITagViewModel[] = [];

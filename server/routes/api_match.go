@@ -182,7 +182,7 @@ func (r *MatchRouter) handleCreate(res http.ResponseWriter, req *http.Request) {
   }
 
   // Then make any match tag relationships
-  if matchCreate.MatchTags != nil {
+  if matchCreate.MatchTags != nil && len(*matchCreate.MatchTags) > 0 {
     matchTagCreates := addMatchIDtoMatchTagCreate(*matchCreate.MatchTags, matchID)
     _, err := r.Services.Database.CreateMatchTags(matchTagCreates)
     if err != nil {
@@ -242,11 +242,13 @@ func (r *MatchRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
       return
     }
 
-    // Then nake new match tag relatioships
-    _, err = r.Services.Database.CreateMatchTags(*matchUpdate.MatchTags)
-    if err != nil {
-      http.Error(res, fmt.Sprintf("Error creating new match tags: %s", err.Error()), http.StatusInternalServerError)
-      return
+    // Then make new match tag relationships
+    if len(*matchUpdate.MatchTags) > 0 {
+      _, err = r.Services.Database.CreateMatchTags(*matchUpdate.MatchTags)
+      if err != nil {
+        http.Error(res, fmt.Sprintf("Error creating new match tags: %s", err.Error()), http.StatusInternalServerError)
+        return
+      }
     }
   }
 
