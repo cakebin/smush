@@ -31,6 +31,7 @@
     </div>
     <div class="card-footer p-2">
         <span class="small text-muted">{{match.created | date:"MM/dd/yy h:mm a"}}</span>
-        <button *ngIf="isUserOwned" class="btn btn-sm btn-outline-primary float-right py-0 px-1">Edit</button>
+        <button *ngIf="isUserOwned" (click)="deleteMatch(match)" class="btn btn-sm btn-outline-secondary float-right py-0 px-1 ml-1">Delete</button>
+        <button *ngIf="isUserOwned" (click)="editMatch(match)" class="btn btn-sm btn-outline-primary float-right py-0 px-1">Edit</button>
     </div>
 </div>

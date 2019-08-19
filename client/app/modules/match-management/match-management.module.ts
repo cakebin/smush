@@ -10,10 +10,13 @@ import { MatchInputFormComponent } from './match-input-form.component';
 import { MatchViewComponent } from './match-view.component';
 import { MatchRowComponent} from './components/match-row.component';
 import { MatchCardComponent } from './components/match-card.component';
+import { MatchCardEditComponent } from './components/match-card-edit.component';
+
 
 import { MatchManagementService } from './match-management.service';
 import { CharacterManagementModule } from '../character-management/character-management.module';
 import { CharacterManagementService } from '../character-management/character-management.service';
+
 
 
 
@@ -23,6 +26,10 @@ import { CharacterManagementService } from '../character-management/character-ma
     MatchViewComponent,
     MatchRowComponent,
     MatchCardComponent,
+    MatchCardEditComponent
+  ],
+  entryComponents: [
+    MatchCardEditComponent,
   ],
   imports: [
     BrowserModule,
