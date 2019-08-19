@@ -14,7 +14,7 @@ export class CommonUxService {
     }
 
     public showStandardToast(message: string | TemplateRef<any>, titleText: string = ''): void {
-        this.toastService.show(message, { title: titleText });
+        this.toastService.show(message, { title: titleText, classname: 'bg-primary text-light' });
     }
     public showSuccessToast(message: string | TemplateRef<any>, titleText: string = 'Success'): void {
         this.toastService.show(message, { classname: 'bg-success text-light', delay: 5000, title: titleText });

@@ -25,7 +25,8 @@ type UserGetResponseData struct {
 // UserUpdateResponseData is the data we send
 // back after a successfully creating a new user
 type UserUpdateResponseData struct {
-  User  *db.UserProfileView  `json:"user"`
+  User            *db.UserProfileView      `json:"user"`
+  UserCharacters  []*db.UserCharacterView  `json:"userCharacters"`
 }
 
 
@@ -162,11 +163,18 @@ func (r *UserRouter) handleUpdateProfile(res http.ResponseWriter, req *http.Requ
   }
   userProfileView, err := r.Services.Database.GetUserProfileViewByUserID(userID)
 
+  userCharViews, err := r.Services.Database.GetUserCharacterViewsByUserID(userID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user character views in database after updating user_character: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
   response := &Response{
     Success:  true,
     Error:    nil,
     Data:     UserUpdateResponseData{
-      User:  userProfileView,
+      User:           userProfileView,
+      UserCharacters: userCharViews,
     },
   }
 

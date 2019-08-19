@@ -40,6 +40,8 @@ export class UserManagementService {
                     localStorage.setItem('smush_user', JSON.stringify(user));
                     localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
                     localStorage.setItem('smush_refresh_expire', JSON.stringify(new Date(res.data.refreshExpiration)));
+                    // Don't save authenticated state
+                    user.isAuthenticated = true;
                     this._updateCachedUser(user);
                 }
             })
@@ -69,11 +71,12 @@ export class UserManagementService {
     public updateUser(updatedUser: IUserViewModel): Observable<{}> {
         updatedUser = this._prepareUserForApi(updatedUser);
         return this.httpClient.post(`${this.apiUrl}/update_profile`, updatedUser).pipe(
-            tap(res => {
-                localStorage.setItem('smush_user', JSON.stringify(updatedUser));
-            }
-        ),
-        finalize(() => this._updateCachedUser(updatedUser))
+            tap((res: IServerResponse) => {
+                if (res && res.data && res.data.user) {
+                    res.data.user.userCharacters = res.data.userCharacters;
+                    this._updateCachedUser(res.data.user, true);
+                }
+            })
         );
     }
     public deleteUser(userId: number): Observable<{}> {
@@ -92,7 +95,7 @@ export class UserManagementService {
             tap((res: IServerResponse) => {
                 if (res && res.data && res.data.user) {
                     res.data.user.userCharacters = res.data.userCharacters;
-                    this._updateCachedUser(res.data.user);
+                    this._updateCachedUser(res.data.user, true);
                 }
             })
         );
@@ -104,7 +107,7 @@ export class UserManagementService {
             map((res: IServerResponse) => {
                 if (res && res.data && res.data.user) {
                     res.data.user.userCharacters = res.data.userCharacters;
-                    this._updateCachedUser(res.data.user);
+                    this._updateCachedUser(res.data.user, true);
                     return res.data.user;
                 }
             })
@@ -116,7 +119,7 @@ export class UserManagementService {
             tap((res: IServerResponse) => {
                 if (res && res.data && res.data.user) {
                     res.data.user.userCharacters = res.data.userCharacters;
-                    this._updateCachedUser(res.data.user);
+                    this._updateCachedUser(res.data.user, true);
                 }
             })
         ).subscribe();
@@ -129,7 +132,7 @@ export class UserManagementService {
             tap((res: IServerResponse) => {
                 if (res && res.data && res.data.user) {
                     res.data.user.userCharacters = res.data.userCharacters;
-                    this._updateCachedUser(res.data.user);
+                    this._updateCachedUser(res.data.user, true);
                 }
             })
         ).subscribe();
@@ -140,7 +143,7 @@ export class UserManagementService {
             tap((res: IServerResponse) => {
                 if (res && res.data && res.data.user) {
                     res.data.user.userCharacters = res.data.userCharacters;
-                    this._updateCachedUser(res.data.user);
+                    this._updateCachedUser(res.data.user, true);
                 }
             })
         ).subscribe();
@@ -165,8 +168,11 @@ export class UserManagementService {
         }
         return userCharacter;
     }
-    private _updateCachedUser(user: IUserViewModel): void {
-        localStorage.setItem('smush_user', JSON.stringify(user));
+    private _updateCachedUser(user: IUserViewModel, updateLocalStorage: boolean = false): void {
+        if (updateLocalStorage) {
+            localStorage.setItem('smush_user', JSON.stringify(user));
+        }
+
         this.cachedUser.next(user);
         this.cachedUser.pipe(
             publish(),
@@ -242,9 +248,7 @@ export class UserManagementService {
                             localStorage.setItem('smush_access_expire', JSON.stringify(new Date(res.data.accessExpiration)));
                             if (isInitialCheck) {
                                 // If this is on pageload, change isAuthenticated to true so we know to load the static data etc
-                                const authedUser: IUserViewModel = this.cachedUser.value;
-                                authedUser.isAuthenticated = true;
-                                this._updateCachedUser(authedUser);
+                                this._setUserAuthenticated();
                             }
                         }
                     }
@@ -253,11 +257,14 @@ export class UserManagementService {
                 if (isInitialCheck) {
                     // We didn't need to re-authenticate. The user still has a good access token.
                     // If this is on pageload, change isAuthenticated to true so we know to load the static data etc
-                    const authedUser: IUserViewModel = this.cachedUser.value;
-                    authedUser.isAuthenticated = true;
-                    this._updateCachedUser(authedUser);
+                    this._setUserAuthenticated();
                 }
             }
         }
+    }
+    private _setUserAuthenticated(): void {
+        const authedUser: IUserViewModel = this.cachedUser.value;
+        authedUser.isAuthenticated = true;
+        this._updateCachedUser(authedUser);
     }
 }
