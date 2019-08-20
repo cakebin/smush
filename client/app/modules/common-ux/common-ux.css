@@ -1,9 +1,6 @@
 :host ::ng-deep.no-data-block {
     margin-top:100px;
 }
-:host ::ng-deep .cursor-pointer {
-    cursor: pointer;
-}
 :host ::ng-deep common-ux-toasts.ngb-toasts {
     top: initial;
     bottom: 0;
@@ -29,4 +26,18 @@
 :host ::ng-deep th.asc[common-ux-sortable-table-header] span .ng-fa-icon[sortUp],
 :host ::ng-deep th.desc[common-ux-sortable-table-header] span .ng-fa-icon[sortDown] {
     opacity: 1;
+}
+::ng-deep .tag-list {
+    height:90px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+::ng-deep .cursor-pointer {
+    cursor: pointer;
+}
+::ng-deep .tag-popover-move-left {
+    left: 70px !important;
+}
+::ng-deep .tag-popover-move-left .arrow {
+    left: 10% !important;
 }

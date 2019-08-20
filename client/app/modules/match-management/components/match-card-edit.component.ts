@@ -18,8 +18,7 @@ export class MatchCardEditComponent implements OnInit {
   @Input() characters: ICharacterViewModel[] = [];
   @Input() editedMatch: IMatchViewModel = {} as IMatchViewModel;
 
-  public matchTags: ITagViewModel[] = []; // Will add to match on save
-  public newTag: ITagViewModel = null;
+  public editedMatchTags: ITagViewModel[] = []; // Will add to match on save
   public warnings: string[] = [];
   public isSaving: boolean = false;
   public faQuestionCircle = faQuestionCircle;
@@ -32,7 +31,7 @@ export class MatchCardEditComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.matchTags = this.editedMatch.matchTags;
+    this.editedMatchTags = this.editedMatch.matchTags;
   }
 
 
@@ -56,17 +55,6 @@ export class MatchCardEditComponent implements OnInit {
       this.editedMatch.userCharacterId = event.characterId;
     }
   }
-  public onSelectTag(event: ITagViewModel): void {
-    if (event != null) {
-      if (!this.matchTags.find(t => t.tagId === event.tagId)) {
-        this.matchTags.push(event);
-      }
-    }
-  }
-  public removeTag(tag: ITagViewModel): void {
-    const tagIndex: number = this.matchTags.findIndex(t => t.tagId === tag.tagId);
-    this.matchTags.splice(tagIndex, 1);
-  }
 
 
   /*----------------------
@@ -81,7 +69,7 @@ export class MatchCardEditComponent implements OnInit {
       return;
     }
     this.isSaving = true;
-    this.editedMatch.matchTags = this.matchTags.map(t => {
+    this.editedMatch.matchTags = this.editedMatchTags.map(t => {
       return {
         matchTagId: null,
         matchId: this.editedMatch.matchId,

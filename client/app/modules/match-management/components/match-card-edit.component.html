@@ -42,47 +42,11 @@
 
             <div class="row">
                 <div class="col-6">
-                    <label for="match-tags">
-                        Tags
-                        <button class="btn btn-sm btn-outline-secondary p-0 px-1 ml-1" 
-                        style="position:relative; top:-1px;"
-                        placement="top"
-                        triggers="manual"
-                        popoverClass="tag-popover"
-                        [autoClose]="false"
-                        [ngbPopover]="popContent"
-                        [popoverTitle]="popTitle"
-                        #pop="ngbPopover"
-                        (click)="pop.open()">
-                            View all tags
-                        </button>
-                        <ng-template #popTitle>
-                            Match quality tags
-                            <span (click)="pop.close()" class="cursor-pointer float-right">&times;</span>
-                        </ng-template>
-                        <ng-template #popContent>
-                            Click to add a tag, or type into the input below.
-                            <ul class="list-unstyled mb-1 mt-2">
-                                <li *ngFor="let tag of tags">
-                                    <button (click)="onSelectTag(tag)" class="btn btn-sm btn-link p-0">{{tag.tagName}}</button>
-                                </li>
-                            </ul>
-                        </ng-template>
-                    </label>
-                    <common-ux-typeahead 
-                    [clearOnSelect]="true"
-                    [items]="tags" 
-                    [textPropertyName]="'tagName'"
-                    [valuePropertyName]="'tagId'"
-                    [value]="newTag"
-                    (selectItem)="onSelectTag($event)"
-                    id="match-tags"></common-ux-typeahead>
-                    <div>
-                        <span *ngFor="let tag of matchTags" class="badge badge-secondary mr-1">
-                            {{tag.tagName}}
-                            <span (click)="removeTag(tag)" class="ml-1 cursor-pointer">x</span>
-                        </span>
-                    </div>
+                    <label for="match-tags">Tags</label>
+                    <common-ux-tag-input 
+                    [tags]="tags" 
+                    [(selectedTags)]="editedMatchTags"
+                    id="match-tags"></common-ux-tag-input>
                 </div>
                 <div class="col-6">
                     <div>Match outcome:</div>
