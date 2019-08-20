@@ -18,7 +18,6 @@ export class MatchRowComponent implements OnInit {
 
   public editedMatch: IMatchViewModel = {} as IMatchViewModel;
   public editedMatchTags: ITagViewModel[] = []; // Will add to match on save
-  public newTag: ITagViewModel = null;
   public warnings: string[] = [];
 
   public faCheck = faCheck;
@@ -104,15 +103,10 @@ export class MatchRowComponent implements OnInit {
     this.editedMatch = {} as IMatchViewModel;
     this.match.editMode = false;
   }
-  public removeTag(tag: ITagViewModel): void {
-    const tagIndex: number = this.editedMatchTags.findIndex(t => t.tagId === tag.tagId);
-    this.editedMatchTags.splice(tagIndex, 1);
-  }
-  public onSelectTag(event: ITagViewModel): void {
+
+  public updateSelectedTags(event: ITagViewModel[]): void {
     if (event != null) {
-      if (!this.editedMatchTags.find(t => t.tagId === event.tagId)) {
-        this.editedMatchTags.push(event);
-      }
+      this.editedMatchTags = event;
     }
   }
   public onSelectEditOpponentCharacter(event: ICharacterViewModel): void {

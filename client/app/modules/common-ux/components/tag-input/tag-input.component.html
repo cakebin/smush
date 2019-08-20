@@ -1,0 +1,52 @@
+<div class="row no-gutters">
+  <div class="col-lg-3 col-md-4 pr-lg-1 pr-md-1">
+      <button class="btn btn-block btn-outline-secondary text-nowrap"
+      [ngClass]="{'btn-sm': size=='sm'}"
+      [placement]="placement"
+      triggers="manual"
+      container="body"
+      [popoverClass]="popoverClass"
+      [autoClose]="false"
+      [ngbPopover]="popContent"
+      [popoverTitle]="popTitle"
+      #pop="ngbPopover"
+      (click)="pop.open()">
+          <span class="d-none d-md-inline d-lg-none">Tags</span>
+          <span class="d-md-none d-lg-inline">Tag list</span>           
+      </button>
+  </div>
+  <div class="col-lg-9 col-md-8">
+      <common-ux-typeahead 
+      [size]="size"
+      [clearOnSelect]="true"
+      [items]="tags" 
+      [textPropertyName]="'tagName'"
+      [valuePropertyName]="'tagId'"
+      [value]="newTag"
+      (selectItem)="onSelectTag($event)"
+      id="match-tags"></common-ux-typeahead>
+  </div> 
+</div> 
+<div class="row">
+    <div class="col">
+        <span *ngFor="let tag of selectedTags" class="badge badge-secondary mr-1">
+            {{tag.tagName}}
+            <span (click)="removeTag(tag)" class="ml-1 cursor-pointer">&times;</span>
+        </span>
+    </div>
+</div>
+
+
+
+<ng-template #popTitle>
+    Match quality tags
+    <span (click)="pop.close()" class="float-right cursor-pointer">&times;</span>
+</ng-template>
+<ng-template #popContent>
+    Click to add a tag, or type into the input below.
+    <ul class="tag-list list-unstyled mb-1 mt-2">
+        <li *ngFor="let tag of tags">
+            <button (click)="onSelectTag(tag)" class="btn btn-sm btn-link p-0">{{tag.tagName}}</button>
+        </li>
+    </ul>
+</ng-template>

@@ -21,6 +21,7 @@ import { SortableTableHeaderComponent } from './components/sortable-table-header
 import { MaskedNumberInputComponent } from './components/masked-number-input/masked-number-input.component';
 import { SlidePanelComponent } from './components/slide-panel/slide-panel.component';
 import { TypeaheadComponent } from './components/typeahead/typeahead.component';
+import { TagInputComponent } from './components/tag-input/tag-input.component';
 
 // Pipes
 import { ToNumberPipe } from './components/string-to-number/string-to-number.pipe';
@@ -32,6 +33,7 @@ import { ToNumberPipe } from './components/string-to-number/string-to-number.pip
     TypeaheadComponent,
     MaskedNumberInputComponent,
     SlidePanelComponent,
+    TagInputComponent,
     ToNumberPipe,
   ],
   exports: [
@@ -44,6 +46,7 @@ import { ToNumberPipe } from './components/string-to-number/string-to-number.pip
     MaskedNumberInputComponent,
     ToastComponent,
     SlidePanelComponent,
+    TagInputComponent,
     ConfirmModalModule,
     ToNumberPipe,
   ],

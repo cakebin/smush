@@ -16,11 +16,6 @@ import { TagManagementService } from '../tag-management/tag-management.service';
 @Component({
   selector: 'match-input-form',
   templateUrl: './match-input-form.component.html',
-  styles: [`
-  ::ng-deep .tag-popover {
-    left: 15px !important;
-  }
-  `]
 })
 export class MatchInputFormComponent implements OnInit {
   public match: IMatchViewModel = new MatchViewModel();
@@ -28,7 +23,6 @@ export class MatchInputFormComponent implements OnInit {
   public tags: ITagViewModel[] = [];
 
   public matchTags: ITagViewModel[] = []; // Will add to match on save
-  public newTag: ITagViewModel = null;
 
   public showFooterWarnings: boolean = false;
   public warnings: string[] = [];
@@ -102,17 +96,6 @@ export class MatchInputFormComponent implements OnInit {
       this.showFooterWarnings = false;
       this.isSaving = false;
     });
-  }
-  public removeTag(tag: ITagViewModel): void {
-    const tagIndex: number = this.matchTags.findIndex(t => t.tagId === tag.tagId);
-    this.matchTags.splice(tagIndex, 1);
-  }
-  public onSelectTag(event: ITagViewModel): void {
-    if (event != null) {
-      if (!this.matchTags.find(t => t.tagId === event.tagId)) {
-        this.matchTags.push(event);
-      }
-    }
   }
   public onSelectOpponentCharacter(event: ICharacterViewModel): void {
     // Event properties aren't accessible in the template

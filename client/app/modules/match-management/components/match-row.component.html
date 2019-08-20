@@ -71,21 +71,11 @@
     </td>
 
     <td class="align-middle">
-        <common-ux-typeahead 
-        [clearOnSelect]="true"
-        [items]="tags" 
-        [textPropertyName]="'tagName'"
-        [valuePropertyName]="'tagId'"
-        [value]="newTag"
+        <common-ux-tag-input 
+        [tags]="tags" 
         [size]="'sm'"
-        (selectItem)="onSelectTag($event)"
-        id="match-tags"></common-ux-typeahead>
-        <div>
-            <span *ngFor="let tag of editedMatchTags" class="badge badge-secondary mr-1">
-                {{tag.tagName}}
-                <span (click)="removeTag(tag)" class="ml-1 cursor-pointer">x</span>
-            </span>
-        </div>
+        [(selectedTags)]="editedMatchTags">
+        </common-ux-tag-input>
     </td>
     <td class="align-middle">{{editedMatch.created | date:"MM/dd/yy h:mm a"}}</td>
     <td class="text-center align-middle"
