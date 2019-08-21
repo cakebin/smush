@@ -8,6 +8,7 @@ package db
 // UserManager describes all of the methods used
 // to interact with the users table in our database
 type UserManager interface {
+  GetAllUsers() ([]*User, error)
   GetUserIDByEmail(email string) (int64, error)
 
   UpdateUserProfile(profileUpdate *UserProfileUpdate) (int64, error)
@@ -22,7 +23,14 @@ type UserManager interface {
           Data Structures
 ----------------------------------*/
 
-// UserProfileUpdate describes the data needed 
+// User describes the data in the users table
+type User struct {
+  UserID   int64   `json:"userId"`
+  UserName string  `json:"userName"`
+}
+
+
+// UserProfileUpdate describes the data needed
 // to update a given user's profile information
 type UserProfileUpdate struct {
   UserID    int64   `json:"userId"`
@@ -46,7 +54,7 @@ type UserRefreshUpdate struct {
 }
 
 
-// UserCreate describes the data needed 
+// UserCreate describes the data needed
 // to create a new user in our db
 type UserCreate struct {
   UserName        string  `json:"userName"`
@@ -81,13 +89,50 @@ func (db *DB) GetUserIDByEmail(email string) (int64, error) {
 }
 
 
+func (db *DB) GetAllUsers() ([]*User, error) {
+  sqlStatement := `
+    SELECT
+      user_id,
+      user_name
+    FROM
+      users
+  `
+  rows, err := db.Query(sqlStatement)
+  if err != nil {
+    return nil, err
+  }
+  defer rows.Close()
+
+  users := make([]*User, 0)
+  for rows.Next() {
+    user := new(User)
+    err := rows.Scan(
+      &user.UserID,
+      &user.UserName,
+    )
+    if err != nil {
+      return nil, err
+    }
+
+    users = append(users, user)
+  }
+
+  err = rows.Err()
+  if err != nil {
+    return nil, err
+  }
+
+  return users, nil
+}
+
+
 // CreateUser adds a new entry to the users table in our database
 func (db *DB) CreateUser(userCreate *UserCreate) (int64, error) {
   var userID int64
   sqlStatement := `
     INSERT INTO users
       (user_name, email_address, hashed_password)
-    VALUES 
+    VALUES
       ($1, $2, $3)
     RETURNING
       user_id
@@ -127,7 +172,7 @@ func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int64, error)
     profileUpdate.UserID,
   )
   err := row.Scan(&userID)
-  
+
   if err != nil {
     return 0, err
   }
