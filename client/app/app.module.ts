@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
+import 'bootstrap';
 
 // Root
 import { AppComponent } from './app.component';

@@ -1,20 +1,33 @@
-.flex-container {
-    position:absolute;
-    top:50px;
-    bottom:0;
-    left:0;
-    right:0;
+/* Large viewports */
+.home-page {
     display: flex;
-    align-items: center;
-    min-height: 600px;
-    justify-content: center;
-}
-.flex-item {
-    flex: 1;
+    flex-direction: column;
+    width: 70%;
+    margin: auto;
 }
 
-.flex-item--fixed {
-    flex: none;
-    max-width: 50%;
+.cakebin {
+    width: 18.750em;
+    height: 18.750em;
 }
-  
+
+
+/* Medium viewports */
+@media (max-width : 900px) {
+    .home-page {
+        width: 80%;
+    }
+}
+
+
+/* Small viewports */
+@media (max-width : 420px) {
+    .home-page {
+        width: 90%
+    }
+
+    .cakebin {
+        width: 90%;
+        height: 100%;
+    }
+ }
