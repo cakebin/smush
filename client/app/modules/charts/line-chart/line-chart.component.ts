@@ -11,11 +11,11 @@ const oceanScheme =  {
 };
 
 @Component({
-  selector: 'chart-bar-horizontal',
-  templateUrl: './bar-chart.component.html',
-  styleUrls: ['./bar-chart.component.css']
+  selector: 'chart-line',
+  templateUrl: './line-chart.component.html',
+  styleUrls: ['../charts.css']
 })
-export class BarChartComponent implements OnInit {
+export class LineChartComponent implements OnInit {
   @Input() data: SingleSeries = [];
   @Input() xAxisLabel: string = '';
   @Input() yAxisLabel: string = '';
@@ -25,12 +25,9 @@ export class BarChartComponent implements OnInit {
   @Input() dataUnit: string = '';
 
   public colorScheme = oceanScheme;
-  public calcHeight: number = 400;
 
   constructor() {}
 
   ngOnInit() {
-    const charHeight: number = 12;
-    this.calcHeight = charHeight * this.data.length;
   }
 }
