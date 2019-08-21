@@ -4,31 +4,14 @@ import { SingleSeries, MultiSeries, DataItem, Series } from '@swimlane/ngx-chart
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { MatchManagementService } from 'client/app/modules/match-management/match-management.service';
-import { IMatchViewModel, IUserViewModel } from 'client/app/app.view-models';
+import { IMatchViewModel, IUserViewModel, IChartViewModel, ChartViewModel, IChartUserViewModel } from 'client/app/app.view-models';
 import { CommonUxService } from 'client/app/modules/common-ux/common-ux.service';
 import { UserManagementService } from 'client/app/modules/user-management/user-management.service';
 
-interface IChartViewModel {
-  chartId: number;
-  chartName: string;
-}
-class ChartViewModel implements IChartViewModel {
-  constructor(
-    public chartId: number,
-    public chartName: string,
-    public chartType: 'bar' | 'line',
-  ) {}
-}
 const charts: IChartViewModel[] = [
   new ChartViewModel(1, 'Opponent character usage', 'bar'),
   new ChartViewModel(2, 'User GSP over time', 'line'),
 ];
-
-// TEMP, need this as an actual view model somewhere else
-interface IChartUserViewModel {
-  userId: number;
-  userName: string;
-}
 
 @Component({
   selector: 'insights',
@@ -73,7 +56,7 @@ export class InsightsComponent implements OnInit {
     this.matchService.cachedMatches.subscribe(res => {
       if (res && res.length) {
         this.matches = res;
-        this.displayChart(this.selectedChart);
+        this.updateAndRenderChart();
         this.isInitialLoad = false;
       }
     },
@@ -89,6 +72,11 @@ export class InsightsComponent implements OnInit {
         ];
       }
     });
+    this.userService.getAllUsers().subscribe((res: IChartUserViewModel[]) => {
+      if (res) {
+        this.users = res;
+      }
+    });
   }
 
 
@@ -97,7 +85,7 @@ export class InsightsComponent implements OnInit {
   ----------------------*/
 
   public onDateSelect(event: any): void {
-    this.displayChart(this.selectedChart);
+    this.updateAndRenderChart();
   }
 
 
@@ -105,7 +93,10 @@ export class InsightsComponent implements OnInit {
       Chart publishers
   ----------------------*/
 
-  public displayChart(chart: IChartViewModel) {
+  public updateAndRenderChart() {
+    this._clearData();
+    const chart = this.selectedChart;
+
     switch (chart.chartId) {
       case 1:
         this.chartData = this._getCharacterUsageChartData();
@@ -113,11 +104,14 @@ export class InsightsComponent implements OnInit {
         this.xAxisLabel = 'Usage';
         this.yAxisLabel = 'Character';
         this.xAxisTickFormatting = (val: string) => val + '%';
+        this.yAxisTickFormatting = (val: string) => val;
         this.sortType = 'use';
         this.sortOrder = 'desc';
         break;
       case 2:
-        this.selectedUser = this.users.find(u => u.userId === this.user.userId);
+        if (this.selectedUser == null) {
+          this.selectedUser = this.users.find(u => u.userId === this.user.userId);
+        }
         this.multiSeriesChartData = this._getUserGspChartData();
         this.xAxisLabel = 'Date';
         this.yAxisLabel = 'GSP';
@@ -134,9 +128,13 @@ export class InsightsComponent implements OnInit {
       Data methods
   -------------------*/
   private _getFilteredData(): IMatchViewModel[] {
-    let filteredData: IMatchViewModel[] = this.matches;
+    let filteredData: IMatchViewModel[] = [];
+    Object.assign(filteredData, this.matches);
 
     // Filter the data based on user-given constraints
+    if (this.selectedUser) {
+      filteredData = filteredData.filter(match => match.userId === this.selectedUser.userId);
+    }
     if (this.startDate) {
       filteredData = filteredData.filter(match => {
         const matchCreateDate: Date = new Date(match.created);
@@ -157,9 +155,7 @@ export class InsightsComponent implements OnInit {
         return (matchNgbCreateDate.before(this.endDate) || matchNgbCreateDate.equals(this.endDate));
       });
     }
-    if (this.selectedUser) {
-      filteredData = filteredData.filter(match => match.userId === this.selectedUser.userId);
-    }
+
     if (!filteredData || !filteredData.length) {
       this.noFilteredDataToDisplay = true;
       return;
@@ -295,5 +291,9 @@ export class InsightsComponent implements OnInit {
     }
 
     return str;
-}
+  }
+  private _clearData(): void {
+    this.chartData = null;
+    this.multiSeriesChartData = null;
+  }
 }

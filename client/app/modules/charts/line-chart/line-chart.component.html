@@ -1,17 +1,23 @@
-<ngx-charts-line-chart class="chart-container"
-    [results]="data"
-    [xAxisLabel]="xAxisLabel"
-    [yAxisLabel]="yAxisLabel"
-    [legend]="true"
-    [view]="[800]"
-    [timeline]="true"
-    [autoScale]="true"
-    [xAxis]="true"
-    [yAxis]="true"
-    [showXAxisLabel]="true"
-    [showYAxisLabel]="true"
-    [xAxisTickFormatting]="xAxisTickFormatting"
-    [yAxisTickFormatting]="yAxisTickFormatting"
-    [scheme]="colorScheme"
-    >
-</ngx-charts-line-chart>
+<div class="chart-container line-chart">
+    <ngx-charts-line-chart
+        [results]="data"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+        [legend]="true"
+        [view]="[800]"
+        [timeline]="true"
+        [autoScale]="true"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxisTickFormatting]="xAxisTickFormatting"
+        [yAxisTickFormatting]="yAxisTickFormatting"
+        [scheme]="colorScheme"
+        >
+    </ngx-charts-line-chart>
+    <small class="timeline-tip text-black-50 font-italic">
+        Click and drag to drill into areas of interest.
+    </small>
+</div>
+

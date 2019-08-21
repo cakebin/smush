@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, tap, finalize, map } from 'rxjs/operators';
-import { IUserViewModel, LogInViewModel, IServerResponse, IUserCharacterViewModel } from '../../app.view-models';
+import { publish, refCount, tap, map } from 'rxjs/operators';
+import { IUserViewModel, LogInViewModel, IServerResponse, IUserCharacterViewModel, IChartUserViewModel } from '../../app.view-models';
 
 @Injectable()
 export class UserManagementService {
@@ -65,6 +65,15 @@ export class UserManagementService {
                User
     ------------------------*/
 
+    public getAllUsers(): Observable<IChartUserViewModel[]> {
+        return this.httpClient.get(`${this.apiUrl}/getall`).pipe(
+            map((res: IServerResponse) => {
+                if (res.success && res.data) {
+                    return res.data.users as IChartUserViewModel[];
+                }
+            })
+        );
+    }
     public createUser(user: IUserViewModel): Observable<{}> {
         return this.httpClient.post(`${this.authApiUrl}/register`, user);
     }

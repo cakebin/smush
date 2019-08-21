@@ -8,7 +8,11 @@
 .tooltip-data {
     font-size: 1.25em;
 }
-ngx-charts-line-chart.chart-container {
+.chart-container.line-chart{
   width:800px;
   margin-left:-410px;
+}
+.timeline-tip {
+  position: absolute;
+  bottom: 16px;
 }

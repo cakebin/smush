@@ -121,3 +121,18 @@ export interface IMatchTagViewModel {
     tagId: number;
     tagName: string;
 }
+export interface IChartViewModel {
+    chartId: number;
+    chartName: string;
+  }
+export class ChartViewModel implements IChartViewModel {
+    constructor(
+      public chartId: number,
+      public chartName: string,
+      public chartType: 'bar' | 'line',
+    ) {}
+}
+export interface IChartUserViewModel {
+    userId: number;
+    userName: string;
+}

@@ -6,7 +6,7 @@
                 <!-------------------
                      Chart select
                 --------------------->
-                <select [(ngModel)]="selectedChart" (ngModelChange)="displayChart($event)" class="custom-select">
+                <select [(ngModel)]="selectedChart" (change)="updateAndRenderChart()" class="custom-select">
                     <option *ngFor="let chart of charts" [ngValue]="chart">{{chart.chartName}}</option>
                 </select>
             </div>
@@ -19,7 +19,7 @@
                     --------------------->
                     <div class="input-group col-6">
                         <input class="form-control" placeholder="Start date" name="start-date" 
-                            [(ngModel)]="startDate" (dateSelect)="onDateSelect($event)" 
+                            [(ngModel)]="startDate" (dateSelect)="updateAndRenderChart()" 
                             ngbDatepicker #dpStart="ngbDatepicker" autocomplete="off" />
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" (click)="dpStart.toggle()" type="button">
@@ -29,7 +29,7 @@
                     </div>
                     <div class="input-group col-6">
                         <input class="form-control" placeholder="End date" name="end-date" 
-                            [(ngModel)]="endDate" (dateSelect)="onDateSelect($event)" 
+                            [(ngModel)]="endDate" (dateSelect)="updateAndRenderChart()" 
                             ngbDatepicker #dpEnd="ngbDatepicker" autocomplete="off" />
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" (click)="dpEnd.toggle()" type="button">
@@ -43,8 +43,8 @@
                 <!-------------------
                      User select
                 --------------------->
-                <select disabled [(ngModel)]="selectedUser" class="custom-select">
-                    <option [value]="null">-- Data from all users --</option>
+                <select [disabled]="!this.users?.length" [(ngModel)]="selectedUser" (change)="updateAndRenderChart()" class="custom-select">
+                    <option *ngIf="selectedChart.chartId != 2" [value]="null">-- Data from all users --</option>
                     <option *ngFor="let user of users" [ngValue]="user">{{user.userName}}</option>
                 </select>
             </div>
@@ -54,7 +54,7 @@
                    Sorting
             --------------------->
             <div class="col-6 pr-1">
-                <select [(ngModel)]="sortType" (change)="publishCharacterUsageChartData()" 
+                <select [(ngModel)]="sortType" (change)="updateAndRenderChart()" 
                 [disabled]="selectedChart.chartId != 1" class="custom-select">
                     <option [ngValue]="null">-- Sort by --</option>
                     <option value="alpha">Alphabetical</option>
@@ -62,7 +62,7 @@
                 </select>
             </div>
             <div class="col-6 pl-1">
-                <select [(ngModel)]="sortOrder" (change)="publishCharacterUsageChartData()" 
+                <select [(ngModel)]="sortOrder" (change)="updateAndRenderChart()" 
                 [disabled]="selectedChart.chartId != 1" class="custom-select">
                     <option [ngValue]="null">-- Sort order --</option>
                     <option value="asc">Ascending</option>
