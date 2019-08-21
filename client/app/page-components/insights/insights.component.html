@@ -3,16 +3,20 @@
     <div class="col-8">
         <div class="form-row">
             <div class="col">
-                <select disabled class="custom-select">
-                    <option selected>Opponent character usage</option>
-                    <option value="1">User win rate over time</option>
-                    <option value="2">User win rate by character</option>
+                <!-------------------
+                     Chart select
+                --------------------->
+                <select [(ngModel)]="selectedChart" (ngModelChange)="displayChart($event)" class="custom-select">
+                    <option *ngFor="let chart of charts" [ngValue]="chart">{{chart.chartName}}</option>
                 </select>
             </div>
         </div>
         <div class="form-row mt-2">
             <div class="col-6 pr-1">
                 <div class="form-row">
+                    <!-------------------
+                         Date select
+                    --------------------->
                     <div class="input-group col-6">
                         <input class="form-control" placeholder="Start date" name="start-date" 
                             [(ngModel)]="startDate" (dateSelect)="onDateSelect($event)" 
@@ -36,24 +40,31 @@
                 </div>
             </div>
             <div class="col-6 pl-1">
-                <select disabled class="custom-select">
-                    <option selected>-- Data from all users --</option>
-                    <option value="1">Jyruffe</option>
-                    <option value="2">Joralphe</option>
+                <!-------------------
+                     User select
+                --------------------->
+                <select disabled [(ngModel)]="selectedUser" class="custom-select">
+                    <option [value]="null">-- Data from all users --</option>
+                    <option *ngFor="let user of users" [ngValue]="user">{{user.userName}}</option>
                 </select>
             </div>
         </div>
         <div class="form-row mt-2">
+            <!-------------------
+                   Sorting
+            --------------------->
             <div class="col-6 pr-1">
-                <select [(ngModel)]="sortType" (change)="publishCharacterUsageChartData()" class="custom-select">
-                    <option selected value="">-- Sort by --</option>
+                <select [(ngModel)]="sortType" (change)="publishCharacterUsageChartData()" 
+                [disabled]="selectedChart.chartId != 1" class="custom-select">
+                    <option [ngValue]="null">-- Sort by --</option>
                     <option value="alpha">Alphabetical</option>
                     <option value="use">Usage</option>
                 </select>
             </div>
             <div class="col-6 pl-1">
-                <select [(ngModel)]="sortOrder" (change)="publishCharacterUsageChartData()" class="custom-select">
-                    <option selected value="">-- Sort order --</option>
+                <select [(ngModel)]="sortOrder" (change)="publishCharacterUsageChartData()" 
+                [disabled]="selectedChart.chartId != 1" class="custom-select">
+                    <option [ngValue]="null">-- Sort order --</option>
                     <option value="asc">Ascending</option>
                     <option value="desc">Descending</option>
                 </select>
@@ -63,7 +74,11 @@
         <div class="row mt-3">
             <div class="col">
                 <div *ngIf="!isInitialLoad && matches?.length && !noFilteredDataToDisplay">
+                    <!-------------------
+                          Bar chart
+                    --------------------->
                     <chart-bar-horizontal 
+                        *ngIf="selectedChart.chartType=='bar'"
                         [data]="chartData"
                         [dataUnit]="dataUnit"
                         [xAxisLabel]="xAxisLabel"
@@ -71,6 +86,18 @@
                         [xAxisTickFormatting]="xAxisTickFormatting"
                         [yAxisTickFormatting]="yAxisTickFormatting"
                     ></chart-bar-horizontal>
+                    <!-------------------
+                          Line chart
+                    --------------------->
+                    <chart-line 
+                        *ngIf="selectedChart.chartType=='line'"
+                        [data]="multiSeriesChartData"
+                        [dataUnit]="dataUnit"
+                        [xAxisLabel]="xAxisLabel"
+                        [yAxisLabel]="yAxisLabel"
+                        [xAxisTickFormatting]="xAxisTickFormatting"
+                        [yAxisTickFormatting]="yAxisTickFormatting"
+                    ></chart-line>
                 </div>
                 <div *ngIf="isInitialLoad" class="text-center insights-chart-container">
                     <div class="skeleton-chart text-center mt-2">

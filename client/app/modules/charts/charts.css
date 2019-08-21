@@ -8,3 +8,7 @@
 .tooltip-data {
     font-size: 1.25em;
 }
+ngx-charts-line-chart.chart-container {
+  width:800px;
+  margin-left:-410px;
+}
