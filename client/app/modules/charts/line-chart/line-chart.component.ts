@@ -21,8 +21,6 @@ export class LineChartComponent implements OnInit {
   @Input() yAxisLabel: string = '';
   @Input() xAxisTickFormatting;
   @Input() yAxisTickFormatting;
-  // Weird-ass template handling: https://github.com/swimlane/ngx-charts/issues/736
-  @Input() dataUnit: string = '';
 
   public colorScheme = oceanScheme;
 

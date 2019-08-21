@@ -173,6 +173,10 @@ export class InsightsComponent implements OnInit {
     const multiSeries: MultiSeries = [];
     const filteredData = this._getFilteredData();
 
+    if (!filteredData) {
+      return null;
+    }
+
     filteredData.map(match => {
       if (!match.userCharacterName || !match.userCharacterGsp) {
         return null;
@@ -192,13 +196,16 @@ export class InsightsComponent implements OnInit {
       } as DataItem);
     });
 
-    console.log(multiSeries);
     return multiSeries;
   }
 
   private _getCharacterUsageChartData(): SingleSeries {
     let series: SingleSeries = [];
     const filteredData = this._getFilteredData();
+
+    if (!filteredData) {
+      return null;
+    }
 
     // Group by and transform into DataItem objects simultaneously (cringe)
     series = filteredData.reduce((dataItemArray: SingleSeries, match: IMatchViewModel) => {

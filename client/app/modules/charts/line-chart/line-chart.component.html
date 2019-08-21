@@ -14,13 +14,4 @@
     [yAxisTickFormatting]="yAxisTickFormatting"
     [scheme]="colorScheme"
     >
-    <ng-template #tooltipTemplate let-model="model">
-    <div class="text-center p-1">
-        <div>{{model.name}}</div>
-        <div class="tooltip-data">
-        <span *ngIf="!dataUnit">{{model.value}}</span>
-        <span *ngIf="dataUnit=='percent'">{{model.value?.toFixed(2)}}%</span>
-        </div>
-    </div>
-    </ng-template>
 </ngx-charts-line-chart>
