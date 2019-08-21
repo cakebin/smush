@@ -44,7 +44,7 @@
                      User select
                 --------------------->
                 <select [disabled]="!this.users?.length" [(ngModel)]="selectedUser" (change)="updateAndRenderChart()" class="custom-select">
-                    <option *ngIf="selectedChart.chartId != 2" [value]="null">-- Data from all users --</option>
+                    <option *ngIf="selectedChart.chartId != 2" [ngValue]="null">-- Data from all users --</option>
                     <option *ngFor="let user of users" [ngValue]="user">{{user.userName}}</option>
                 </select>
             </div>

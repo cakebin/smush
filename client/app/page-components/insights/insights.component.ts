@@ -105,8 +105,14 @@ export class InsightsComponent implements OnInit {
         this.yAxisLabel = 'Character';
         this.xAxisTickFormatting = (val: string) => val + '%';
         this.yAxisTickFormatting = (val: string) => val;
-        this.sortType = 'use';
-        this.sortOrder = 'desc';
+
+        if (this.sortType == null) {
+          this.sortType = 'use';
+        }
+        if (this.sortOrder == null) {
+          this.sortOrder = 'desc';
+        }
+
         break;
       case 2:
         if (this.selectedUser == null) {
@@ -221,7 +227,7 @@ export class InsightsComponent implements OnInit {
       name: dataItem.name, value: ((dataItem.value as number) / filteredData.length) * 100 } as DataItem;
     });
 
-    // Sort by opponent character name alphabetically
+    // Sort as specified by user
     series = this._sortSeries(series);
 
     return series;
