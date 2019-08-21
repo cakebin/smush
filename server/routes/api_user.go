@@ -14,6 +14,10 @@ import (
           Response Data
 ----------------------------------*/
 
+type UserGetAllResponseData struct {
+  Users  []*db.User  `json:"users"`
+}
+
 // UserGetResponseData is the data we send back
 // after a successfully getting all user's info
 type UserGetResponseData struct {
@@ -68,6 +72,8 @@ func (r *UserRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
         switch head {
         case "get":
           r.handleGetByID(res, req)
+        case "getall":
+          r.handleGetAll(res, req)
         default:
           http.Error(res, fmt.Sprintf("Unsupported GET path %s", head), http.StatusBadRequest)
           return
@@ -138,6 +144,26 @@ func (r *UserRouter) handleGetByID(res http.ResponseWriter, req *http.Request) {
     Data:     UserGetResponseData{
       User:            userProfileView,
       UserCharacters:  userCharViews,
+    },
+  }
+
+  res.Header().Set("Content-Type", "application/json")
+  json.NewEncoder(res).Encode(response)
+}
+
+
+func (r *UserRouter) handleGetAll(res http.ResponseWriter, req *http.Request) {
+  users, err := r.Services.Database.GetAllUsers()
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error getting all users: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  response := &Response{
+    Success:  true,
+    Error:    nil,
+    Data:     UserGetAllResponseData{
+      Users: users,
     },
   }
 
