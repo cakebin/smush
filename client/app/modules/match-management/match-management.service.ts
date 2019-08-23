@@ -21,15 +21,16 @@ export class MatchManagementService {
             }
         );
     }
-    public createMatch(match: IMatchViewModel): Observable<{}> {
+    public createMatch(match: IMatchViewModel): Observable<IMatchViewModel> {
         match = this._prepareMatchForApi(match);
         return this.httpClient.post(`${this.apiUrl}/create`, match).pipe(
-            tap((res: IServerResponse) => {
+            map((res: IServerResponse) => {
                 if (res && res.data && res.data.match) {
+                    const serverMatch: IMatchViewModel = res.data.match;
                     // Set "isNew" property for highlighting
-                    res.data.match.isNew = true;
+                    serverMatch.isNew = true;
                     let allMatches: IMatchViewModel[] = this.cachedMatches.value;
-                    allMatches.push(res.data.match);
+                    allMatches.push(serverMatch);
                     this._updateCachedMatches(allMatches);
 
                     // Remove "isNew" property after 3 seconds so it won't re-highlight.
@@ -42,6 +43,8 @@ export class MatchManagementService {
                         latestMatch.isNew = false;
                         this._updateCachedMatches(allMatches);
                     }, 3000);
+
+                    return serverMatch;
                 }
             }));
     }
