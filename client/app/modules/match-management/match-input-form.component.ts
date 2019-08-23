@@ -5,7 +5,8 @@ import { MatchViewModel,
   IUserViewModel,
   ICharacterViewModel,
   ITagViewModel,
-  IMatchTagViewModel } from '../../app.view-models';
+  IMatchTagViewModel,
+  IUserCharacterViewModel } from '../../app.view-models';
 import { CommonUxService } from '../common-ux/common-ux.service';
 import { MatchManagementService } from './match-management.service';
 import { UserManagementService } from '../user-management/user-management.service';
@@ -21,6 +22,7 @@ export class MatchInputFormComponent implements OnInit {
   public match: IMatchViewModel = new MatchViewModel();
   public characters: ICharacterViewModel[] = [];
   public tags: ITagViewModel[] = [];
+  public userCharacter: IUserCharacterViewModel = {} as IUserCharacterViewModel;
 
   public matchTags: ITagViewModel[] = []; // Will add to match on save
 
@@ -45,11 +47,24 @@ export class MatchInputFormComponent implements OnInit {
         if (res) {
           this.user = res;
           this.match.userId = this.user.userId;
+          this.userCharacter.userId = this.userCharacter.userId;
           if (res.defaultCharacterId) {
             this.match.userCharacterId = res.defaultCharacterId;
+            this.userCharacter.characterId = res.defaultCharacterId;
           }
           if (res.defaultUserCharacterGsp) {
             this.match.userCharacterGsp = res.defaultUserCharacterGsp;
+            this.userCharacter.characterGsp = res.defaultUserCharacterGsp
+          }
+          if (res.defaultUserCharacterId) {
+            this.userCharacter.userCharacterId = res.defaultUserCharacterId;
+            const defaultUserChar: IUserCharacterViewModel = res.userCharacters.find((userChar) => {
+              return userChar.userCharacterId === res.defaultUserCharacterId; 
+            });
+            this.userCharacter.altCostume = defaultUserChar.altCostume;
+          }
+          if (res.defaultCharacterName) {
+            this.userCharacter.characterName = res.defaultCharacterName;
           }
         }
     });
@@ -85,17 +100,22 @@ export class MatchInputFormComponent implements OnInit {
       } as IMatchTagViewModel;
     });
 
-    this.matchService.createMatch(this.match).subscribe((res: number) => {
-      // On success, do nothing
-    }, error => {
-      this.commonUxService.showDangerToast('Unable to save match.');
-      console.error(error);
-    }, () => {
-      this._resetMatch();
-      // Set footer warnings to false so it won't show up until the next mouseenter
-      this.showFooterWarnings = false;
-      this.isSaving = false;
-    });
+    this.matchService.createMatch(this.match).subscribe(
+      res => {
+        this.userCharacter.characterGsp = res.userCharacterGsp;
+        this.userService.updateUserCharacter(this.userCharacter).subscribe();
+      },
+      error => {
+        this.commonUxService.showDangerToast('Unable to save match.');
+        console.error(error);
+      },
+      () => {
+        this._resetMatch();
+        // Set footer warnings to false so it won't show up until the next mouseenter
+        this.showFooterWarnings = false;
+        this.isSaving = false;
+      }
+     );
   }
   public onSelectOpponentCharacter(event: ICharacterViewModel): void {
     // Event properties aren't accessible in the template
