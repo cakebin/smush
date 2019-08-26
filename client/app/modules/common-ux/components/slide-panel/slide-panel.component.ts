@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, HostBinding } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { SlidePanelService } from './slide-panel.service';
 
 type SlideDirection = 'left' | 'right';
 
@@ -22,7 +23,8 @@ type SlideDirection = 'left' | 'right';
 })
 export class SlidePanelComponent implements OnInit {
   @Input() slideDirection: SlideDirection = 'left';
-  @Input() set paneVisible(isVisible: boolean) {
+
+  public set paneVisible(isVisible: boolean) {
     this._paneVisible = isVisible;
     if (isVisible) {
       if (this.slideDirection === 'left') {
@@ -46,7 +48,7 @@ export class SlidePanelComponent implements OnInit {
       }, 300);
     }
   }
-  get paneVisible() {
+  public get paneVisible() {
     return this._paneVisible;
   }
   private _paneVisible: boolean = false;
@@ -59,11 +61,20 @@ export class SlidePanelComponent implements OnInit {
   @HostBinding('class.slide-panel-high-z-index') setHighZIndexClass: boolean = false;
   @HostBinding('class.slide-panel-low-z-index') setLowZIndexClass: boolean = false;
 
+  constructor(private panelService: SlidePanelService) {
+  }
+
   ngOnInit() {
     // The panel itself needs to be hidden on page load so users don't see it animating away.
     // For some reason, it starts out displayed before hiding itself.
     setTimeout(() => {
       this.setHidePanelClass = false;
     }, 1000);
+
+    this.panelService.panelVisible.subscribe(
+      (res: boolean) => {
+        this.paneVisible = res;
+      }
+    );
   }
 }

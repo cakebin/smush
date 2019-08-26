@@ -16,10 +16,12 @@ import { ToastModule } from './components/toast/toast.module';
 import { ToastService } from './components/toast/toast.service';
 import { ToastComponent } from './components/toast/toast.component';
 
+// Slide panel
+import { SlidePanelModule } from './components/slide-panel/slide-panel.module';
+
 // Various components
 import { SortableTableHeaderComponent } from './components/sortable-table-header/sortable-table-header.component';
 import { MaskedNumberInputComponent } from './components/masked-number-input/masked-number-input.component';
-import { SlidePanelComponent } from './components/slide-panel/slide-panel.component';
 import { TypeaheadComponent } from './components/typeahead/typeahead.component';
 import { TagInputComponent } from './components/tag-input/tag-input.component';
 
@@ -32,7 +34,6 @@ import { ToNumberPipe } from './components/string-to-number/string-to-number.pip
     SortableTableHeaderComponent,
     TypeaheadComponent,
     MaskedNumberInputComponent,
-    SlidePanelComponent,
     TagInputComponent,
     ToNumberPipe,
   ],
@@ -45,7 +46,7 @@ import { ToNumberPipe } from './components/string-to-number/string-to-number.pip
     TypeaheadComponent,
     MaskedNumberInputComponent,
     ToastComponent,
-    SlidePanelComponent,
+    SlidePanelModule,
     TagInputComponent,
     ConfirmModalModule,
     ToNumberPipe,

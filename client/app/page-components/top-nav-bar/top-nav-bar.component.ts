@@ -5,6 +5,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { UserManagementService } from '../../modules/user-management/user-management.service';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { IUserViewModel, ILogInViewModel, IServerResponse, LogInViewModel } from 'client/app/app.view-models';
+import { SlidePanelService } from 'client/app/modules/common-ux/components/slide-panel/slide-panel.service';
 
 @Component({
   selector: 'top-nav-bar',
@@ -19,13 +20,13 @@ export class TopNavBarComponent implements OnInit {
     public showLoginForm: boolean = true;
     public showRegistrationFormWarnings: boolean = false;
     public invalidEmailPassword: boolean = false;
-    public paneVisible: boolean = false;
 
     public faBars = faBars;
 
     constructor(
       private commonUxService: CommonUxService,
       private userService: UserManagementService,
+      private panelService: SlidePanelService,
       private router: Router,
     ) {
     }
@@ -60,7 +61,7 @@ export class TopNavBarComponent implements OnInit {
     }
     public logOut(): void {
       this.userService.logOut();
-      this.paneVisible = false;
+      this.panelService.closePanel();
     }
     public createUser(): void {
       if (!this._validateNewUser()) {
@@ -84,12 +85,8 @@ export class TopNavBarComponent implements OnInit {
           }
         );
     }
-    public togglePanelState(stateToSet: boolean = null): void {
-      if (stateToSet !== null) {
-        this.paneVisible = stateToSet;
-      } else {
-        this.paneVisible = !this.paneVisible;
-      }
+    public togglePanelState(setPanelOpen: boolean = false): void {
+      this.panelService.togglePanel();
 
       // When the user closes the login panel,
       // change the form back to the login (not register) form and clear all warnings
@@ -104,7 +101,7 @@ export class TopNavBarComponent implements OnInit {
       this.invalidEmailPassword = false;
 
       if (closePane) {
-        this.paneVisible = false;
+        this.panelService.closePanel();
       }
     }
     private _validateNewUser(): boolean {
