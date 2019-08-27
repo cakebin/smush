@@ -78,14 +78,14 @@
         </common-ux-tag-input>
     </td>
     <td class="align-middle">{{editedMatch.created | date:"MM/dd/yy h:mm a"}}</td>
-    <td class="text-center align-middle"
-    #warningPop="ngbPopover"
-    [ngbPopover]=""
-    placement="left"
-    triggers="manual"
-    (mouseenter)="openWarningPopover(warningPop)"
-    (mouseleave)="warningPop.close()">
-        <div class="btn-group btn-block">
+    <td class="text-center align-middle">
+        <div class="btn-group btn-block"
+        #warningPop="ngbPopover"
+        [ngbPopover]=""
+        placement="left"
+        triggers="manual"
+        (mouseenter)="openWarningPopover(warningPop)"
+        (mouseleave)="warningPop.close()">
             <button 
             [disabled]="!this.editedMatch.opponentCharacterId" 
             (click)="saveChanges()" 

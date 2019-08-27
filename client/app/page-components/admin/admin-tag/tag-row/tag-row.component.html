@@ -14,14 +14,14 @@
   <td class="align-middle">
     <input [(ngModel)]="editedTag.tagName" type="text" name="tag-name" class="form-control" />
   </td>
-  <td class="text-center align-middle"
-  #warningPop="ngbPopover"
-  [ngbPopover]=""
-  placement="left"
-  triggers="manual"
-  (mouseenter)="openWarningPopover(warningPop)"
-  (mouseleave)="warningPop.close()">
-    <div class="btn-group float-right">
+  <td class="text-center align-middle">
+    <div class="btn-group float-right"
+      #tagWarningPop="ngbPopover"
+      [ngbPopover]=""
+      placement="left"
+      triggers="manual"
+      (mouseenter)="openWarningPopover(tagWarningPop)"
+      (mouseleave)="tagWarningPop.close()">
       <button 
       [disabled]="!this.editedTag.tagName" 
       (click)="saveChanges()" 

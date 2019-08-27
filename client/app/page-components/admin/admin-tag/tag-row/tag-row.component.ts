@@ -41,7 +41,7 @@ export class TagRowComponent implements OnInit {
   }
 
   public deleteTag(tag: ITagViewModel): void {
-    this.commonUxService.openConfirmModal(`Removing tag ${tag.tagName}`, 'Delete tag', false, 'Nuke it')
+    this.commonUxService.openConfirmModal(`Removing tag "${tag.tagName}".`, 'Delete tag', false, 'Nuke it')
       .then(confirm => { this.tagService.deleteTag(tag); }, reject => { /* Do nothing */ });
   }
 
@@ -49,13 +49,13 @@ export class TagRowComponent implements OnInit {
     this.tagService.updateTag(this.editedTag).subscribe(
       (res: IServerResponse) => {
         if (res) {
-          console.log('returned tag', res)
+          console.log('returned tag', res);
           this.tag = res.data.tag;
           this.editedTag = res.data.tag;
           this.resetState();
         }
       }
-    )
+    );
   }
 
   public resetState(): void {
@@ -67,7 +67,7 @@ export class TagRowComponent implements OnInit {
     this.warnings = [];
 
     if (!this.editedTag.tagName) {
-      this.warnings.push('Tag Name required.');
+      this.warnings.push('Tag name required.');
     }
 
     if (this.warnings.length) {
