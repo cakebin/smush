@@ -24,6 +24,8 @@ import { HomeComponent } from './page-components/home/home.component';
 import { MatchesComponent } from './page-components/matches/matches.component';
 import { InsightsComponent } from './page-components/insights/insights.component';
 import { AdminComponent } from './page-components/admin/admin.component';
+import { AdminTagComponent } from './page-components/admin/admin-tag/admin-tag.component';
+import { AdminCharacterComponent } from './page-components/admin/admin-character/admin-character.component';
 import { ProfileComponent } from './page-components/profiles/profile.component';
 import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 
@@ -33,6 +35,7 @@ import { CharacterManagementService } from 'client/app/modules/character-managem
 import { MatchManagementService } from './modules/match-management/match-management.service';
 import { UserManagementService } from './modules/user-management/user-management.service';
 import { CommonUxService } from './modules/common-ux/common-ux.service';
+
 
 
 @NgModule({
@@ -45,6 +48,8 @@ import { CommonUxService } from './modules/common-ux/common-ux.service';
     InsightsComponent,
     AdminComponent,
     ProfileComponent,
+    AdminTagComponent,
+    AdminCharacterComponent,
   ],
   imports: [
     BrowserModule,
