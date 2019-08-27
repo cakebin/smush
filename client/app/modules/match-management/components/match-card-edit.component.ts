@@ -18,7 +18,7 @@ export class MatchCardEditComponent implements OnInit {
   @Input() characters: ICharacterViewModel[] = [];
   @Input() editedMatch: IMatchViewModel = {} as IMatchViewModel;
 
-  public editedMatchTags: ITagViewModel[] = []; // Will add to match on save
+  public editedMatchTags: IMatchTagViewModel[] = []; // Will add to match on save
   public warnings: string[] = [];
   public isSaving: boolean = false;
   public faQuestionCircle = faQuestionCircle;

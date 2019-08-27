@@ -14,6 +14,7 @@ export class TagManagementService {
         @Inject('TagApiUrl') private apiUrl: string,
     ) {
     }
+
     public loadAllTags(): void {
         this.httpClient.get<IServerResponse>(`${this.apiUrl}/getall`).subscribe(
             (res: IServerResponse) => {
@@ -23,6 +24,7 @@ export class TagManagementService {
             }
         );
     }
+
     public createTag(tag: ITagViewModel): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/create`, tag).pipe(
             tap((res: IServerResponse) => {
@@ -34,6 +36,7 @@ export class TagManagementService {
             })
         );
     }
+
     public updateTag(updatedTag: ITagViewModel): Observable<{}> {
         return this.httpClient.post(`${this.apiUrl}/update`, updatedTag).pipe(
             tap((res: IServerResponse) => {
@@ -51,6 +54,19 @@ export class TagManagementService {
             })
         );
     }
+
+   public deleteTag(tag: ITagViewModel): void {
+       this.httpClient.post(`${this.apiUrl}/delete`, tag).pipe(
+           tap((res: IServerResponse) => {
+             if (res && res.success) {
+               const allTags: ITagViewModel[] = this.cachedTags.value;
+               const index = allTags.findIndex(t => t.tagId === tag.tagId);
+               allTags.splice(index, 1);
+               this._updateCachedTags(allTags);
+             }
+           })
+       ).subscribe();
+   }
 
     private _updateCachedTags(tags: ITagViewModel[]): void {
         tags.sort((a, b) => {
