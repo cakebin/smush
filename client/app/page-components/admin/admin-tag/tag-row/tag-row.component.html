@@ -10,7 +10,7 @@
 
 <!-- Edit row -->
 <ng-template #editing>
-  <td class="align-middle">{{ editedTag.tagId }}</td>
+  <td class="align-middle pl-3">{{ editedTag.tagId }}</td>
   <td class="align-middle">
     <input [(ngModel)]="editedTag.tagName" type="text" name="tag-name" class="form-control" />
   </td>
@@ -21,12 +21,12 @@
   triggers="manual"
   (mouseenter)="openWarningPopover(warningPop)"
   (mouseleave)="warningPop.close()">
-    <div class="btn-group btn-block">
+    <div class="btn-group float-right">
       <button 
       [disabled]="!this.editedTag.tagName" 
       (click)="saveChanges()" 
-      class="btn btn-sm btn-light border-secondary">Save</button>
-       <button (click)="resetState()" class="btn btn-sm btn-light border-secondary">Cancel</button>
+      class="btn btn-light border-secondary">Save</button>
+       <button (click)="resetState()" class="btn btn-light border-secondary">Cancel</button>
     </div>
   </td>
 </ng-template>
