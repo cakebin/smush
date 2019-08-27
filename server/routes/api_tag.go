@@ -65,6 +65,8 @@ func (r *TagRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
       r.handleCreate(res, req)
     case "update":
       r.handleUpdate(res, req)
+    case "delete":
+      r.handleDelete(res, req)
     default:
       http.Error(res, fmt.Sprintf("Unsupported POST path %s", head), http.StatusBadRequest)
       return
@@ -174,6 +176,32 @@ func (r *TagRouter) handleUpdate(res http.ResponseWriter, req *http.Request) {
     Data:     TagUpdateResponseData{
       Tag:  tag,
     },
+  }
+
+  res.Header().Set("Content-Type", "application/json")
+  json.NewEncoder(res).Encode(response)
+}
+
+
+func (r *TagRouter) handleDelete(res http.ResponseWriter, req *http.Request) {
+  decoder := json.NewDecoder(req.Body)
+  tagDelete := new(db.TagDelete)
+
+  err := decoder.Decode(tagDelete)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
+    return
+  }
+
+  _, err = r.Services.Database.DeleteTagByTagID(tagDelete.TagID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error deleting tag in database: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  response := &Response{
+    Success:  true,
+    Error:    nil,
   }
 
   res.Header().Set("Content-Type", "application/json")

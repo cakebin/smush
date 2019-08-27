@@ -107,11 +107,13 @@ export interface IServerResponse {
 export interface ITagViewModel {
     tagId: number;
     tagName: string;
+    editMode: boolean;
 }
 export class TagViewModel implements ITagViewModel {
     constructor(
         public tagId: number = null,
         public tagName: string = '',
+        public editMode: boolean = false,
     ) {
     }
 }

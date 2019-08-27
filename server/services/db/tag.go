@@ -28,6 +28,13 @@ type TagUpdate struct {
 }
 
 
+// TagDelete describes the data needed 
+// to delete a given tag in our database
+type TagDelete struct {
+  TagID  int64  `json:"tagId"`
+}
+
+
 /*---------------------------------
             Interface
 ----------------------------------*/
@@ -40,6 +47,7 @@ type TagManager interface {
 
   CreateTag(tagCreate *TagCreate) (int, error)
   UpdateTag(tagUpdate *TagUpdate) (int, error)
+  DeleteTagByTagID(tagID int64) (int64, error)
 }
 
 
@@ -159,4 +167,26 @@ func (db *DB) UpdateTag(tagUpdate *TagUpdate) (int, error) {
   }
 
   return tagID, nil
+}
+
+
+// DeleteTagByTagID deletes an existing entry in the tags table
+func (db *DB) DeleteTagByTagID(tagID int64) (int64, error) {
+  var deletedTagID int64
+  sqlStatement := `
+    DELETE FROM
+      tags
+    WHERE
+      tag_id = $1
+    RETURNING
+      tag_id
+  `
+  row := db.QueryRow(sqlStatement, tagID)
+
+  err := row.Scan(&deletedTagID)
+  if err != nil {
+    return 0, nil
+  }
+
+  return deletedTagID, nil
 }
