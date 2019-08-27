@@ -1,8 +1,12 @@
-.skeleton-table {
+.skeleton-table, .skeleton-cards {
   position:relative;
   bottom:0;
   overflow:hidden;
   opacity:0.5;
+}
+.skeleton-cards {
+  height:280px;
+  overflow:hidden;
 }
 .skeleton-table tr {
   height:30px;

@@ -12,6 +12,9 @@
     [characters]="characters" 
     ></match-card>
 </div>
+<div *ngIf="isInitialLoad && cardMode" class="card-deck skeleton-cards">
+    <skeleton-match-card *ngFor="let card of [0, 1, 2, 3, 4, 5]"></skeleton-match-card>
+</div>
 
 <table *ngIf="!isInitialLoad && sortedMatches?.length && !cardMode" class="table table-borderless table-sm table-striped">
     <thead class="thead-dark">
@@ -42,7 +45,7 @@
     <h3 class="text-black-50">No matches found</h3>
 </div>
 
-<div *ngIf="isInitialLoad" class="skeleton-table">
+<div *ngIf="isInitialLoad && !cardMode" class="skeleton-table">
     <table class="table table-borderless table-sm table-striped">
         <thead class="thead-dark">
             <tr>

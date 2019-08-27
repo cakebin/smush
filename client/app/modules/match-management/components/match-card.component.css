@@ -57,11 +57,11 @@ img {
   top: -5px;
   left: 3px;
 }
-.player-1 .player-header::after { 
+.card:not(.skeleton-card) > .player-1 .player-header::after { 
   content: "P1";
   color: #f44336;
 }
-.player-2 .player-header::after { 
+.card:not(.skeleton-card) > .player-2 .player-header::after { 
   content: "P2";
   color: #1976d2;
 }
@@ -120,7 +120,20 @@ img.smush-logo {
   top: 40px;
   opacity:0.3;
 }
-
+.filler-text {
+  position: relative;
+  display: inline-block;
+  width: 80px;
+  height: 10px;
+  opacity: 0.3;
+}
+.skeleton-card {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+.skeleton-card .badge {
+  opacity: 0.75;
+}
 /* Defaults are
   top: 10px;
   left: -220px;
