@@ -49,7 +49,7 @@
                     Insights
                 </a>
             </li>
-            <li *ngIf="user && user.userId < 4" class="nav-item">
+            <li *ngIf="user && hasRoleAdmin" class="nav-item">
                 <a class="nav-link" [ngClass]="{'disabled': !user}" routerLink="/admin" routerLinkActive="active">
                     Admin
                 </a>

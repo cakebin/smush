@@ -62,6 +62,24 @@ func (r *CharacterRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) 
     }
   // POST Request Handlers
   case http.MethodPost:
+    // Check for admin role
+    accessCookie, err := req.Cookie("smush-access-token")
+    if err != nil {
+      http.Error(res, fmt.Sprintf("Access token expired; can't get user ID from cookie"), http.StatusUnauthorized)
+      return
+    }
+    userID, err := r.Services.Auth.GetUserIDFromJWTToken(accessCookie.Value)
+    userRoleViews, err := r.Services.Database.GetUserRoleViewsByUserID(userID)
+    if err != nil {
+      http.Error(res, fmt.Sprintf("Error fetching user role from db: %s", err.Error()), http.StatusInternalServerError)
+      return
+    }
+    hasRoleAdmin := r.Services.Auth.HasRoleAdmin(userRoleViews)
+    if !hasRoleAdmin {
+      http.Error(res, fmt.Sprintf("User not authorized to POST to api/tag"), http.StatusUnauthorized)
+      return
+    }
+
     switch head {
     case "create":
       r.handleCreate(res, req)

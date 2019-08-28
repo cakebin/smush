@@ -11,6 +11,7 @@ type Auth struct {}
 type Authenticator interface {
   JWTManager
   EncryptionManager
+  RoleManager
 }
 
 

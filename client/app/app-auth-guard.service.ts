@@ -30,8 +30,11 @@ export class AuthGuardService {
         const expectedRole = route.data.expectedRole;
         if (expectedRole) {
             if (expectedRole === 'administrator') {
-                // We do not have actual roles yet in the db so this is a jank substitute
-                if (!this._isAuthenticated() || this._user.userId > 3) {
+                const hasRoleAdmin = this._user.userRoles.reduce((acc, cur) => {
+                    return acc || cur.roleId == 1;
+                  }, false);
+
+                if (!this._isAuthenticated() || !hasRoleAdmin) {
                     this.router.navigate(['/home']);
                 }
             }

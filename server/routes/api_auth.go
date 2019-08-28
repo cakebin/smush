@@ -287,6 +287,14 @@ func (r *AuthRouter) handleLogin(res http.ResponseWriter, req *http.Request) {
     return
   }
 
+  // Finally get the user roles after authentication
+  userRoleViews, err := r.Services.Database.GetUserRoleViewsByUserID(userCredentialsView.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user roles from database: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+  userProfileView.UserRoles = userRoleViews
+
   response := &Response{
     Success:           true,
     Error:             nil,
