@@ -1,9 +1,10 @@
 <input
+    #inputField
     type="text"
     class="form-control"
     [ngClass]="{'form-control-sm':size=='sm', 'form-control-lg':size=='lg'}" 
     [(ngModel)]="numberValue"
     autocomplete="off"
     (keydown)="checkKeyInput($event)"
-    (keyup)="formatNumberAndEmit($event)"
+    (blur)="formatAndEmitValue()"
 />
