@@ -15,7 +15,6 @@ export class SlidePanelService {
     );
   }
   public closePanel() {
-    console.log('closing panel');
     this.panelVisible.next(false);
     this.panelVisible.pipe(
       publish(),
