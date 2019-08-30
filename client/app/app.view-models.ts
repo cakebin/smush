@@ -51,6 +51,7 @@ export interface IUserViewModel {
     defaultCharacterName: string;
     userCharacters: IUserCharacterViewModel[];
     isAuthenticated: boolean;
+    userRoles: IUserRoleViewModel[];
 }
 export class UserViewModel implements IUserViewModel {
     constructor(
@@ -65,6 +66,7 @@ export class UserViewModel implements IUserViewModel {
         public defaultCharacterName: string = '',
         public userCharacters: IUserCharacterViewModel[] = [],
         public isAuthenticated: boolean = false,
+        public userRoles: IUserRoleViewModel[] = [],
     ) {
     }
 }
@@ -76,6 +78,12 @@ export interface IUserCharacterViewModel {
     characterName: string;
     userId: number;
     editMode: boolean;
+}
+export interface IUserRoleViewModel {
+    userRoleId: number;
+    userId: number;
+    roleId: number;
+    roleName: string;
 }
 export interface ICharacterViewModel {
     characterId: number;

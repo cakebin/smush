@@ -24,6 +24,9 @@ type UserProfileView struct {
   // Data from user_characters
   DefaultUserCharacterID        NullInt64JSON   `json:"defaultUserCharacterId"`
   DefaultUserCharacterGsp       NullInt64JSON   `json:"defaultUserCharacterGsp"`
+
+  // Data from user_roles
+  UserRoles                     []*UserRoleView  `json:"userRoles"`
 }
 
 // UserCredentialsView describes all of the data

@@ -67,28 +67,7 @@ type UserCreate struct {
        Method Implementations
 ----------------------------------*/
 
-// GetUserIDByEmail gets a specific user's id from the users table by email
-func (db *DB) GetUserIDByEmail(email string) (int64, error) {
-  var userID int64
-  sqlStatement := `
-    SELECT
-      user_id
-    FROM
-      users
-    WHERE
-      email_address = $1
-  `
-  row := db.QueryRow(sqlStatement, email)
-  err := row.Scan(&userID)
-
-  if err != nil {
-    return 0, err
-  }
-
-  return userID, nil
-}
-
-
+// GetAllUsers fetches userId/userName for all users
 func (db *DB) GetAllUsers() ([]*User, error) {
   sqlStatement := `
     SELECT
@@ -123,6 +102,28 @@ func (db *DB) GetAllUsers() ([]*User, error) {
   }
 
   return users, nil
+}
+
+
+// GetUserIDByEmail gets a specific user's id from the users table by email
+func (db *DB) GetUserIDByEmail(email string) (int64, error) {
+  var userID int64
+  sqlStatement := `
+    SELECT
+      user_id
+    FROM
+      users
+    WHERE
+      email_address = $1
+  `
+  row := db.QueryRow(sqlStatement, email)
+  err := row.Scan(&userID)
+
+  if err != nil {
+    return 0, err
+  }
+
+  return userID, nil
 }
 
 

@@ -20,6 +20,7 @@ export class TopNavBarComponent implements OnInit {
     public showLoginForm: boolean = true;
     public showRegistrationFormWarnings: boolean = false;
     public invalidEmailPassword: boolean = false;
+    public hasRoleAdmin: boolean = false;
 
     public faBars = faBars;
 
@@ -36,6 +37,11 @@ export class TopNavBarComponent implements OnInit {
       this.userService.cachedUser.subscribe({
         next: res => {
           this.user = res;
+          if (res && res.userRoles && res.userRoles) {
+            this.hasRoleAdmin = this.user.userRoles.reduce((acc, cur) => {
+              return acc || cur.roleId == 1;
+            }, false);
+          }
         },
         error: err => {
           this.commonUxService.showDangerToast('Unable to get user data.');

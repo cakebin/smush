@@ -35,6 +35,7 @@ type JWTManager interface {
   GetNewJWTToken(id int64, expiration time.Time) (string, error)
   RefreshJWTAccessToken(token string, expiration time.Time) (string, error)
   CheckJWTToken(token string) (bool, error)
+  GetUserIDFromJWTToken(token string) (int64, error)
 }
 
 
@@ -104,4 +105,24 @@ func (a *Auth) RefreshJWTAccessToken(token string, newExpiration time.Time) (str
   }
 
   return newAccessTokenStr, nil
+}
+
+
+// GetUserIDFromJWTToken extracts the stored userID fromt the claims in a JWT token 
+func (a *Auth) GetUserIDFromJWTToken(token string) (int64, error) {
+  claims := new(Claims)
+  parsedToken, err := jwt.ParseWithClaims(
+    token,
+    claims,
+    func(token *jwt.Token) (interface{}, error) { return jwtKey, nil},
+  )
+  if err != nil {
+    return 0, err
+  }
+
+  if !parsedToken.Valid {
+    return 0, errors.New("Token Expired")
+  }
+
+  return int64(claims.UserID), nil
 }

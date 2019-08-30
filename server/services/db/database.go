@@ -22,6 +22,7 @@ type DatabaseManager interface {
   MatchViewManager
   UserManager
   UserViewManager
+  UserRoleViewManager
   CharacterManager
   UserCharacterManager
   UserCharacterViewManager
