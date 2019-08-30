@@ -1,20 +1,27 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit } from '@angular/core';
 
 
 @Component({
   selector: 'common-ux-masked-number-input',
   templateUrl: './masked-number-input.component.html'
 })
-export class MaskedNumberInputComponent {
+export class MaskedNumberInputComponent implements OnInit {
+  @ViewChild('inputField', { static: false }) inputField: ElementRef;
+
   private _numberValue: string = '';
   @Input() size: '' | 'sm' | 'lg' = '';
   @Input() set numberValue(value: string) {
-    this._numberValue = this._formatNumber(value);
+    this._numberValue = value;
   }
   get numberValue(): string {
     return this._numberValue;
   }
   @Output() numberValueChange: EventEmitter<string> = new EventEmitter<string>();
+
+  ngOnInit() {
+    // Format once on init to show a pretty default value
+    this.numberValue = this._formatNumber(this.numberValue);
+  }
 
   public checkKeyInput(event: KeyboardEvent): boolean {
     const isNumber = event.key.replace(/\D/g, '').length;
@@ -27,11 +34,8 @@ export class MaskedNumberInputComponent {
     }
   }
 
-  public formatNumberAndEmit(event: KeyboardEvent): void {
-    // Skip for arrow keys
-    if (['Left', 'Right', 'ArrowLeft', 'ArrowRight'].indexOf(event.key) !== -1) {
-      return;
-    }
+  public formatAndEmitValue(): void {
+    this.numberValue = this._formatNumber(this.numberValue);
     this.numberValueChange.emit(this.numberValue);
   }
 

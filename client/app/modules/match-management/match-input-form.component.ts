@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { MatchViewModel,
+import {
   IMatchViewModel,
   IUserViewModel,
   ICharacterViewModel,
@@ -19,7 +19,7 @@ import { TagManagementService } from '../tag-management/tag-management.service';
   templateUrl: './match-input-form.component.html',
 })
 export class MatchInputFormComponent implements OnInit {
-  public match: IMatchViewModel = new MatchViewModel();
+  public match: IMatchViewModel = {} as IMatchViewModel;
   public characters: ICharacterViewModel[] = [];
   public tags: ITagViewModel[] = [];
   public userCharacter: IUserCharacterViewModel = {} as IUserCharacterViewModel;
@@ -54,12 +54,12 @@ export class MatchInputFormComponent implements OnInit {
           }
           if (res.defaultUserCharacterGsp) {
             this.match.userCharacterGsp = res.defaultUserCharacterGsp;
-            this.userCharacter.characterGsp = res.defaultUserCharacterGsp
+            this.userCharacter.characterGsp = res.defaultUserCharacterGsp;
           }
           if (res.defaultUserCharacterId) {
             this.userCharacter.userCharacterId = res.defaultUserCharacterId;
             const defaultUserChar: IUserCharacterViewModel = res.userCharacters.find((userChar) => {
-              return userChar.userCharacterId === res.defaultUserCharacterId; 
+              return userChar.userCharacterId === res.defaultUserCharacterId;
             });
             this.userCharacter.altCostume = defaultUserChar.altCostume;
           }
@@ -153,18 +153,17 @@ export class MatchInputFormComponent implements OnInit {
   ------------------------*/
   private _resetMatch(): void {
     this.matchTags = [];
-    this.match = {
-      matchId: null,
-      userId: this.user.userId,
-      userName: null,
-      userCharacterId: this.match.userCharacterId,
-      userCharacterName: this.match.userCharacterName,
-      userCharacterGsp: this.match.userCharacterGsp,
-      opponentCharacterId: null,
-      opponentCharacterName: null,
-      opponentCharacterGsp: null,
-      matchTags: [],
-      userWin: null
-    } as IMatchViewModel;
+    this.match.matchId = null;
+    this.match.userId = this.user.userId,
+    this.match.userName = null;
+
+    // this.match.userCharacterId stays the same
+    // this.match.userCharacterName stays the same
+    // this.match.userCharacterGsp stays the same
+
+    this.match.opponentCharacterId = null;
+    this.match.opponentCharacterGsp = null;
+    this.match.matchTags = [];
+    this.match.userWin = null;
   }
 }
