@@ -156,6 +156,13 @@ func (r *UserCharacterRouter) handleUpdate(res http.ResponseWriter, req *http.Re
     return
   }
 
+  userRoleViews, err := r.Services.Database.GetUserRoleViewsByUserID(userCharUpdate.UserID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error fetching user roles from database: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+  userProfileView.UserRoles = userRoleViews
+
   response := &Response{
     Success:  true,
     Error:    nil,
