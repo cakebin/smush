@@ -23,6 +23,7 @@ export class MatchManagementService {
     }
     public createMatch(match: IMatchViewModel): Observable<IMatchViewModel> {
         match = this._prepareMatchForApi(match);
+
         return this.httpClient.post(`${this.apiUrl}/create`, match).pipe(
             map((res: IServerResponse) => {
                 if (res && res.data && res.data.match) {
@@ -100,20 +101,22 @@ export class MatchManagementService {
          Private helpers
     ------------------------*/
     private _prepareMatchForApi(match: IMatchViewModel): IMatchViewModel {
+        const apiMatch: IMatchViewModel = JSON.parse(JSON.stringify(match));
+
         // Do all type conversions & other misc translations here before sending to API
-        if (match.userCharacterGsp) {
-            match.userCharacterGsp = parseInt(match.userCharacterGsp.toString().replace(/\D/g, ''), 10);
+        if (apiMatch.userCharacterGsp) {
+            apiMatch.userCharacterGsp = parseInt(apiMatch.userCharacterGsp.toString().replace(/\D/g, ''), 10);
         }
-        if (match.opponentCharacterGsp) {
-            match.opponentCharacterGsp = parseInt(match.opponentCharacterGsp.toString().replace(/\D/g, ''), 10);
+        if (apiMatch.opponentCharacterGsp) {
+            apiMatch.opponentCharacterGsp = parseInt(apiMatch.opponentCharacterGsp.toString().replace(/\D/g, ''), 10);
         }
-        if (match.userCharacterGsp === '') {
-            match.userCharacterGsp = null;
+        if (apiMatch.userCharacterGsp === '') {
+            apiMatch.userCharacterGsp = null;
         }
-        if (match.opponentCharacterGsp === '') {
-            match.opponentCharacterGsp = null;
+        if (apiMatch.opponentCharacterGsp === '') {
+            apiMatch.opponentCharacterGsp = null;
         }
-        return match;
+        return apiMatch;
     }
     private _updateCachedMatches(updatedMatches: IMatchViewModel[]): void {
         this.cachedMatches.next(updatedMatches);
