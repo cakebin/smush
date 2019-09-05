@@ -517,3 +517,8 @@ img[data-character="Mario"] {
   top: 8px;
   left: 0px;
 }
+img[data-character="Banjo & Kazooie"] {
+  width: 240px;
+  top: -50px;
+  left: 0px;
+}
