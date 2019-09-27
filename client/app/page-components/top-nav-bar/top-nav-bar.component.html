@@ -2,25 +2,25 @@
     <div pane class="nav-slide-menu-content shadow bg-white">
         <!-- User login and registration -->
         <div *ngIf="!user" class="pt-1">
-            <div *ngIf="showLoginForm; then loginForm else registerForm"></div>
+            <div *ngIf="displayedForm=='login'; then loginForm else registerForm"></div>
 
             <div class="dropdown-divider"></div>       
             
-            <button *ngIf="showLoginForm else loginButton" (click)="showLoginForm=false" class="dropdown-item">New around here? Sign up</button>
-            <ng-template #loginButton><button (click)="showLoginForm=true" class="dropdown-item">Already registered? Sign in</button></ng-template>
+            <button [hidden]="displayedForm!='login'" (click)="displayedForm='register'" class="dropdown-item">New around here? Sign up</button>
+            <button [hidden]="displayedForm!='register'" (click)="displayedForm='login'" class="dropdown-item">Already registered? Sign in</button>
             
             <div class="dropdown-divider"></div> 
             
-            <button class="dropdown-item">Forgot password?</button>
+            <button routerLink="/reset-password/request" (click)="togglePanelState(false)" class="dropdown-item">Forgot password?</button>
             
             <div class="dropdown-divider"></div>
         </div>
 
         <!-- User edit profile and logout -->
         <div *ngIf="user" class="pt-3">
-            <button class="dropdown-item" routerLink="/profile/edit" (click)="togglePanelState(false)">Edit Profile</button>
+            <button class="dropdown-item" routerLink="/profile/edit" (click)="togglePanelState(false)">Edit profile</button>
             <div class="dropdown-divider"></div> 
-            <button (click)="logOut()" class="dropdown-item">Log Out</button>
+            <button (click)="logOut()" class="dropdown-item">Log out</button>
             <div class="dropdown-divider"></div> 
         </div>
     </div>
@@ -67,7 +67,6 @@
                     </span>
                 </li>
             </ul>
-
         </div>
     </div>
 </nav>
@@ -112,7 +111,7 @@
             type="password" id="dropdownFormPassword1" name="dropdownFormPassword1">
         </div>
         <div class="form-group mb-2">
-            <label for="dropdownFormPassword2" class="mb-0">Confirm Password</label>
+            <label for="dropdownFormPassword2" class="mb-0">Confirm password</label>
             <input [(ngModel)]="newUser.passwordConfirm" (focus)="showRegistrationFormWarnings=false" (keyup.enter)="createUser()"  
             class="form-control" [ngClass]="{ 'border-danger': ((newUser.passwordConfirm && newUser.passwordConfirm!==newUser.password) 
             || (!newUser.passwordConfirm && showRegistrationFormWarnings)) }"

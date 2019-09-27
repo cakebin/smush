@@ -28,6 +28,8 @@ import { AdminTagComponent } from './page-components/admin/admin-tag/admin-tag.c
 import { TagRowComponent } from './page-components/admin/admin-tag/tag-row/tag-row.component';
 import { AdminCharacterComponent } from './page-components/admin/admin-character/admin-character.component';
 import { ProfileComponent } from './page-components/profiles/profile.component';
+import { RequestResetComponent } from './page-components/reset-password/request-reset.component';
+import { PasswordResetComponent } from './page-components/reset-password/reset.component';
 import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 
 // Services
@@ -36,8 +38,6 @@ import { CharacterManagementService } from 'client/app/modules/character-managem
 import { MatchManagementService } from './modules/match-management/match-management.service';
 import { UserManagementService } from './modules/user-management/user-management.service';
 import { CommonUxService } from './modules/common-ux/common-ux.service';
-
-
 
 
 @NgModule({
@@ -50,6 +50,8 @@ import { CommonUxService } from './modules/common-ux/common-ux.service';
     InsightsComponent,
     AdminComponent,
     ProfileComponent,
+    RequestResetComponent,
+    PasswordResetComponent,
     AdminTagComponent,
     AdminCharacterComponent,
     TagRowComponent,
