@@ -55,15 +55,18 @@
             --------------------->
             <div class="col-6 pr-1">
                 <select [(ngModel)]="sortType" (change)="updateAndRenderChart()" 
-                [disabled]="selectedChart.chartId != 1" class="custom-select">
+                [disabled]="selectedChart.chartType == 'line'" class="custom-select">
                     <option [ngValue]="null">-- Sort by --</option>
                     <option value="alpha">Alphabetical</option>
-                    <option value="use">Usage</option>
+                    <option value="dataValue">
+                        <span *ngIf="selectedChart.chartId == 1">Usage</span>
+                        <span *ngIf="selectedChart.chartId == 3">Win rate</span>
+                    </option>
                 </select>
             </div>
             <div class="col-6 pl-1">
                 <select [(ngModel)]="sortOrder" (change)="updateAndRenderChart()" 
-                [disabled]="selectedChart.chartId != 1" class="custom-select">
+                [disabled]="selectedChart.chartType == 'line'" class="custom-select">
                     <option [ngValue]="null">-- Sort order --</option>
                     <option value="asc">Ascending</option>
                     <option value="desc">Descending</option>
@@ -73,7 +76,10 @@
 
         <div class="row mt-3">
             <div class="col">
-                <div *ngIf="!isInitialLoad && matches?.length && !noFilteredDataToDisplay">
+                <div *ngIf="!isInitialLoad 
+                && matches?.length 
+                && !noFilteredDataToDisplay 
+                && (chartData || multiSeriesChartData)">
                     <!-------------------
                           Bar chart
                     --------------------->
