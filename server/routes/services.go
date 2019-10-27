@@ -5,6 +5,7 @@ import (
 
   "github.com/cakebin/smush/server/services/auth"
   "github.com/cakebin/smush/server/services/db"
+  "github.com/cakebin/smush/server/services/email"
 )
 
 
@@ -13,6 +14,7 @@ import (
 type Services struct {
   Database  db.DatabaseManager
   Auth      auth.Authenticator
+  Email     email.Emailer
 }
 
 
@@ -26,6 +28,7 @@ func NewRouterServices() *Services {
   }
   services.Database = database
   services.Auth = auth.New()
+  services.Email = email.New()
 
   return services
 }
