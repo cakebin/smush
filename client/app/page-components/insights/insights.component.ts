@@ -101,8 +101,12 @@ export class InsightsComponent implements OnInit {
     switch (chart.chartId) {
       case 1:
         // Opponent character usage
-        this.sortType = 'dataValue';
-        this.sortOrder = 'desc';
+        if (this.sortType == null) {
+          this.sortType = 'dataValue';
+        }
+        if (this.sortOrder == null) {
+          this.sortOrder = 'desc';
+        }
         this._setSingleSeriesChartData(this._getCharacterUsageChartData());
         this.dataUnit = 'percent';
         this.xAxisLabel = 'Usage';
@@ -127,8 +131,12 @@ export class InsightsComponent implements OnInit {
 
       case 3:
         // User win rate by character
-        this.sortType = 'dataValue';
-        this.sortOrder = 'desc';
+        if (this.sortType == null) {
+          this.sortType = 'dataValue';
+        }
+        if (this.sortOrder == null) {
+          this.sortOrder = 'desc';
+        }
         if (this.selectedUser == null) {
           this.selectedUser = this.users.find(u => u.userId === this.user.userId);
         }
