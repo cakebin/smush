@@ -2,9 +2,9 @@ import { Injectable, Inject  } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonUxService } from '../../modules/common-ux/common-ux.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { publish, refCount, tap, map } from 'rxjs/operators';
-import { IUserViewModel, LogInViewModel, IServerResponse, IUserCharacterViewModel, IChartUserViewModel } from '../../app.view-models';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { publish, refCount, tap, map, delay } from 'rxjs/operators';
+import { IUserViewModel, LogInViewModel, IServerResponse, IUserCharacterViewModel, IChartUserViewModel, IPasswordResetRequestModel, IPasswordResetModel } from '../../app.view-models';
 
 @Injectable()
 export class UserManagementService {
@@ -27,7 +27,7 @@ export class UserManagementService {
 
 
     /*-----------------------
-               Auth
+              Auth
     ------------------------*/
 
     public logIn(logInModel: LogInViewModel): Observable<IServerResponse> {
@@ -62,7 +62,7 @@ export class UserManagementService {
 
 
     /*-----------------------
-               User
+              User
     ------------------------*/
 
     public getAllUsers(): Observable<IChartUserViewModel[]> {
@@ -92,6 +92,23 @@ export class UserManagementService {
         return this.httpClient.post(`${this.apiUrl}/delete`, userId);
     }
 
+    /*-----------------------
+          Reset password
+    ------------------------*/
+
+    public requestResetPassword(emailAddress: string): Observable<{}> {
+        const requestModel: IPasswordResetRequestModel = { userEmail: emailAddress };
+        // return this.httpClient.post(`${this.authApiUrl}/forgot-password`, requestModel);
+        return of({}).pipe(delay(1000));
+    }
+    public resetPassword(urlToken: string, newPass: string): Observable<boolean> {
+        const resetModel: IPasswordResetModel = {
+            token: urlToken,
+            newPassword: newPass
+        };
+        // return this.httpClient.post(`${this.authApiUrl}/reset-password`, resetModel);
+        return of(true).pipe(delay(1000));
+    }
 
     /*-----------------------
          User characters

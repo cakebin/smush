@@ -64,7 +64,7 @@ export class AdminTagComponent implements OnInit {
       (res: IServerResponse) => {
         if (res.success) {
           this.newTag = {} as ITagViewModel;
-          this.commonUxService.showSuccessToast('Tag created!');
+          this.commonUxService.showStandardToast('Tag created!');
         } else {
           this.commonUxService.showDangerToast('Unable to create tag.');
         }

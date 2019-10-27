@@ -1,6 +1,10 @@
 <div class="row">
   <div class="col-3"></div>
   <div class="col-6">
+    <div *ngIf="requestSent" class="alert alert-primary mt-3">
+        Email sent to <a href="mailto:{{emailAddress}}" target="_blank">{{emailAddress}}</a> with instructions on how to reset your password. 
+        Didn't receive it? <a href="#" (click)="sendRequest();false">Send it again.</a>
+    </div>
 
     <h4 class="mt-4 mb-4">Request password reset</h4>
 
@@ -9,17 +13,10 @@
         <div class="input-group">
             <input [(ngModel)]="emailAddress" type="text" class="form-control" name="request-email-address" autocomplete="off">
             <div class="input-group-append">
-              <button [disabled]="!emailAddress || isSaving" class="btn btn-primary" type="button" id="button-request-reset">Submit</button>
+              <button (click)="sendRequest()" [disabled]="!emailAddress || isSending" class="btn btn-primary" type="button" id="button-request-reset">Submit</button>
             </div>
         </div>
     </div>
-    <div class="text-center mt-4">
-      <p class="m-0">Email sent with instructions on how to reset your password.</p>
-      <p class="m-0">Didn't receive it? <a href="#" (click)="false">Send it again.</a></p>
-    </div>
-
-
-
 
   </div>
   <div class="col-3"></div>
