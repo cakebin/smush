@@ -11,6 +11,7 @@ import { UserManagementService } from 'client/app/modules/user-management/user-m
 const charts: IChartViewModel[] = [
   new ChartViewModel(1, 'Opponent character usage', 'bar'),
   new ChartViewModel(2, 'User GSP over time', 'line'),
+  new ChartViewModel(3, 'User win rate by character', 'bar'),
 ];
 
 @Component({
@@ -29,7 +30,7 @@ export class InsightsComponent implements OnInit {
   public startDate: NgbDate;
   public endDate: NgbDate;
   public selectedUser: IChartUserViewModel = null;
-  public sortType: string = 'use';
+  public sortType: string = 'dataValue';
   public sortOrder: string = 'desc';
 
   public chartData: SingleSeries = [];
@@ -99,22 +100,25 @@ export class InsightsComponent implements OnInit {
 
     switch (chart.chartId) {
       case 1:
-        this.chartData = this._getCharacterUsageChartData();
+        // Opponent character usage
+        if (this.sortType == null) {
+          this.sortType = 'dataValue';
+        }
+        if (this.sortOrder == null) {
+          this.sortOrder = 'desc';
+        }
+        this._setSingleSeriesChartData(this._getCharacterUsageChartData());
         this.dataUnit = 'percent';
         this.xAxisLabel = 'Usage';
         this.yAxisLabel = 'Character';
         this.xAxisTickFormatting = (val: string) => val + '%';
         this.yAxisTickFormatting = (val: string) => val;
-
-        if (this.sortType == null) {
-          this.sortType = 'use';
-        }
-        if (this.sortOrder == null) {
-          this.sortOrder = 'desc';
-        }
-
         break;
+
       case 2:
+        // User GSP over time
+        this.sortType = null;
+        this.sortOrder = null;
         if (this.selectedUser == null) {
           this.selectedUser = this.users.find(u => u.userId === this.user.userId);
         }
@@ -123,9 +127,25 @@ export class InsightsComponent implements OnInit {
         this.yAxisLabel = 'GSP';
         this.xAxisTickFormatting = (val: string) => this._getFormattedDate(val);
         this.yAxisTickFormatting = (val: string) => parseInt(val, 10).toLocaleString();
-        this.sortType = null;
-        this.sortOrder = null;
         break;
+
+      case 3:
+        // User win rate by character
+        if (this.sortType == null) {
+          this.sortType = 'dataValue';
+        }
+        if (this.sortOrder == null) {
+          this.sortOrder = 'desc';
+        }
+        if (this.selectedUser == null) {
+          this.selectedUser = this.users.find(u => u.userId === this.user.userId);
+        }
+        this._setSingleSeriesChartData(this._getCharacterWinRateData());
+        this.dataUnit = 'percent';
+        this.xAxisLabel = 'Win rate';
+        this.yAxisLabel = 'Character';
+        this.xAxisTickFormatting = (val: string) => val + '%';
+        this.yAxisTickFormatting = (val: string) => val;
     }
   }
 
@@ -133,6 +153,7 @@ export class InsightsComponent implements OnInit {
   /*------------------
       Data methods
   -------------------*/
+
   private _getFilteredData(): IMatchViewModel[] {
     let filteredData: IMatchViewModel[] = [];
     Object.assign(filteredData, this.matches);
@@ -200,7 +221,6 @@ export class InsightsComponent implements OnInit {
 
     return multiSeries;
   }
-
   private _getCharacterUsageChartData(): SingleSeries {
     let series: SingleSeries = [];
     const filteredData = this._getFilteredData();
@@ -232,6 +252,47 @@ export class InsightsComponent implements OnInit {
 
     return series;
   }
+  private _getCharacterWinRateData(): SingleSeries {
+    let series: SingleSeries = [];
+    const filteredData = this._getFilteredData();
+
+    if (!filteredData) {
+      return null;
+    }
+
+    const matchesByCharacter: {[index: string]: IMatchViewModel[]} = {};
+    filteredData.forEach(match => {
+      if (matchesByCharacter[match.opponentCharacterName] == null) {
+        matchesByCharacter[match.opponentCharacterName] = [];
+      }
+      matchesByCharacter[match.opponentCharacterName].push(match);
+    });
+
+    // For each character group, get total number of wins
+    Object.keys(matchesByCharacter).forEach(opponentCharacterName => {
+      const matches: IMatchViewModel[] = matchesByCharacter[opponentCharacterName];
+      const total: number = matches.filter(match => match.userWin !== null).length;
+
+      if (!total) {
+        return;
+      }
+
+      const wins: number = matches.filter(match => match.userWin).length;
+      const winRate: number = (wins / total) * 100;
+      // Push an entry into the series (win ratio)
+      series.push({ name: opponentCharacterName, value: winRate } as DataItem);
+    });
+
+    // Sort the data points as specified by user
+    series = this._sortSeries(series);
+
+    return series;
+  }
+
+
+  /*-----------------
+     Chart helpers
+  ------------------*/
 
   private _sortSeries(series: SingleSeries): SingleSeries {
     let sortMultiplier;
@@ -258,7 +319,7 @@ export class InsightsComponent implements OnInit {
       });
     }
 
-    if (this.sortType === 'use') {
+    if (this.sortType === 'dataValue' ) {
       series = series.sort((a: DataItem, b: DataItem) => {
         let sortValue;
         if (a.value > b.value) {
@@ -301,5 +362,13 @@ export class InsightsComponent implements OnInit {
   private _clearData(): void {
     this.chartData = null;
     this.multiSeriesChartData = null;
+  }
+  private _setSingleSeriesChartData(data: SingleSeries) {
+    // This hack needed due to D3 charting library rounded edges bug
+    // Only affects our bar charts, not line charts.
+    // https://github.com/swimlane/ngx-charts/issues/498
+    setTimeout(() => {
+      this.chartData = data;
+    });
   }
 }

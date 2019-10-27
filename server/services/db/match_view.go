@@ -80,7 +80,7 @@ func (db *DB) GetMatchViewByMatchID(matchID int64) (*MatchView, error) {
     LEFT JOIN users ON users.user_id = matches.user_id
     LEFT JOIN characters opponent_character ON opponent_character.character_id = matches.opponent_character_id
     LEFT JOIN characters player_character ON player_character.character_id = matches.user_character_id
-    LEFT JOIN user_characters ON user_characters.character_id = matches.user_character_id
+    LEFT JOIN user_characters ON user_characters.character_id = matches.user_character_id AND user_characters.user_id = matches.user_id
     WHERE
      match_id = $1
   `
@@ -134,7 +134,7 @@ func (db *DB) GetAllMatchViews() ([]*MatchView, error) {
     LEFT JOIN users ON users.user_id = matches.user_id
     LEFT JOIN characters opponent_character ON opponent_character.character_id = matches.opponent_character_id
     LEFT JOIN characters player_character ON player_character.character_id = matches.user_character_id
-    LEFT JOIN user_characters ON user_characters.character_id = matches.user_character_id
+    LEFT JOIN user_characters ON user_characters.character_id = matches.user_character_id AND user_characters.user_id = matches.user_id
   `
 
   rows, err := db.Query(sqlStatement)
