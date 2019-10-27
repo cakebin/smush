@@ -12,7 +12,6 @@ import (
 // ResetPWInfo is a convenience data structure for holding
 // all relevant information for resetting a user's password
 type ResetPWInfo struct {
-  UserName   string  `json:"userName"`
   UserEmail  string  `json:"userEmail"`
   ResetURL   string  `json:"resetUrl"`
 }
@@ -26,7 +25,7 @@ type ResetPWInfo struct {
 // used for sending emails related to a user's password
 type PasswordEmailer interface {
   SendResetPWEmail(resetPWInfo *ResetPWInfo) (bool, error)
-}
+} 
 
 
 // SendResetPWEmail sends an email to a user
@@ -34,7 +33,7 @@ type PasswordEmailer interface {
 func (e *Email) SendResetPWEmail(resetPWInfo *ResetPWInfo) (bool, error) {
    from := mail.NewEmail("Cakebin", "cae@cakeforge.co")
    subject := "Reset your password for smush-tracker"
-   to := mail.NewEmail(resetPWInfo.UserName, resetPWInfo.UserEmail)
+   to := mail.NewEmail("Smusher", resetPWInfo.UserEmail)
 
    resetPWBody := fmt.Sprintf(`
    Hallo friend,
