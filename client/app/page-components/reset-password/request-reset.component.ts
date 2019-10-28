@@ -8,7 +8,8 @@ import { UserManagementService } from 'client/app/modules/user-management/user-m
 export class RequestResetComponent {
   public emailAddress: string = '';
   public isSending: boolean = false;
-  public requestSent: boolean = false;
+  public requestSuccess: boolean = false;
+  public requestFailed: boolean = false;
 
   constructor(private userService: UserManagementService) {
   }
@@ -19,9 +20,15 @@ export class RequestResetComponent {
     }
     this.isSending = true;
     this.userService.requestResetPassword(this.emailAddress).subscribe(
-      res => {
-        this.requestSent = true;
-        this.isSending = false;
+      (res: boolean) => {
+        if (res) {
+          this.requestSuccess = true;
+        } else {
+          this.requestFailed = true;
+        }
+      },
+      error => {
+        this.requestFailed = true;
       },
       () => {
         this.isSending = false;
