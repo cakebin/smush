@@ -5,9 +5,11 @@ import (
   "encoding/json"
   "fmt"
   "net/http"
+  "strconv"
   "time"
 
   "github.com/cakebin/smush/server/services/db"
+  "github.com/cakebin/smush/server/services/email"
 )
 
 
@@ -45,6 +47,19 @@ type RefreshRequestData struct {
   UserID  int64  `json:"userId"`
 }
 
+
+// ForgotPasswordRequestData describes the data we're expecting
+// when a user requests to send an email to reset their password
+type ForgotPasswordRequestData struct {
+  UserEmail  string  `json:"userEmail"`
+}
+
+// ResetPasswordRequestData describes the data we're expecting
+// when a user requests to reset their password
+type ResetPasswordRequestData struct {
+  Token        string  `json:"token"`
+  NewPassword  string  `json:"newPassword"`
+}
 
 /*---------------------------------
           Response Data
@@ -104,6 +119,10 @@ func (r *AuthRouter) ServeHTTP(res http.ResponseWriter, req *http.Request) {
     r.handleRegister(res, req)
   case "refresh":
     r.handleRefresh(res, req)
+  case "forgot-password":
+    r.handleForgotPassword(res, req)
+  case "reset-password":
+    r.handleResetPassword(res, req)
   default:
     http.Error(res, "404 Not found", http.StatusNotFound)
   }
@@ -400,6 +419,131 @@ func (r *AuthRouter) handleLogout(res http.ResponseWriter, req *http.Request) {
     Data:    LogoutResponseData{
       UserID: userID,
     },
+  }
+
+  res.Header().Set("Content-Type", "application/json")
+  json.NewEncoder(res).Encode(response)
+}
+
+
+func (r *AuthRouter) handleForgotPassword(res http.ResponseWriter, req *http.Request) {
+  var forgotPasswordRequestData ForgotPasswordRequestData
+  decoder := json.NewDecoder(req.Body)
+  err := decoder.Decode(&forgotPasswordRequestData)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
+    return
+  }
+
+  // Check if we have a user with that email address before sending an email
+  userID, err := r.Services.Database.GetUserIDByEmail(forgotPasswordRequestData.UserEmail)
+  if err == sql.ErrNoRows {
+    http.Error(res, fmt.Sprintf("No such user exists with email address %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  resetPasswordRequest, err := http.NewRequest("GET", "https://smush-tracker.herokuapp.com/reset-password/token", nil)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error when attempting to build reset password url: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  queryParam := resetPasswordRequest.URL.Query()
+  resetExpirationTime := time.Now().Add(15 * time.Minute)
+  resetPasswordToken, err := r.Services.Auth.GetNewJWTToken(userID, resetExpirationTime)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error creating new access token: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  // Update the user's reset_password_token for validation later
+  resetPasswordUpdate := new(db.UserResetPasswordUpdate)
+  resetPasswordUpdate.UserID = userID
+  resetPasswordUpdate.ResetPasswordToken = resetPasswordToken
+  userID, err = r.Services.Database.UpdateUserResetPasswordRefreshToken(resetPasswordUpdate)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error saving reset_password_token :%s for userID: %d", err.Error(), userID), http.StatusInternalServerError)
+    return
+  }
+
+  queryParam.Add("t", resetPasswordToken)
+  queryParam.Add("e", strconv.FormatInt(resetExpirationTime.Unix() * 1000, 10))
+  resetPasswordRequest.URL.RawQuery = queryParam.Encode()
+  resetURL := resetPasswordRequest.URL.String()
+
+  resetPWInfo := new(email.ResetPWInfo)
+  resetPWInfo.UserEmail = forgotPasswordRequestData.UserEmail
+  resetPWInfo.ResetURL = resetURL
+  success, err := r.Services.Email.SendResetPWEmail(resetPWInfo)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error when attempting to send email to: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  response := &Response{
+    Success:  success,
+    Error:    nil,
+  }
+
+  res.Header().Set("Content-Type", "application/json")
+  json.NewEncoder(res).Encode(response)
+}
+
+
+func (r *AuthRouter) handleResetPassword(res http.ResponseWriter, req *http.Request) {
+  resetPasswordRequest := new(ResetPasswordRequestData)
+  decoder := json.NewDecoder(req.Body)
+  err := decoder.Decode(&resetPasswordRequest)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Invalid JSON request: %s", err.Error()), http.StatusBadRequest)
+    return
+  }
+
+  // Check if the reset token has expired
+  _, err = r.Services.Auth.CheckJWTToken(resetPasswordRequest.Token)
+  if err != nil {
+    http.Error(res, "Reset Password token has expired", http.StatusBadRequest)
+    return
+  }
+
+  // Get the userID from the reset token
+  userID, err := r.Services.Auth.GetUserIDFromJWTToken(resetPasswordRequest.Token)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error getting userID from reset token: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  // Check if the reset token matches the one we stored for the user's database
+  currentResetPasswordToken, err := r.Services.Database.GetUserResetPasswordTokenByUserID(userID)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error getting user's current reset token: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  if currentResetPasswordToken != resetPasswordRequest.Token {
+    http.Error(res, "Provided reset token does not match user's current reset token", http.StatusBadRequest)
+    return
+  }
+
+  // If we're good, update the new password for the user with the usual hashing
+  newHashedPassword, err := r.Services.Auth.HashPassword(resetPasswordRequest.NewPassword)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error when hashing new password: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+  hashedPasswordUpdate := new(db.UserHashedPasswordUpdate)
+  hashedPasswordUpdate.UserID = userID
+  hashedPasswordUpdate.HashedPassword = newHashedPassword
+  userID, err = r.Services.Database.UpdateUserHashedPassword(hashedPasswordUpdate)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error when updating user's hashed password: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  // Send a success response, which would have the front end prompt them to log in
+  response := &Response{
+    Success:  true,
+    Error:    nil,
   }
 
   res.Header().Set("Content-Type", "application/json")

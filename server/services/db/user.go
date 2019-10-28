@@ -10,9 +10,12 @@ package db
 type UserManager interface {
   GetAllUsers() ([]*User, error)
   GetUserIDByEmail(email string) (int64, error)
+  GetUserResetPasswordTokenByUserID(int64) (string, error)
 
   UpdateUserProfile(profileUpdate *UserProfileUpdate) (int64, error)
   UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int64, error)
+  UpdateUserResetPasswordRefreshToken(resetPasswordUpdate *UserResetPasswordUpdate) (int64, error)
+  UpdateUserHashedPassword(hashedPasswordUpdate *UserHashedPasswordUpdate) (int64, error)
   UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int64, error)
 
   CreateUser(userCreate *UserCreate) (int64, error)
@@ -53,6 +56,21 @@ type UserRefreshUpdate struct {
   RefreshToken  string  `json:"refreshToken"`
 }
 
+
+// UserResetPasswordUpdate describes the data
+// needed to update a given user's reset password token
+type UserResetPasswordUpdate struct {
+  UserID              int64   `json:"userId"`  
+  ResetPasswordToken  string  `json:"resetPasswordToken"`
+}
+
+
+// UserHashedPasswordUpdate describes the data
+// needed to update a given user's hashed password
+type UserHashedPasswordUpdate struct {
+  UserID          int64   `json:"userId"`
+  HashedPassword  string  `json:"hashedPassword"`
+}
 
 // UserCreate describes the data needed
 // to create a new user in our db
@@ -127,6 +145,30 @@ func (db *DB) GetUserIDByEmail(email string) (int64, error) {
 }
 
 
+// GetUserResetPasswordTokenByUserID gets a user's reset_password_token; used for "forgot password"
+func (db *DB) GetUserResetPasswordTokenByUserID(userID int64) (string, error) {
+  var resetPasswordToken string
+  sqlStatement := `
+    SELECT
+      reset_password_token
+    FROM
+      users
+    WHERE
+      user_id = $1
+  `
+  row := db.QueryRow(
+    sqlStatement,
+    userID,
+  )
+  err := row.Scan(&resetPasswordToken)
+  if err != nil {
+    return "", err
+  }
+
+  return resetPasswordToken, nil
+}
+
+
 // CreateUser adds a new entry to the users table in our database
 func (db *DB) CreateUser(userCreate *UserCreate) (int64, error) {
   var userID int64
@@ -183,7 +225,7 @@ func (db *DB) UpdateUserProfile(profileUpdate *UserProfileUpdate) (int64, error)
 }
 
 
-// UpdateUserRefreshToken updates an a user's refresh token; used for auth
+// UpdateUserRefreshToken updates a user's refresh token; used for auth
 func (db *DB) UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int64, error) {
   var userID int64
   sqlStatement := `
@@ -203,6 +245,60 @@ func (db *DB) UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int64, e
   )
   err := row.Scan(&userID)
 
+  if err != nil {
+    return 0, err
+  }
+
+  return userID, nil
+}
+
+
+// UpdateUserResetPasswordRefreshToken updates a user's reset password token; used for "forgot password"
+func (db *DB) UpdateUserResetPasswordRefreshToken(resetPasswordUpdate *UserResetPasswordUpdate) (int64, error) {
+  var userID int64
+  sqlStatement := `
+    UPDATE
+      users
+    SET
+      reset_password_token = $1
+    WHERE
+      user_id = $2
+    RETURNING
+      user_id
+  `
+  row := db.QueryRow(
+    sqlStatement,
+    resetPasswordUpdate.ResetPasswordToken,
+    resetPasswordUpdate.UserID,
+  )
+  err := row.Scan(&userID)
+  if err != nil {
+    return 0, err
+  }
+
+  return userID, nil
+}
+
+
+// UpdateUserHashedPassword updates a user's hashed password
+func (db *DB) UpdateUserHashedPassword(hashedPasswordUpdate *UserHashedPasswordUpdate) (int64, error) {
+  var userID int64
+  sqlStatement := `
+    UPDATE
+      users
+    SET
+      hashed_password = $1
+    WHERE
+      user_id = $2
+    RETURNING
+      user_id
+  `
+  row := db.QueryRow(
+    sqlStatement,
+    hashedPasswordUpdate.HashedPassword,
+    hashedPasswordUpdate.UserID,
+  )
+  err := row.Scan(&userID)
   if err != nil {
     return 0, err
   }
