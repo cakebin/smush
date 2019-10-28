@@ -33,10 +33,10 @@ img {
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.8);
   position: absolute;
   width: 154px;
-  top: 0px;
+  top: -4px;
   left:-2px;
-  height: 24px;
-  line-height:2.2em;
+  height: 28px;
+  line-height:2.8em;
   font-weight: 800;
   font-style: italic;
   font-size: 0.74em;
