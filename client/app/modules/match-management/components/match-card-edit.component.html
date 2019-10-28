@@ -53,10 +53,10 @@
        
                     <div [(ngModel)]="editedMatch.userWin" class="btn-group btn-group-toggle mt-2" ngbRadioGroup name="match-outcome">
                         <label ngbButtonLabel class="btn-outline-secondary">
-                            <input ngbButton type="radio" [value]="true"> Win
+                            <input (click)="editedMatch.userWin = (editedMatch.userWin ? null : true)" ngbButton type="radio" [value]="true"> Win
                         </label>
                         <label ngbButtonLabel class="btn-outline-secondary">
-                            <input ngbButton type="radio" [value]="false"> Loss
+                            <input (click)="editedMatch.userWin = (editedMatch.userWin===false ? null : false)" ngbButton type="radio" [value]="false"> Loss
                         </label>
                     </div>
                  

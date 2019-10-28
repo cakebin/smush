@@ -23,7 +23,7 @@
                     <label for="user-character">
                         Your character<span *ngIf="match.userCharacterGsp">*</span>
                     </label>
-                    <common-ux-typeahead 
+                    <common-ux-typeahead
                     [items]="characters" 
                     [textPropertyName]="'characterName'"
                     [valuePropertyName]="'characterId'"
@@ -53,10 +53,10 @@
        
                     <div class="btn-group btn-group-toggle mt-2" ngbRadioGroup name="match-outcome" [(ngModel)]="match.userWin">
                         <label ngbButtonLabel class="btn-outline-secondary">
-                            <input ngbButton type="radio" [value]="true"> Win
+                            <input (click)="match.userWin = (match.userWin ? null : true)" ngbButton type="radio" [value]="true"> Win
                         </label>
                         <label ngbButtonLabel class="btn-outline-secondary">
-                            <input ngbButton type="radio" [value]="false"> Loss
+                            <input (click)="match.userWin = (match.userWin===false ? null : false)" ngbButton type="radio" [value]="false"> Loss
                         </label>
                     </div>
                  
