@@ -146,3 +146,10 @@ export interface IChartUserViewModel {
     userId: number;
     userName: string;
 }
+export interface IPasswordResetRequestModel {
+    userEmail: string;
+}
+export interface IPasswordResetModel {
+    token: string;
+    newPassword: string;
+}

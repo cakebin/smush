@@ -460,7 +460,7 @@ func (r *AuthRouter) handleForgotPassword(res http.ResponseWriter, req *http.Req
   resetPasswordUpdate := new(db.UserResetPasswordUpdate)
   resetPasswordUpdate.UserID = userID
   resetPasswordUpdate.ResetPasswordToken = resetPasswordToken
-  userID, err = r.Services.Database.UpdateUserResetPasswordRefreshToken(resetPasswordUpdate)
+  userID, err = r.Services.Database.UpdateUserResetPasswordToken(resetPasswordUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error saving reset_password_token :%s for userID: %d", err.Error(), userID), http.StatusInternalServerError)
     return
@@ -537,6 +537,16 @@ func (r *AuthRouter) handleResetPassword(res http.ResponseWriter, req *http.Requ
   userID, err = r.Services.Database.UpdateUserHashedPassword(hashedPasswordUpdate)
   if err != nil {
     http.Error(res, fmt.Sprintf("Error when updating user's hashed password: %s", err.Error()), http.StatusInternalServerError)
+    return
+  }
+
+  // Clear out the reset password token
+  resetPasswordUpdate := new(db.UserResetPasswordUpdate)
+  resetPasswordUpdate.UserID = userID
+  resetPasswordUpdate.ResetPasswordToken = ""
+  userID, err = r.Services.Database.UpdateUserResetPasswordToken(resetPasswordUpdate)
+  if err != nil {
+    http.Error(res, fmt.Sprintf("Error clearing reset_password_token :%s for userID: %d", err.Error(), userID), http.StatusInternalServerError)
     return
   }
 

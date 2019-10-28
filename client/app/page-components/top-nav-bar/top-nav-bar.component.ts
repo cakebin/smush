@@ -17,7 +17,7 @@ export class TopNavBarComponent implements OnInit {
     public newUser: IUserViewModel = {} as IUserViewModel;
     public logInModel: ILogInViewModel = {} as ILogInViewModel;
 
-    public showLoginForm: boolean = true;
+    public displayedForm: 'login' | 'register' = 'login';
     public showRegistrationFormWarnings: boolean = false;
     public invalidEmailPassword: boolean = false;
     public hasRoleAdmin: boolean = false;
@@ -39,7 +39,7 @@ export class TopNavBarComponent implements OnInit {
           this.user = res;
           if (res && res.userRoles && res.userRoles) {
             this.hasRoleAdmin = this.user.userRoles.reduce((acc, cur) => {
-              return acc || cur.roleId == 1;
+              return acc || cur.roleId === 1;
             }, false);
           }
         },
@@ -78,7 +78,7 @@ export class TopNavBarComponent implements OnInit {
       this.userService.createUser(this.newUser).subscribe(
         (res: IServerResponse) => {
             if (res.success) {
-              this.commonUxService.showSuccessToast('Congratulations! Your account has been created.');
+              this.commonUxService.showStandardToast('Congratulations! Your account has been created.');
               this.resetPane();
             } else {
               this.commonUxService.showDangerToast('Unable to create account.');
@@ -102,7 +102,7 @@ export class TopNavBarComponent implements OnInit {
       this.logInModel = {} as LogInViewModel;
       this.newUser = {} as IUserViewModel;
 
-      this.showLoginForm = true;
+      this.displayedForm = 'login';
       this.showRegistrationFormWarnings = false;
       this.invalidEmailPassword = false;
 

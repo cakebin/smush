@@ -50,7 +50,7 @@ export class AdminCharacterComponent implements OnInit {
       (res: IServerResponse) => {
         if (res.success) {
           this.newCharacter = {} as ICharacterViewModel;
-          this.commonUxService.showSuccessToast('Character created!');
+          this.commonUxService.showStandardToast('Character created!');
         } else {
           this.commonUxService.showDangerToast('Unable to create character.');
         }
@@ -77,7 +77,7 @@ export class AdminCharacterComponent implements OnInit {
       (res: IServerResponse) => {
         if (res.success) {
           this.editCharacter = {} as ICharacterViewModel;
-          this.commonUxService.showSuccessToast('Character updated!');
+          this.commonUxService.showStandardToast('Character updated!');
         } else {
           this.commonUxService.showDangerToast('Unable to update character.');
         }

@@ -14,7 +14,7 @@ type UserManager interface {
 
   UpdateUserProfile(profileUpdate *UserProfileUpdate) (int64, error)
   UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int64, error)
-  UpdateUserResetPasswordRefreshToken(resetPasswordUpdate *UserResetPasswordUpdate) (int64, error)
+  UpdateUserResetPasswordToken(resetPasswordUpdate *UserResetPasswordUpdate) (int64, error)
   UpdateUserHashedPassword(hashedPasswordUpdate *UserHashedPasswordUpdate) (int64, error)
   UpdateUserDefaultUserCharacter(userCharUpdate *UserDefaultUserCharacterUpdate) (int64, error)
 
@@ -253,8 +253,8 @@ func (db *DB) UpdateUserRefreshToken(refreshUpdate *UserRefreshUpdate) (int64, e
 }
 
 
-// UpdateUserResetPasswordRefreshToken updates a user's reset password token; used for "forgot password"
-func (db *DB) UpdateUserResetPasswordRefreshToken(resetPasswordUpdate *UserResetPasswordUpdate) (int64, error) {
+// UpdateUserResetPasswordToken updates a user's reset password token; used for "forgot password"
+func (db *DB) UpdateUserResetPasswordToken(resetPasswordUpdate *UserResetPasswordUpdate) (int64, error) {
   var userID int64
   sqlStatement := `
     UPDATE

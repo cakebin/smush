@@ -7,7 +7,6 @@ export class SlidePanelService {
   public panelVisible: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   public openPanel() {
-    console.log('opening panel');
     this.panelVisible.next(true);
     this.panelVisible.pipe(
       publish(),

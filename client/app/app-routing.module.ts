@@ -6,7 +6,10 @@ import { InsightsComponent } from './page-components/insights/insights.component
 import { PageNotFoundComponent } from './page-components/page-not-found/page-not-found.component';
 import { HomeComponent } from './page-components/home/home.component';
 import { AdminComponent } from './page-components/admin/admin.component';
+import { RequestResetComponent } from './page-components/reset-password/request-reset.component';
+import { PasswordResetComponent } from './page-components/reset-password/reset.component';
 import { AuthGuardService as AuthGuard } from './app-auth-guard.service';
+
 
 const routes: Routes = [
   {
@@ -30,6 +33,20 @@ const routes: Routes = [
       {
         path: 'edit',
         component: ProfileComponent,
+      },
+    ]
+  },
+  {
+    // No guard for password reset pages
+    path: 'reset-password',
+    children: [
+      {
+        path: 'request',
+        component: RequestResetComponent,
+      },
+      {
+        path: 'token',
+        component: PasswordResetComponent,
       },
     ]
   },

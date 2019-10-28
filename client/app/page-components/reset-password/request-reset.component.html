@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="col-3"></div>
+  <div class="col-6">
+    <div *ngIf="requestSuccess" class="alert alert-primary mt-3">
+        Email sent to <a href="mailto:{{emailAddress}}" target="_blank">{{emailAddress}}</a> with instructions on how to reset your password. 
+        Didn't receive it? <a href="#" (click)="sendRequest();false">Send it again.</a>
+    </div>
+    <div *ngIf="requestFailed" class="alert alert-warning mt-3">
+        Request could not be sent.
+        Please contact the administrators for assistance.
+    </div>
+
+    <h4 class="mt-4 mb-4">Request password reset</h4>
+
+    <div class="form-group">
+        <label for="request-email-address">Email address</label>
+        <div class="input-group">
+            <input [(ngModel)]="emailAddress" type="text" class="form-control" name="request-email-address" autocomplete="off">
+            <div class="input-group-append">
+              <button (click)="sendRequest()" [disabled]="!emailAddress || isSending" class="btn btn-primary" type="button" id="button-request-reset">Submit</button>
+            </div>
+        </div>
+    </div>
+
+  </div>
+  <div class="col-3"></div>
+</div>
