@@ -522,3 +522,8 @@ img[data-character="Banjo & Kazooie"] {
   top: -50px;
   left: 0px;
 }
+img[data-character="Terry"] {
+  width: 550px;
+  top: 0;
+  left: -165px;
+}
