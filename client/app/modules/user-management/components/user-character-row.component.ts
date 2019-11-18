@@ -74,7 +74,16 @@ export class UserCharacterRowComponent implements OnInit {
     );
   }
   public deleteUserCharacter() {
-    this.userService.deleteUserCharacter(this.userCharacter);
+    this.commonUxService.openConfirmModal(
+      `Remove saved character ${this.userCharacter.characterName}?`,
+      'Delete saved character',
+      false,
+      'Delete it').then(
+        confirm => {
+          this.userService.deleteUserCharacter(this.userCharacter);
+        }, dismiss => {
+          // Cancelled. Do nothign
+        });
   }
   public setDefaultUserCharacter() {
     this.userService.setDefaultUserCharacter(this.userCharacter);

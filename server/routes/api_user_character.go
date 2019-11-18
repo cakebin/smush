@@ -197,7 +197,8 @@ func (r *UserCharacterRouter) handleDelete(res http.ResponseWriter, req *http.Re
   if (userProfileView.DefaultUserCharacterID.Int64 == userCharDelete.UserCharacterID.Int64) {
     userDefaultUserCharUpdate := new(db.UserDefaultUserCharacterUpdate)
     userDefaultUserCharUpdate.UserID = userCharDelete.UserID
-    userDefaultUserCharUpdate.UserCharacterID = userCharDelete.UserCharacterID
+    nullUserCharacterID := new(db.NullInt64JSON)
+    userDefaultUserCharUpdate.UserCharacterID = *nullUserCharacterID
 
     _, err = r.Services.Database.UpdateUserDefaultUserCharacter(userDefaultUserCharUpdate)
     if err != nil {
